@@ -1,0 +1,46 @@
+﻿@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.UI.Components.Plan
+ @using MudBlazor
+
+
+
+<MainPlan DataBuild="Params" IsDialog="false" IsAuth="true" />
+  
+
+@code
+{
+
+    [Parameter]
+    public bool IsAuth { get; set; } = true;
+
+    [Parameter]
+
+
+
+    public PlanViewModel? Params { get; set; } = null;
+
+
+
+
+
+    protected override void OnInitialized()
+    {
+      
+
+    }
+
+    private void UpgradePlan()
+    {
+        
+
+    }
+
+    private void ComparePlans()
+    {
+        
+    }
+
+    
+}
+
+ 

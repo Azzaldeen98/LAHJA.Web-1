@@ -1,0 +1,33 @@
+﻿@using System.Web
+@inject NavigationManager Navigation
+@inject IStringLocalizer<UserAvaterCard> Localizer
+
+<MudContainer Class="p-3">
+    <MudMenu Class="mr-2">
+        <ActivatorContent>
+            <MudAvatar>
+                <MudImage Style="width:70px;height:70px" Src="@(ImageUrl??"https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/SXJTVYmE71adfaZsiGDsE.png")" />
+            </MudAvatar>
+        
+             <MudText Typo="Typo.h5" Class="font-bold">@(Name??"User")</MudText>
+            
+         
+
+        </ActivatorContent>
+        <ChildContent>
+            <MudMenuItem Href="dashboard/profile">@Localizer["Profile"]</MudMenuItem>
+            <MudMenuItem Href="@($"Logout/{HttpUtility.UrlEncode(Navigation.Uri)}/{false}")">@Localizer["Sign Out"]</MudMenuItem>
+        </ChildContent>
+    </MudMenu>
+</MudContainer>
+@if (!string.IsNullOrEmpty(PhoneNumber))
+{
+    <MudChip Class="mt-1" T="object" Color="Color.Default" Variant="Variant.Outlined">@PhoneNumber</MudChip>
+}
+
+@code {
+    [Parameter] public string Name { get; set; }
+    [Parameter] public string ImageUrl { get; set; } 
+    [Parameter] public string PhoneNumber{ get; set; }
+
+}

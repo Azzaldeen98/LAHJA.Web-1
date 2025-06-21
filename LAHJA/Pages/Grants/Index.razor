@@ -1,0 +1,113 @@
+﻿@page "/Grant"
+@using Microsoft.AspNetCore.Authorization
+@using MudBlazor
+@inject NavigationManager Navigation
+@attribute [Authorize]
+@* <MudPaper Class="pa-5 mx-auto mt-7" MaxWidth="1000px">
+    <MudTabs>
+      
+        <MudTabPanel Text="تسجيل الدخول">
+        <LAHJA.Components.T.Login/>
+        </MudTabPanel>
+ 
+        
+            
+        
+
+     
+        <MudTabPanel Text="التحقق من البريد الإلكتروني">
+            <MudText Typo="Typo.body1" Align="Align.Center">
+                تم إرسال رابط التحقق إلى بريدك الإلكتروني. الرجاء التحقق من بريدك.
+            </MudText>
+            <MudButton Variant="MudBlazor.Variant.Filled" Color="MudBlazor.Color.Primary" FullWidth="true" OnClick="ResendVerificationEmail">
+                إعادة إرسال رابط التحقق
+            </MudButton>
+        </MudTabPanel>
+
+     
+        <MudTabPanel Text="نسيت كلمة المرور">
+       
+           <LAHJA.Components.T.ForgotPassword/>
+
+        </MudTabPanel>
+
+        <MudTabPanel Text="تسجيل الخروج">
+           <LAHJA.Components.T.Logout/>
+        </MudTabPanel>
+ 
+        <MudTabPanel Text="تغيير كلمة المرور">
+         <LAHJA.Components.T.ResetPassword/>
+        </MudTabPanel>
+    </MudTabs>
+ 
+</MudPaper> *@
+ <h2>fghghghg</h2>
+ 
+@code {
+    // متغيرات تسجيل الدخول
+    private string LoginEmail;
+    private string LoginPassword;
+
+    // متغيرات إنشاء الحساب
+    private string RegisterFullName;
+    private string RegisterEmail;
+    private string RegisterPassword;
+    private string ConfirmPassword;
+
+    // متغيرات التحقق من البريد
+    private string VerificationEmail;
+
+    // متغيرات استعادة كلمة المرور
+    private string ForgotPasswordEmail;
+
+    // متغيرات تغيير كلمة المرور
+    private string NewPassword;
+    private string ConfirmNewPassword;
+
+    // علامات التبويب
+    private int SelectedTab;
+
+    // تسجيل الدخول
+    private void HandleLogin()
+    {
+        if (!string.IsNullOrEmpty(LoginEmail) && !string.IsNullOrEmpty(LoginPassword))
+        {
+            // تنفيذ منطق تسجيل الدخول
+            Navigation.NavigateTo("/dashboard");
+        }
+    }
+
+    // إنشاء الحساب
+    private void HandleRegister()
+    {
+        if (RegisterPassword == ConfirmPassword && !string.IsNullOrEmpty(RegisterEmail))
+        {
+            // تنفيذ منطق إنشاء الحساب
+            SelectedTab = 2; // الانتقال إلى علامة التبويب "التحقق من البريد الإلكتروني"
+        }
+    }
+
+    // إعادة إرسال بريد التحقق
+    private void ResendVerificationEmail()
+    {
+        // تنفيذ منطق إرسال بريد التحقق
+        Console.WriteLine("تم إرسال بريد التحقق مرة أخرى");
+    }
+
+    // استعادة كلمة المرور
+    private void HandleForgotPassword()
+    {
+        // تنفيذ منطق استعادة كلمة المرور
+        Console.WriteLine($"تم إرسال رابط استعادة كلمة المرور إلى {ForgotPasswordEmail}");
+    }
+
+    // تغيير كلمة المرور
+    private void HandlePasswordChange()
+    {
+        if (NewPassword == ConfirmNewPassword && !string.IsNullOrEmpty(NewPassword))
+        {
+            // تنفيذ منطق تغيير كلمة المرور
+            Console.WriteLine("تم تغيير كلمة المرور بنجاح");
+        }
+    }
+}

@@ -1,0 +1,464 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Them
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+ @inherits CardAuth<DataBuildAuthBase>
+@inject IJSRuntime JSRuntime
+@* @inject IStringLocalizer<AccountTemplate> Localizer *@
+   
+
+
+
+
+
+<MudContainer Style="@(CurrentLanguage=="en"?"":"direction:rtl !important")" Class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+    <!-- إعدادات الحساب -->
+    <MudContainer Class="mb-6">
+        <MudContainer Class="flex justify-between">
+            <MudText Typo="Typo.h5" Class="flex flex-row items-center text-xl font-bold">
+                @translations[CurrentLanguage]["AccountSettings"]
+            </MudText>
+        </MudContainer>
+    </MudContainer>
+
+    <!-- نموذج تحديث بيانات المستخدم -->
+    <MudContainer Class="mb-8 max-w-lg">
+        <MudForm @ref="form" OnValidSubmit="@HandleValidSubmit" Class="mb-8 flex flex-col space-y-5" @bind-Errors="@errors">
+            <MudTextField 
+                @bind-Value="Username" 
+                Label="@translations[CurrentLanguage]["Username"]"
+                Placeholder="@translations[CurrentLanguage]["EnterUsername"]"
+                Pattern="\b(?!\d+$)([a-zA-Z0-9]|-(?!-))+\b"
+                Title="@translations[CurrentLanguage]["UsernamePattern"]"
+                MinLength="2" 
+                MaxLength="42"
+                Required="true" 
+                RequiredError="@translations[CurrentLanguage]["UsernameRequired"]"
+                ErrorText="@translations[CurrentLanguage]["UsernameError"]" />
+            
+            <MudTextField 
+                T="string" 
+                Label="@translations[CurrentLanguage]["PrimaryEmail"]"
+                Placeholder="@translations[CurrentLanguage]["EnterEmail"]"
+                Required="true" 
+                RequiredError="@translations[CurrentLanguage]["EmailRequired"]"
+                Validation="@(new EmailAddressAttribute() { ErrorMessage = translations[CurrentLanguage]["EmailInvalid"] })"
+                @bind-Value="@Email" />
+
+            <MudText Typo="Typo.body2" Class="mt-2 text-sm text-gray-400">
+                @translations[CurrentLanguage]["EmailInfo"]
+            </MudText>
+
+            <MudButton 
+                Type="Submit" 
+                Variant="Variant.Filled" 
+                Color="@AppColors.BASE_COLOR_ENUM">
+                @translations[CurrentLanguage]["SaveChanges"]
+            </MudButton>
+        </MudForm>
+    </MudContainer>
+
+    <!-- نموذج البريد الإلكتروني الإضافي -->
+    <MudContainer Class="mb-8 max-w-lg">
+        <MudText Typo="Typo.h6" Class="mb-3 font-semibold">
+            @translations[CurrentLanguage]["AdditionalEmails"]
+        </MudText>
+        <MudText Typo="Typo.body2" Class="mb-4 text-gray-500">
+            @translations[CurrentLanguage]["AdditionalEmailsInfo"]
+        </MudText>
+        <MudForm @ref="form" OnValidSubmit="HandleValidSubmit" Class="mb-8 flex flex-col space-y-5">
+            <MudTextField 
+                @bind-Value="Password" 
+                Label="@translations[CurrentLanguage]["Password"]"
+                Placeholder="@translations[CurrentLanguage]["EnterPassword"]" 
+                Type="password" 
+                Required="true" 
+                MinLength="4" 
+                MaxLength="100" />
+            
+            <MudTextField 
+                @bind-Value="ConfirmPassword" 
+                Label="@translations[CurrentLanguage]["ConfirmPassword"]"
+                Placeholder="@translations[CurrentLanguage]["ConfirmPasswordPlaceholder"]" 
+                Type="password" 
+                Required="true" 
+                MinLength="8" />
+            
+            <MudButton Type="Submit"  Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM">
+                @translations[CurrentLanguage]["SaveChanges"]
+            </MudButton>
+        </MudForm>
+    </MudContainer>
+
+    <!-- حذف الحساب -->
+    <MudContainer Class="mb-8 max-w-lg">
+        <MudText Typo="Typo.h6" Class="mb-3 font-semibold">
+            @translations[CurrentLanguage]["DeleteAccount"]
+        </MudText>
+        <MudText Typo="Typo.body2" Class="mb-4 text-gray-500">
+            @translations[CurrentLanguage]["DeleteAccountInfo"]
+        </MudText>
+        <MudButton OnClick="OpenModal" Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM">
+            @translations[CurrentLanguage]["DeleteMyAccount"]
+        </MudButton>
+
+        <MudContainer @bind-IsVisible="isModalVisible">
+            <MudCard>
+                <MudText Typo="Typo.h6">
+                    @translations[CurrentLanguage]["DeleteAccount"]
+                </MudText>
+                <MudIconButton Icon="Icons.Material.Filled.Close" OnClick="CloseModal" />
+            </MudCard>
+            <MudContainer>
+                <MudAlert Severity="Severity.Error">
+                    @translations[CurrentLanguage]["DeleteAccountWarning"]
+                </MudAlert>
+                <MudForm @ref="form" OnValidSubmit="HandleValidSubmit">
+                    <MudTextField 
+                        @bind-Value="Username" 
+                        Label="@translations[CurrentLanguage]["Username"]"
+                        Placeholder="@translations[CurrentLanguage]["EnterUsername"]" 
+                        Required="true" />
+                    
+                    <MudTextField 
+                        @bind-Value="Confirmation" 
+                        Label='@translations[CurrentLanguage]["DeleteAccountConfirmationLabel"]' 
+                        Placeholder='@translations[CurrentLanguage]["DeleteAccountConfirmationPlaceholder"]' 
+                        Required="true" />
+                    
+                    <MudButton Type="Submit" Variant="Variant.Filled" Color="Color.Error">
+                        @translations[CurrentLanguage]["DeleteMyAccount"]
+                    </MudButton>
+                    <MudButton OnClick="CloseModal" Variant="Variant.Outlined" Color="Color.Default">
+                        @translations[CurrentLanguage]["Cancel"]
+                    </MudButton>
+                </MudForm>
+            </MudContainer>
+        </MudContainer>
+    </MudContainer>
+</MudContainer>
+
+@code {
+    private Dictionary<string, Dictionary<string, string>> translations = new()
+    {
+        ["en"] = new Dictionary<string, string>
+        {
+            { "AccountSettings", "Account Settings" },
+            { "Username", "Username" },
+            { "EnterUsername", "Enter your username" },
+            { "UsernamePattern", "Letters, numbers, dashes. No dash at the end or start, no consecutive dashes. Not just numbers." },
+            { "UsernameRequired", "Username is required!" },
+            { "UsernameError", "The username must follow the pattern: letters, numbers, and dashes only." },
+            { "PrimaryEmail", "Primary Email" },
+            { "EnterEmail", "Enter your email address" },
+            { "EmailRequired", "Email is required!" },
+            { "EmailInvalid", "The email address is invalid." },
+            { "EmailInfo", "We will use this email to communicate with you." },
+            { "SaveChanges", "Save changes" },
+            { "AdditionalEmails", "Additional Emails" },
+            { "AdditionalEmailsInfo", "Link additional emails to your account." },
+            { "Password", "Password" },
+            { "EnterPassword", "Enter new password" },
+            { "ConfirmPassword", "Confirm Password" },
+            { "ConfirmPasswordPlaceholder", "Confirm your password" },
+            { "DeleteAccount", "Delete Your Account" },
+            { "DeleteAccountInfo", "This action is irreversible." },
+            { "DeleteAccountWarning", "Deleting your account will permanently erase all data." },
+            { "DeleteMyAccount", "Delete My Account" },
+            { "DeleteAccountConfirmationLabel", "Confirmation" },
+            { "DeleteAccountConfirmationPlaceholder", "Type 'delete my account'" },
+            { "Cancel", "Cancel" }
+        },
+        ["ar"] = new Dictionary<string, string>
+        {
+            { "AccountSettings", "إعدادات الحساب" },
+            { "Username", "اسم المستخدم" },
+            { "EnterUsername", "أدخل اسم المستخدم" },
+            { "UsernamePattern", "أحرف وأرقام وشرطات. لا توجد شرطة في البداية أو النهاية." },
+            { "UsernameRequired", "اسم المستخدم مطلوب!" },
+            { "UsernameError", "يجب أن يتبع اسم المستخدم النمط." },
+            { "PrimaryEmail", "البريد الإلكتروني الأساسي" },
+            { "EnterEmail", "أدخل بريدك الإلكتروني" },
+            { "EmailRequired", "البريد الإلكتروني مطلوب!" },
+            { "EmailInvalid", "عنوان البريد الإلكتروني غير صالح." },
+            { "EmailInfo", "سنستخدم هذا البريد للتواصل معك." },
+            { "SaveChanges", "حفظ التغييرات" },
+            { "AdditionalEmails", "إضافة بريد إلكتروني" },
+            { "AdditionalEmailsInfo", "اربط بريدًا إضافيًا بحسابك." },
+            { "Password", "كلمة المرور" },
+            { "EnterPassword", "أدخل كلمة مرور جديدة" },
+            { "ConfirmPassword", "تأكيد كلمة المرور" },
+            { "ConfirmPasswordPlaceholder", "أكد كلمة المرور الخاصة بك" },
+            { "DeleteAccount", "حذف الحساب" },
+            { "DeleteAccountInfo", "هذا الإجراء لا يمكن التراجع عنه." },
+            { "DeleteAccountWarning", "سيتم حذف جميع بياناتك." },
+            { "DeleteMyAccount", "احذف حسابي" },
+            { "DeleteAccountConfirmationLabel", "التأكيد" },
+            { "DeleteAccountConfirmationPlaceholder", "اكتب 'احذف حسابي'" },
+            { "Cancel", "إلغاء" }
+        }
+    };
+
+    private string CurrentLanguage = "en"; // تغيير اللغة إلى "ar" للعرض بالعربية
+
+
+    private string ConfirmPassword { get; set; }
+    private string Confirmation { get; set; }
+    private bool isModalVisible = false;
+
+    private void OpenModal() => isModalVisible = true;
+    private void CloseModal() => isModalVisible = false;
+
+
+
+
+    private MudForm form;
+    private MudForm emailForm;
+    private string Email { get; set; }
+    private bool isEmailModalVisible = true;
+    private string Username { get; set; }
+
+    private string Password { get; set; }
+
+
+
+
+
+    private void HandleValidSubmit()
+    {
+        if (form.IsValid)
+        {
+            
+        }
+    }
+
+    [Parameter] public EventCallback OnClose { get; set; }
+    protected override void OnInitialized()
+    {
+        
+    }
+  
+
+ 
+}
+
+
+@* <section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4"> *@
+  @*   <div class="mb-6">
+        <div class="flex justify-between">
+            <h3 class="flex flex-row items-center text-xl font-bold">
+                Account Settings
+            </h3>
+        </div>
+    </div> *@
+
+
+     @* <div class="SVELTE_HYDRATER contents" data-target="UserSettingsAccountForm" data-props="{&quot;canWriteEmail&quot;:true,&quot;user&quot;:&quot;735408478mm&quot;,&quot;email&quot;:&quot;735408478mm@gmail.com&quot;,&quot;csrf&quot;:&quot;eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NTAxNjY0NjQsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJjZjdhMTAyZWExN2IxNzBiN2QwYjNmOGFlYzljMmRiM2Q2YWZhNGNhZTA3MDM3NzEzN2YyNDBkYzAyMDNkODk5In0=&quot;}">
+         <form class="mb-8 flex flex-col space-y-5" method="post">
+             <input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NTAxNjY0NjQsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJjZjdhMTAyZWExN2IxNzBiN2QwYjNmOGFlYzljMmRiM2Q2YWZhNGNhZTA3MDM3NzEzN2YyNDBkYzAyMDNkODk5In0="> <label class="md:pr-36">
+                 Username
+                 <input autocomplete="off" class="form-input" name="username" placeholder="Username" type="text" pattern="\b(?!\d+$)([a-zA-Z0-9]|-(?!-))+\b" title="Letters, numbers, dashes. No dash at the end or the start, no consecutive dashes. Not just numbers." minlength="2" maxlength="42">
+             </label>
+             <label class="md:pr-36">
+                 Primary email
+                 <input autocomplete="email" class="form-input" name="email" placeholder="Email address" type="email" required=""> <p class="mt-2 text-sm text-gray-400">We will use this email to communicate with you. This is also the email to use to authenticate on hf.co.</p>
+             </label>
+             <div>
+                 <button class="btn-1 btn-1-two type="submit">Save changes</button>
+             </div>
+         </form>
+     </div> *@
+
+  @*    <div class="SVELTE_HYDRATER contents" data-target="UserSettingsAccountPasswordForm" data-props="{}">
+         <form class="mb-8 flex flex-col space-y-5">
+             <label class="md:pr-36">
+                 Password
+                 <input autocomplete="new-password" class="form-input" maxlength="100" minlength="4" name="new-password" placeholder="Enter new password" type="password" required="">
+             </label>
+             <label class="md:pr-36">
+                 Confirm your new password
+                 <input autocomplete="new-password" class="form-input" minlength="8" name="confirm-password" placeholder="Confirm new password" type="password" required="">
+             </label>
+             <div>
+                 <button class="btn-1 btn-1-two type="submit">Save changes</button>
+             </div>
+         </form>
+     </div>  *@
+
+  
+
+
+
+
+@*       <div class="mb-8 max-w-lg">
+         <h3 class="mb-3 text-lg font-semibold">Additional emails</h3>
+         <div class="mb-4 text-gray-500">
+             Link additional emails to your account to join your organizations easily and identify git commits you make.
+         </div>
+
+         <div class="SVELTE_HYDRATER contents" data-target="SecondaryEmailModal" data-props="{&quot;csrf&quot;:&quot;eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NTAxNjY0NjQsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJjZjdhMTAyZWExN2IxNzBiN2QwYjNmOGFlYzljMmRiM2Q2YWZhNGNhZTA3MDM3NzEzN2YyNDBkYzAyMDNkODk5In0=&quot;}">
+         <button id="openModalButton-1" class="btn-1 mt-4 w-auto cursor-pointer" type="button">Add an email</button>
+
+     <!-- Modal -->
+         <div id="SecondaryEmailModal-1" class="modal hidden fixed inset-0 z-40 !m-0 flex max-h-dvh w-screen select-text items-center overflow-y-auto overflow-x-hidden overscroll-contain bg-black/80 p-4 dark:bg-black/90 lg:p-6 2xl:p-8">
+         <div class="shadow-alternate m-auto flex min-h-0 flex-col overflow-hidden rounded-xl bg-white lg:mt-20 lg:max-h-[calc(100%-5.5rem)] xl:mt-24 xl:max-h-[calc(100%-10rem)] md:portrait:mt-20 w-full sm:w-96 max-w-full">
+             <div class="col-span-full flex items-center justify-between whitespace-nowrap bg-gradient-to-r to-white font-semibold dark:to-gray-925 text-gray-800 px-4 py-0.5 border-t border-t-none from-gray-50 first:from-gray-100 dark:from-gray-900 dark:first:from-gray-800 border-b border-gray-100 first:h-[3.1rem] h-11 text-base flex-none rounded-t-lg sm:text-lg">
+                 <h3 class="flex-1 truncate text-base sm:text-lg">Link another email to your account</h3>
+                 <button id="closeModalButton-1" class="group ml-2 mt-0.5 flex-none" type="button">
+                     <svg class="text-lg group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1.1em" height="1.1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32">
+                         <path d="M24 9.4L22.6 8L16 14.6L9.4 8L8 9.4l6.6 6.6L8 22.6L9.4 24l6.6-6.6l6.6 6.6l1.4-1.4l-6.6-6.6L24 9.4z" fill="currentColor"></path>
+                     </svg>
+                 </button>
+             </div>
+             <div class="flex-1 overflow-y-auto">
+                 <form method="POST" action="/settings/email" class="flex flex-col gap-y-2 p-4 sm:p-6">
+                     <input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ5NjY0NzUzNzEsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiIxNWY0YzhkZTFiZWUwMmZhZWMyN2U4ZDI2YTlhMmM2OTBlNWVlMTY3OWUwODczOWZlZDljODBjMTUxMDZiYWQ5In0=">
+                     <label for="email">
+                         Email
+                         <input autocomplete="off" class="form-input p-2" name="email" placeholder="john.doe@company.org" type="email" required>
+                     </label>
+                     <button class="form-input btn-1 p-2" type="submit">Confirm</button>
+                 </form>
+             </div>
+         </div>
+     </div> 
+ </div>
+ </div> *@
+  @* <MudButton OnClick="OpenEmailModal" Variant="Variant.Filled" Color="Color.Primary">Add an email</MudButton> *@
+
+
+@* 
+     <div class="mb-8 max-w-lg">
+         <div class="SVELTE_HYDRATER contents" data-target="UserSettingsDeleteModal" data-props="{&quot;username&quot;:&quot;735408478mm&quot;,&quot;orgsSoloAdmin&quot;:[]}">
+             <h3 class="mb-3 text-lg font-semibold">Delete your account</h3>
+             <div class="mb-4 text-gray-500">
+                 Delete your HF account permanently, this action is irreversible. All your repositories (models, datasets, &amp; Spaces)
+                 will be deleted.
+             </div> *@
+           
+
+          @*    <div class="mt-4">
+                 <button id="openModalButton" class=" cursor-pointer btn-1 btn-1-two!w-auto hover:text-red-500" type="button">Delete my account</button>
+
+                 <!-- Modal -->
+                 <div id="deleteAccountModal" class="modal hidden fixed inset-0 z-40 !m-0 flex max-h-dvh w-screen select-text items-center overflow-y-auto overflow-x-hidden overscroll-contain bg-black/80 p-4 dark:bg-black/90 lg:p-6 2xl:p-8">
+                     <div class="shadow-alternate m-auto flex min-h-0 flex-col overflow-hidden rounded-xl bg-white lg:mt-20 lg:max-h-[calc(100%-5.5rem)] xl:mt-24 xl:max-h-[calc(100%-10rem)] md:portrait:mt-20 w-full lg:w-7/12 max-w-2xl">
+                         <div class="col-span-full flex items-center justify-between whitespace-nowrap bg-gradient-to-r to-white font-semibold dark:to-gray-925 text-gray-800 px-4 py-0.5 border-t border-t-none from-gray-50 first:from-gray-100 dark:from-gray-900 dark:first:from-gray-800 border-b border-gray-100 first:h-[3.1rem] h-11 text-base flex-none rounded-t-lg sm:text-lg">
+                             <h3 class="flex-1 truncate text-base sm:text-lg">Delete your Hugging Face account</h3>
+                             <button id="closeModalButton" class="group ml-2 mt-0.5 flex-none" type="button">
+                                 <svg class="text-lg group-hover:text-gray-500" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1.1em" height="1.1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32">
+                                     <path d="M24 9.4L22.6 8L16 14.6L9.4 8L8 9.4l6.6 6.6L8 22.6L9.4 24l6.6-6.6l6.6 6.6l1.4-1.4l-6.6-6.6L24 9.4z" fill="currentColor"></path>
+                                 </svg>
+                             </button>
+                         </div>
+                         <div class="flex-1 overflow-y-auto">
+                                                             <p class="alert alert-error !rounded-none border-none px-4 sm:px-6">
+
+                                     Deleting your account will delete all your repositories (models, datasets, and Spaces). Your username will be instantly available for new users. You will be immediately billed for any usage of paid services (such as AutoTrain) for the current month. In case of an active subscription, you will be billed for the entirety of the remaining period.
+                               
+                            
+                              </p>
+                           
+                             <div class="p-4 sm:p-6">
+                                 <form id="deleteAccountForm" class="flex flex-col gap-y-2" autocomplete="off">
+                                     <input type="password" class="hidden" autocomplete="new-password" readonly tabindex="-1">
+                                     <label for="username">
+                                         Username
+                                         <input autocomplete="off" class="form-input p-2" name="username" type="text" required>
+                                     </label>
+                                     <label for="confirmation">
+                                         Type “delete my account”
+                                         <input autocomplete="off" class="form-input p-2" name="confirmation" type="text" required>
+                                     </label>
+                                     <div class="flex gap-x-2 pt-8">
+                                         <button style="color: rgb(239 68 68 / var(--tw-text-opacity));" class="btn-1 px-4 text-red-500 dark:text-red-500" type="submit">Delete my account</button>
+                                         <button id="cancelModalButton"  class="btn-1 px-4" type="button">Cancel</button>
+                                     </div>
+                                 </form>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div> *@
+
+
+
+       @*   </div>
+     </div> 
+ *@
+
+ @* </section> *@
+
+
+
+
+<style>
+    .alert-error {
+    --tw-border-opacity: 1;
+    border-color: rgb(254 226 226 / var(--tw-border-opacity));
+    --tw-bg-opacity: 1;
+    background-color: rgb(254 242 242 / var(--tw-bg-opacity));
+    --tw-text-opacity: 1;
+    color: rgb(127 29 29 / var(--tw-text-opacity));
+}
+</style>
+<script>
+    // Open modal
+    document.getElementById('openModalButton').addEventListener('click', function () {
+        document.getElementById('deleteAccountModal').classList.remove('hidden');
+    });
+
+    // Close modal
+    document.getElementById('closeModalButton').addEventListener('click', function () {
+        document.getElementById('deleteAccountModal').classList.add('hidden');
+    });
+
+    // Close modal when clicking outside of the modal content
+    document.getElementById('deleteAccountModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+        }
+    });
+
+    // Cancel button
+    document.getElementById('cancelModalButton').addEventListener('click', function () {
+        document.getElementById('deleteAccountModal').classList.add('hidden');
+    });
+
+    // Form validation
+    document.getElementById('deleteAccountForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const username = document.querySelector('input[name="username"]').value;
+        const confirmation = document.querySelector('input[name="confirmation"]').value;
+
+        if (username === '' || confirmation !== 'delete my account') {
+            alert('Please fill in all fields correctly.');
+        } else {
+            this.submit();  // Perform form submission
+        }
+    });
+</script>
+
+
+<script>
+    // Open Modal
+    document.getElementById('openModalButton-1').addEventListener('click', function () {
+        document.getElementById('SecondaryEmailModal-1').classList.remove('hidden');
+    });
+
+    // Close Modal
+    document.getElementById('closeModalButton-1').addEventListener('click', function () {
+        document.getElementById('SecondaryEmailModal-1').classList.add('hidden');
+    });
+
+    // Close modal when clicking outside of the modal content
+    document.getElementById('SecondaryEmailModal-1').addEventListener('click', function (e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+        }
+    });
+</script>

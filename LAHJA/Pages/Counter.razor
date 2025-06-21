@@ -1,0 +1,53 @@
+﻿@page "/counter"
+@using LAHJA.Notification
+@inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
+@implements IAsyncDisposable
+
+<h3>إرسال إشعار إلى مستخدم</h3>
+
+<input @bind="UserId" placeholder="أدخل UserId" />
+<input @bind="Message" placeholder="أدخل نص الإشعار" />
+<button @onclick="SendNotification">إرسال الإشعار</button>
+
+@code {
+    private string UserId = "";
+    private string Message = "";
+
+    private async Task SendNotification()
+    {
+
+        if (!string.IsNullOrWhiteSpace(UserId))
+        {
+            await NotificationService.SendAlertToUser(UserId, Message);
+        }
+        else
+        {
+            await NotificationService.NotifyClients(Message);
+        }
+
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        //   hubConnection = new HubConnectionBuilder()
+        //  .WithUrl(NavigationManager.ToAbsoluteUri("/notificationHub"))
+        //    .Build();
+        //     hubConnection.On<string>("ReceiveNotification", (message) =>
+        // {
+        //     Console.WriteLine("إشعار جديد: " + message);
+        // });
+
+        //     await hubConnection.StartAsync();
+
+    }
+
+
+
+    public async ValueTask DisposeAsync()
+    {
+        // if (hubConnection is not null)
+        // {
+        //     await hubConnection.DisposeAsync();
+        // }
+    }
+}

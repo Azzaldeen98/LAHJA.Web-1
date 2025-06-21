@@ -1,0 +1,93 @@
+﻿
+<section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+    <div class="mb-6">
+        <div class="flex justify-between">
+            <h3 class="flex flex-row items-center text-xl font-bold">
+                Papers
+            </h3>
+        </div>
+    </div>
+    <div>
+        <form id="claim-paper" class="rounded-xl border border-gray-100 bg-white p-4 shadow-sm" method="post" action="/api/settings/papers/claim">
+            <h2 class="flex items-center pb-4 font-semibold">
+                <svg class="mr-2 text-gray-400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 12 12" fill="none">
+                    <path fill="currentColor" fill-rule="evenodd" d="M8.007 1.814a1.176 1.176 0 0 0-.732-.266H3.088c-.64 0-1.153.512-1.153 1.152v6.803c0 .64.513 1.152 1.153 1.152h5.54c.632 0 1.144-.511 1.144-1.152V3.816c0-.338-.137-.658-.412-.887L8.007 1.814Zm-1.875 1.81c0 .695.55 1.253 1.244 1.253h.983a.567.567 0 0 1 .553.585v4.041c0 .165-.119.302-.283.302h-5.55c-.156 0-.275-.137-.275-.302V2.7a.284.284 0 0 1 .284-.301h2.468a.574.574 0 0 1 .434.19.567.567 0 0 1 .142.395v.64Z" clip-rule="evenodd"></path>
+                </svg>
+                <span>Claim paper authorship</span>
+            </h2>
+            <p class="pb-4 text-gray-500">
+                Author of a paper? You can claim authorship of your papers to showcase them directly on your HF profile. It will be
+                matched against your email address; it is possible to
+                <a href="/settings/account" class="underline">add secondary emails</a> in your preferences if your paper is linked to another email on arXiv.
+            </p>
+            <div>
+                <label for="paperId" class="font-semibold">arXiv identifier</label>
+                <div class="mt-1 flex items-stretch">
+                    <input type="text" name="paperId" placeholder="eg: 1501.00001" class="form-input !mt-0 mr-2" pattern="[0-9]{4}\.[0-9]{4,5}" required>
+                    <input type="hidden" name="csrf" value="eyJkYXRhIjogeyJleHBpcmF0aW9uIjogMTczNDQ2MDgyMzEzMywgInVzZXJJZCI6ICI2NzU4YmMyZjJlZTBiNmUxMTg1N2QwZTIifSwgInNpZ25hdHVyZSI6ICI0NWFkZmM1MjMwNTJmMDlmMjZhNzJiYTE5ZGFiODU0YTk4YWVjYjNlMDdmZWI2MzY1YzBjMzNlMDc3MzlmMDE5In0=">
+                    <button type="submit" class="btn-1 py-2">Claim authorship</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<style>
+    /* General Button Style */
+    .btn-1 {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        background: linear-gradient(to bottom, #fff, #f3f4f6);
+        color: #1f2937;
+        font-weight: 500;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+    }
+
+        .btn-1:hover {
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+    /* Form Input Styling */
+    .form-input {
+        display: block;
+        width: 100%;
+        padding: 0.5rem 0.75rem;
+        border: 1px solid #6b7280;
+        border-radius: 0.375rem;
+        background-color: #fff;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+    /* Section Styling */
+    section {
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        background-color: #ffffff;
+    }
+
+    h3 {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .text-gray-500 {
+        color: #6b7280;
+    }
+
+    .mr-2 {
+        margin-right: 0.5rem;
+    }
+</style>

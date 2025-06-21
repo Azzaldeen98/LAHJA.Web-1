@@ -1,0 +1,46 @@
+﻿@page "/BillingSummaryt"
+
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.UI.Components.Billing.BillingSummarys.Components
+@using LAHJA.UI.Components.Billing.Shared
+
+ 
+
+
+<MudLayout>
+
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-4">
+         <HeaderComponents/>
+        <MudDivider Class="my-4" />
+        <PlansCompire IsAuth="true" Params="plans" />
+        <MudDivider Class="my-4" />
+        <SubscripPlan Params="plan" />
+        <MudDivider Class="my-4" />
+       
+        <MudDivider Class="my-4" />
+     
+    </MudContainer>
+</MudLayout>
+
+@code
+{
+
+    [Parameter] public PlanViewModel? Param { get => plan; set => plan=value; }
+
+    [Parameter]
+
+    public List<PlanViewModel> Params { get => plans; set => plans = value; }
+
+
+
+    private List<PlanViewModel> plans;
+    private PlanViewModel plan;
+
+
+    protected override async void OnInitialized()
+    {
+        // PlanViewModels = DataManager.GetAllPlanInfos();
+        // PlanViewModel = PlanViewModels[0];
+        StateHasChanged();
+    }
+}

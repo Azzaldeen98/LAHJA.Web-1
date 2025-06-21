@@ -1,0 +1,117 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@using System.Globalization
+@using LAHJA.Them
+@using global::Shared.Constants
+@inject IManageLanguageService _manageLanguageService
+@inject LanguageService languageService
+
+
+<section class="pt-0" style="z-index:1">
+    <MudContainer Class="@($"{ClassMaxwith} p-0")">
+        @if (Params != null)
+        {
+            <MudPaper Elevation=@ElevationBX Class="@($"{BK} rounded-4 p-4 p-sm-6 position-relative")">
+                <!-- Grad decoration -->
+                <MudGrid  Class="g-8 align-items-center position-relative">
+                    <!-- Title and list -->
+                    <MudItem xs="12" lg="6">
+                        <MudText Typo="Typo.body1" Class="mb-3">
+                            @Params["Text1"]
+                            <MudText Color="@AppColors.BASE_COLOR_ENUM" Inline> @Params["Text2"]</MudText>
+                        </MudText>
+                        <MudText Typo="Typo.body1" Class="mb-4">
+                            @Params["Description"]
+                        </MudText>
+                        <MudButton Variant="Variant.Filled" Class="@AppTextStyle.TEXT_TRANSFORM_NORMAL" Color="@AppColors.BASE_COLOR_ENUM" Href="/studio" >
+                            @Params["ButtonLink"]
+                        </MudButton>
+                    </MudItem>
+                    @if (IsShowImage)
+                    {
+                        <!-- Button -->
+                        <MudItem xs="12" lg="6" Class="d-none d-lg-flex justify-end align-start">
+                            <img src="assets/images/chatbot-cta.png" style="width: 46%; margin-left: 50%;" alt="">
+                        </MudItem>
+                    }
+                </MudGrid>
+
+                <div class="top-0 mt-n6">
+                    <img src="assets/images/elements/grad-shape/blur-decoration.svg" class="blur-8 opacity-3" alt="Grad shape">
+                </div>
+
+            </MudPaper>
+        }
+    </MudContainer>
+</section>
+
+@code{
+
+
+    private string lg=ConstantsApp.DEFAULT_LANGUAGE;
+
+    [Parameter] public Dictionary<string, string> Params { get; set; }
+    [Parameter] public Dictionary<string, Dictionary<string, string>> Translations { get; set; }
+
+    [Parameter] public bool IsShowImage { set; get; } = true;
+
+    [Parameter] public  string ClassMaxwith { set; get; } = "";
+    [Parameter] public string BK { set; get; } = "bg-dark";
+    [Parameter] public int ElevationBX { set; get; } = 3;
+
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            // var currentLangCode = await _manageLanguageService.GetLanguageAsync();
+
+           
+
+        }
+    }
+    protected override void OnInitialized()
+    {
+        // languageService.OnLanguageChanged += UpdateContent;
+        lg = CultureInfo.CurrentUICulture.Name;
+        Params = Translations[lg];
+        UpdateContent(lg);
+        StateHasChanged();
+    }
+
+    
+    protected async void UpdateContent(string languageCode)
+    {
+        // var currentLangCode = await _manageLanguageService.GetLanguageAsync();
+
+        Params = Translations.ContainsKey(languageCode) ? Translations[languageCode] : Translations["en"];
+        // 
+        InvokeAsync(StateHasChanged);
+
+    }
+
+
+    // [Parameter] public CaerdSevicisIcon? Params { set; get; }
+
+
+    // CaerdSevicisIcon? carddecoration;
+    // protected override void OnInitialized()
+    // {
+
+    //     Params = new CaerdSevicisIcon()
+    //         {
+    //             Name = "Experience the Power of",
+    //             Description = "Our AI chatbot offers enhancing customer satisfaction and boosting your business efficiency.",
+    //             ButtonLink = "Start free trial",
+
+    //             Name = "جرب قوة",
+    //             Description = "يوفر منصة لهجة خدمات التعامل مع نماذج الذكاء الاصطناعي وبرنامج المحادثة الصوتي للهجات .",
+    //             ButtonLink = "ابدأ الإصدار التجريبي المجاني",
+    //         }; 
+
+    //         }
+    
+}

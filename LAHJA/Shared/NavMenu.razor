@@ -1,0 +1,116 @@
+﻿@using LAHJA.Them
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<MainLayout> Localizer
+@attribute [Authorize]
+
+ <AuthorizeView>
+            <Authorized>
+    <div class="mt-4 d-flex flex-column nav-bar_font">
+                <MudLink Style="@("color:" + _iconfill + "!important")" Href="/dashboard" OnClick="ClickItem">
+                        <MudIcon Icon="@Icons.Material.Filled.Dashboard" />
+                            @Localizer["Dashboard"]
+                    </MudLink>
+    
+        
+     @*    <MudLink Style="@("color:" + _iconfill + "!important")" Href="/services" OnClick="ClickItem">
+            <MudIcon Icon="@Icons.Material.Filled.Dashboard" />
+        @Localizer["Servers"]
+        </MudLink>
+        <MudLink Style="@("color:" + _iconfill + "!important")" Href="/billing" OnClick="ClickItem">
+            <MudIcon Icon="@Icons.Material.Filled.AccountBalance" />
+        @Localizer["Billing"]
+        </MudLink> *@
+       @*  <MudNavGroup Style="@("color:" + _iconfill + "!important")" Title="@translations[CurrentLanguage]["Settings"]" Expanded="true"> *@
+     @*    <MudLink  Style="@("color:" + _iconfill + "!important")" Href="/dummy" OnClick="ClickItem">
+            <MudIcon Icon="@Icons.Material.Filled.People" />
+        @Localizer["Users"]
+        </MudLink> *@
+@*         <MudLink Style="@("color:" + _iconfill + "!important")" Href="/dummy" OnClick="ClickItem">
+            <MudIcon Icon="@Icons.Material.Filled.Security" />
+        @Localizer["Security"]
+        </MudLink> *@
+        @* </MudNavGroup> *@
+      @*   <MudLink Href="/dummy" Style="@("color:" + _iconfill + "!important")" OnClick="ClickItem">
+            <MudIcon Icon="@Icons.Material.Filled.Info" />
+        @Localizer["About"]
+        </MudLink> *@
+
+        @* <MudLink Style="@("color:" + _iconfill + "!important")" OnClick="OnLogOut"> *@
+        @*         <MudIcon Icon="@Icons.Material.Filled.Logout" /> *@
+        @* @Localizer["Logout"] *@
+        @* </MudLink>  *@
+    </div>
+</Authorized>
+</AuthorizeView>
+
+@code {
+
+    private string _iconfill = "#fff";
+    [Parameter] public EventCallback ClickItem { get; set; }
+    [Parameter] public EventCallback SubmitLogOut { get; set; }
+    [Parameter] public string Iconfill { get => _iconfill; set { _iconfill = value; StateHasChanged(); } }
+    [Parameter] public string LanguageCode {  set {
+    
+            CurrentLanguage = value;
+            StateHasChanged();
+        } }
+
+    [Parameter]
+    public bool IsLogin
+    {
+        set
+        {
+            _isLogin = value;
+            StateHasChanged();
+        }
+    }
+
+    private async void StateDrawerOpen(bool state)
+    {
+       
+        StateHasChanged();
+    }
+    private bool _isLogin = false;
+    private string CurrentLanguage = "ar"; // يمكن تغييرها إلى "ar" للعرض بالعربية
+
+    private Dictionary<string, Dictionary<string, string>> translations = new()
+        {
+            ["en"] = new Dictionary<string, string>
+        {
+            { "Dashboard", "Dashboard" },
+            { "Servers", "Servers" },
+            { "Billing", "Billing" },
+            { "Settings", "Settings" },
+            { "Users", "Users" },
+            { "Security", "Security" },
+            { "About", "About" },
+            { "Logout", "Logout" }
+        },
+            ["ar"] = new Dictionary<string, string>
+        {
+            { "Dashboard", "لوحة التحكم" },
+            { "Servers", "الخوادم" },
+            { "Billing", "الفواتير" },
+            { "Settings", "الإعدادات" },
+            { "Users", "المستخدمون" },
+            { "Security", "الأمان" },
+            { "About", "حول" },
+            { "Logout", "تسجيل الخروج" }
+        }
+        };
+
+    private void NavigateOnlyToHome() => NavigationManager.NavigateTo("/");
+
+    private void OnLogOut()
+    {
+        if (SubmitLogOut.HasDelegate)
+            SubmitLogOut.InvokeAsync();
+    }
+
+    protected override void OnInitialized()
+    {
+        // يمكن إضافة أي منطق إضافي عند التهيئة
+    }
+}

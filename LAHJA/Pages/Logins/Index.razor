@@ -1,0 +1,72 @@
+﻿@page "/Login"
+@using LAHAJ.Loading
+@using LAHJA.ApplicationLayer.Auth
+@using LAHJA.UI.Templates.Auth
+@using LAHJA.VitsModel.Auth
+@using Microsoft.AspNetCore.Authorization
+@using LAHJA.UI.Components
+
+@inject NavigationManager Navigation
+
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inherits BaseInitializationComponent
+@inject ISnackbar Snackbar
+
+
+@attribute [AllowAnonymous]
+
+<div style="" class="auth-them">
+
+    @if (!_isLoaded)
+    {
+
+        if (isAuth)
+        {
+            <Loading IsLoading="_isLoaded" />
+        }
+        else
+        {
+            <TemplateAuth IsToLoginMode="true" />
+        }
+
+
+    }
+    else
+    {
+        <Loading IsLoading="_isLoaded" />
+     
+    }
+
+
+
+</div>
+
+
+@code
+{
+    private bool _isLoaded = true;
+    private bool isAuth = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isAuth = await getAuthAsync();
+        
+            if (isAuth)
+            {
+                Navigation.NavigateTo("/");
+            }
+
+            await Task.Delay(1000);
+            _isLoaded = false;
+            StateHasChanged();
+
+        }
+
+    }
+
+   
+   
+
+}

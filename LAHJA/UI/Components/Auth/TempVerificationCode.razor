@@ -1,0 +1,48 @@
+﻿@using LAHJA.UI.Components.General.Button
+@using MudBlazor
+@using Microsoft.AspNetCore.Authorization
+@inject NavigationManager Navigation
+
+
+@attribute [AllowAnonymous]
+
+<MudDialog>
+    <DialogActions>
+        <MudCard>
+            <MudCardHeader>
+                <MudText Typo="Typo.h5" Align="Align.Center">Verification Code</MudText>
+            </MudCardHeader>
+            <MudCardContent>
+                 
+                <MudTextField Label="Verification  code" @bind-Value="VerificationCode" Required="true" Placeholder="Verification Code" />  
+            </MudCardContent>
+            <MudCardActions Class="justify-end">
+                @* <MudButton OnClick="onSubmitConfirm" Variant="Variant.Filled" Color="Color.Primary">Confirm</MudButton>
+                <MudButton OnClick="onCloseDialog" Variant="Variant.Text" Color="Color.Secondary">Cancel</MudButton> *@
+
+                <CustomButton Text="Confirm" OnClick="onSubmitConfirm" />
+ 
+                <CancelButton OnClick="onCloseDialog"/>
+      
+            </MudCardActions>
+        </MudCard>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private string VerificationCode { get; set; }
+
+    private void onCloseDialog()
+    {
+        MudDialog.Cancel();
+
+    }
+
+    private async Task onSubmitConfirm()
+    {
+       
+        MudDialog.Close(DialogResult.Ok(VerificationCode));
+    }
+}

@@ -1,0 +1,209 @@
+﻿
+@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+@using LAHJA.Data.UI.Templates.Services
+@using LAHJA.Them
+@using LAHJA.UI.Components.StudioLahjaAi.Component
+@using Microsoft.JSInterop
+@inherits StudioAi
+
+
+<MudPaper Class="mt-0 p-2 overflow-y-auto" Style="text-align: center;">
+    <MudText Typo="Typo.h5">Voice Chat</MudText>
+
+      <MudCard class=" d-flex flex-row  ">
+        <FilterItemSelected Filter="DataBuild.CategoriesFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.LanguagesFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.ModelTypesFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.DialectsFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.SpeakerGendersFilter" CurrentLanguage="@CurrentLanguage" />
+
+    </MudCard>
+    <MudSpacer />
+  
+
+
+     <MudTextField T="string" id="displayTranscript" ReadOnly Variant="Variant.Outlined" FullWidth  Value="@transcribedText" /> 
+    <MudButton id="btnTranscript"  OnClick="onSubmit"></MudButton>
+   
+    <div class="d-flex  flex-wrap justify-content-around m-2  col-md-8 col-sm-12">
+        <MudButton Variant="Variant.Filled" Color="AppColors.BASE_COLOR_ENUM" OnClick="StartListening" Disabled="@isListening" Class="m-2">
+            Start Listening
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="OnStopListening" Disabled="@(isListening == false)" Class="m-2">
+            Stop Listening
+        </MudButton>
+        @if (DataBuild.ModelReleasesFilter != null)
+        {
+            <div class="m-2">
+              <FilterItemSelected Filter="DataBuild.ModelReleasesFilter" CurrentLanguage="@CurrentLanguage" />
+            </div>
+        }
+    </div>
+
+
+    <MudCardContent>
+        <div class="activ-speech-ai mt-0 ">
+            @if (isAudioPlaying)
+            {
+                <div id="logo-icon-animate-id" class="icon-xxl text-center shadow-primary rounded-circle flex-shrink-0 ripple-anim" style="line-height: 6.8rem;">
+
+                    <MudIcon Size="Size.Large" style="direction:ltr !important;margin:8px !important" Color="@AppColors.BASE_COLOR_ENUM" Icon="@Icons.Material.Filled.BlurOn" Title="API" />
+
+                </div>
+            }
+            else
+            {
+
+                <div id="logo-icon-static-id" class="icon-xxl text-center shadow-primary rounded-circle flex-shrink-0" style="line-height: 6.8rem;">
+
+                    <MudIcon Size="Size.Large" style="direction:ltr !important;margin:8px !important" Color="@AppColors.BASE_COLOR_ENUM" Icon="@Icons.Material.Filled.BlurOn" Title="API" />
+
+                </div>
+            }
+        </div>
+
+
+    </MudCardContent>
+    <audio id="audioPlayer" controls @onplay="OnPlay" @onended="OnEnded" @onpause="OnPause" style="width:100%;margin:2%"></audio>
+    @* <p>Current Text: @currentText</p> *@
+</MudPaper>
+
+
+
+@code {
+    private  string transcribedText ;
+    private bool isAudioPlaying = false;
+    private bool isAudioPlayingIsEnd = true;
+    private bool isListening = false;
+    private bool continuousListening = true;
+    private string currentText = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await CreateSessionTokenAsync();
+    }
+
+
+    public void OnValueChanged(string? value)
+    {
+        // transcribedText = currentText = value ?? "";
+        // StateHasChanged();
+        Console.WriteLine($"Text Changed: {value}");
+    }
+    private async Task StartListening()
+    {
+        isListening = true;
+        // var dotNetRef = DotNetObjectReference.Create(this);
+        await JSRuntime.InvokeVoidAsync("startSpeechRecognition",selectedStudioFilter.SelectedLangague.Identifier??"ar");
+        // await JSRuntime.InvokeVoidAsync("startSpeechRecognition");
+    }
+    private async Task OnPlay()
+    {
+        isAudioPlayingIsEnd = true;
+        isAudioPlaying = true;
+        // StateHasChanged();
+    }
+
+    private async Task OnPause()
+    {
+        isAudioPlaying = false;
+        // _processing = false;
+        // StateHasChanged();
+    }
+
+    private async Task OnEnded()
+    {
+        isAudioPlayingIsEnd = false;
+        isAudioPlaying = false;
+        // _processing = false;
+        // StateHasChanged();
+        // if (continuousListening)
+        // {
+        //     await StartListening();
+        // }
+        // else
+        // {
+        //     await  StopListening();
+        // }
+
+        await StartListening();
+    }
+    private async Task onSubmit()
+    {
+
+        // if (isListening)
+        {
+            isListening = false;
+            var res = await JSRuntime.InvokeAsync<string>("getSpeechRecognitionResult");
+            currentText = res;
+            await TextToSpeech(res);
+            transcribedText = "";
+            StateHasChanged();
+
+
+        }
+
+    }
+
+
+    private async Task TextToSpeech(string text)
+    {
+        if (!string.IsNullOrEmpty(text) )
+        {
+            // isAudioPlayingIsEnd = true;
+            // StateHasChanged();
+
+
+            var data = new DataBuildServiceBase { Text = text, ServiceId = "3", Method = "POST", TagId = "audioPlayer", URL = "https:api-inference.huggingface.co/models/wasmdashai/", ModelAi=selectedStudioFilter.SelectedModelRelease.Identifier  };
+
+            var response = await templateServices.VoiceBot(data);
+            if (response.Succeeded)
+            {
+                // audioUrl = response.Data.Result;
+                // StateHasChanged();
+            }
+            else
+            {
+
+                Snackbar.Add("لايوجد لديك رصيد كافي من الطلبات", Severity.Warning);
+
+            }
+
+        }
+
+
+    }
+
+    private async Task OnStopListening()
+    {
+        // continuousListening = false;
+        await StopListening();
+    }
+    private async Task StopListening()
+    {
+        isListening = false;
+        await JSRuntime.InvokeVoidAsync("stopSpeechRecognition");
+    }
+
+    [JSInvokable]
+    public async Task UpdateTranscription(string text)
+    {
+        // transcribedText = text;
+        Console.WriteLine($"Print: {text}");
+        // StateHasChanged();-+
+    }
+    [JSInvokable]
+    public async Task TriggerOnSubmit()
+    {
+        await onSubmit();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // await JSRuntime.InvokeVoidAsync("onInputFinished", DotNetObjectReference.Create(this));
+        }
+    }
+}

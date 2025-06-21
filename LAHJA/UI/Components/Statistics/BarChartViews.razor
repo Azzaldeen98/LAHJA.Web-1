@@ -1,0 +1,85 @@
+﻿  @using ApexCharts
+@using LAHJA.Data.UI.Components.Statistics
+ 
+
+
+
+ 
+    <ApexChart TItem="CountRequesstToScope"
+               Title="Order Net Value">
+    <ApexPointSeries TItem="CountRequesstToScope"
+                         Items="Orders"
+                         Name="Gross Value"
+                         XValue="e => e.Name"
+                         YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                         OrderByDescending="e=>e.Y"
+                         SeriesType="SeriesType.Bar"
+                         Color="#005ba3"
+                         PointColor="e=> GetColor(e)" />
+ </ApexChart>
+ 
+
+
+
+@code{
+
+  [Parameter]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public List<CountRequesstToScope> Orders { get; set; } = new List<CountRequesstToScope>
+
+    {
+       
+    };
+
+
+
+
+
+
+
+    private string GetColor(CountRequesstToScope order)
+
+
+
+    {
+
+      
+
+            return "#ffd500";
+
+        
+
+    }
+
+
+
+    public class Order
+
+    {
+
+        public string Country { get; set; }     
+
+        public decimal GrossValue { get; set; }  
+
+    }
+
+}
+ 

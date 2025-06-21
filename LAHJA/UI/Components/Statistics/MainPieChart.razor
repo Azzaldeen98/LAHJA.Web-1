@@ -1,0 +1,318 @@
+﻿@using ApexCharts
+ 
+@using Domain.ShareData
+@using LAHJA.ApiClient.Services.Query
+@using LAHJA.ApiClient.Services.VoiceBot
+@using LAHJA.Data.UI.Components.Statistics
+@using LAHJA.Helpers.Services
+@using MudBlazor
+
+@using Domain.ShareData
+@using LAHJA.Helpers.Services
+ @inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+ 
+@* <MudContainer MaxWidth="MaxWidth.Medium">
+    <MudText Typo="Typo.h4" GutterBottom="true">Filter Pie Chart</MudText>
+
+    
+    <MudSelect T="FilterPieChart" Label="Select a Plan" @bind-Value="SelectedFilter">
+        @foreach (var filter in DataBuild)
+        {
+            <MudSelectItem T="FilterPieChart" Value="filter">@filter.Name</MudSelectItem>
+        }
+    </MudSelect>
+
+
+
+  
+    
+
+
+    <MudPaper Class="pa-4" Style="margin-top:20px;">
+        @if (Param == null || !Param.Any())
+        {
+
+            <MudAlert Severity="Severity.Error">No data available. Please select a valid plan.</MudAlert>
+        }
+        else
+        {
+
+
+            <MudGrid>
+
+                <MudItem>
+
+
+                </MudItem>
+            </MudGrid>
+            <BarChartViews/>
+            <MudChart ChartType="ChartType.Pie"
+                      InputData="@data.ToArray()"
+                      InputLabels="@labels.ToArray()"
+                      Width="300px"
+                      Height="300px" />
+        }
+    </MudPaper>
+</MudContainer>
+ *@
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-3">
+
+  <MudPaper Class=" border h-100 "Style="padding:3%!important">
+
+   
+
+    <MudText Typo="Typo.body1">@title</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" sm="4" md="6">
+
+
+
+            <MudSelect T="FilterPieChart" Label="Select a Plan" @bind-Value="SelectedFilter">
+                @foreach (var filter in DataBuild)
+                {
+                    <MudSelectItem T="FilterPieChart" Value="filter">@filter.Name</MudSelectItem>
+                }
+
+            </MudSelect>
+        </MudItem>
+        </MudGrid>
+
+
+    <MudGrid Justify="Justify.SpaceAround" Style="padding:4%">
+  
+     @if (Param == null || !Param.Any())
+        {
+
+            <MudAlert Severity="Severity.Error">No data available</MudAlert>
+        }
+
+        else
+        {
+
+            
+                <MudItem xs="12" sm="4" md="6">
+                    <MudCard   >
+
+
+
+                    <MudChart ChartType="MudBlazor.ChartType.Pie"
+                                  InputData="@data.ToArray()"
+                                  InputLabels="@labels.ToArray()"
+                                  Height="200px"
+                                   />
+
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="4" md="6">
+                    <MudCard  >
+                        
+
+
+
+
+  
+    <ApexChart TItem="CountRequesstToScope"
+               Title="Order Net Value" Height="200">
+    <ApexPointSeries TItem="CountRequesstToScope"
+                         Items="Orders"
+                        
+                         Name="Gross Value"
+                         XValue="e => e.Name"
+                         YAggregate="@(e => e.Sum(e => e.GrossValue))"
+                         OrderByDescending="e=>e.Y"
+                         SeriesType="SeriesType.Bar"
+                         Color="rgba(0, 200, 83, 1) "
+
+                         PointColor="e=> GetColor(e)" />
+ </ApexChart>
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    </MudCard>
+                </MudItem>
+
+
+                <MudItem xs="12">
+                    <MudCard Class="pa-3">
+
+
+
+                        <BrushScrolledView />
+                        @*    <MudText Typo="Typo.body1" Class="mb-2">@accuracyVsValidationLossText</MudText> *@
+
+                    </MudCard>
+                </MudItem>
+           
+         
+           
+           
+        }
+
+
+        </MudGrid>
+ </MudPaper>
+</MudContainer>
+
+
+@code {
+
+
+    private List<double> data = new();
+    private List<string> labels = new();
+    private string title;
+    [Parameter]
+    public bool FlagLangage { get; set; }
+    [Parameter]
+
+    public EventCallback<FilterPieChart> ValueChanged { get; set; }
+    [Parameter]
+
+
+    public List<FilterPieChart> DataBuild { get; set; } = null;
+
+    [Parameter]
+    public List<PieChartModel> ResultPieChar { get; set; }
+
+
+    private string GetColor(CountRequesstToScope order)
+
+
+
+    {
+
+
+        return "";
+    }
+
+
+
+
+
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+         
+            if (firstRender)
+            {
+                var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+                changeLanguage(currentLanguage);
+
+            }
+
+         
+
+
+
+
+    }
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+
+            DataBuild = SampleData.GetFilter();
+            SelectedFilter = DataBuild.Where((x => x.Id == 1)).FirstOrDefault();
+
+        }
+        else
+        {
+
+            DataBuild = SampleData.GetFilterar();
+            SelectedFilter = DataBuild.Where((x => x.Id == 1)).FirstOrDefault();
+
+        }
+
+        InvokeAsync(StateHasChanged);
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    protected override async void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+           
+        }
+        catch (Exception ex)
+        {
+
+
+        }
+
+    }
+
+
+    private FilterPieChart? SelectedFilter
+    {
+        get => _selectedFilter;
+        set
+        {
+            _selectedFilter = value;
+            UpdateChartData();
+        }
+    }
+
+    private FilterPieChart? _selectedFilter;
+
+    private List<PieChartModel> Param = new();
+
+    private List<CountRequesstToScope> Orders = new();
+
+    private void UpdateChartData()
+    {
+        Param = SelectedFilter?.ListPieChartModel ?? new List<PieChartModel>();
+
+        Orders = SelectedFilter?.ListScope ?? new List<CountRequesstToScope>();
+        data = Param.Select(p => (double)p.TotalNumber).ToList();
+        labels = Param.Select(p => p.Category).ToList();
+
+
+        this.InvokeAsync(() => StateHasChanged());
+    }
+
+ 
+   
+}

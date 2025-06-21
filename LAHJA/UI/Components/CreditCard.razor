@@ -1,0 +1,249 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+ @* @typeparam CardDetails *@
+ @inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+<style>
+    .container-style {
+        height: auto;
+         /* width: 450px; */
+        /* background-color: #f4f4f4; */
+    }
+
+    .card1 {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        width: 100% !important;
+        height: 250px;
+        border-radius: 15px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .chip {
+        width: 50px;
+        height: 35px;
+        background: linear-gradient(45deg, #f3c623, #f7e02c);
+        border-radius: 5px;
+    }
+
+    .card-number {
+        letter-spacing: 2px;
+        margin: 20px 0;
+    }
+
+    .holder-info-label,
+    .expiry-date-label {
+        opacity: 1;
+    }
+
+    .holder-info-text,
+    .expiry-date-text {
+        margin: 0;
+    }
+
+    .expiry-date-container {
+        text-align: right;
+    }
+
+    .card-logo {
+        font-weight: bold;
+        font-size: 1.2rem;
+        background: linear-gradient(45deg, #ff7b00, #ff3b3b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+
+<MudContainer Class="d-flex my-3 flex-column justify-start align-center container-style">
+
+    <MudPaper Elevation="3" Class="card1" Style="@("background:"+BgColor)">
+
+        <MudGrid>
+            <MudItem xs="10">
+                <MudPaper Class="chip"></MudPaper>
+            </MudItem>
+            <MudItem xs="2">
+                <MudMenu Icon="@Icons.Material.Filled.MoreVert"  Variant="Variant.Outlined">
+                    <MudMenuItem OnClick="@SetAsDefault">
+                        <MudIcon Icon="@Icons.Material.Filled.SelectAll" /> @GetTranslation("SetDefault")
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@OnEditClick">
+                        <MudIcon Icon="@Icons.Material.Filled.Edit" /> @GetTranslation("Edit")
+                    </MudMenuItem>
+                    <MudMenuItem OnClick="@OnDeleteClick">
+                        <MudIcon Icon="@Icons.Material.Filled.Delete" Color="Color.Error" /> @GetTranslation("Delete")
+                    </MudMenuItem>
+                </MudMenu>
+            </MudItem>
+        </MudGrid>
+
+        <!-- Card Number -->
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="card-number m-auto">@GetCardNumber()</MudText>
+
+        <!-- Card Holder and Expiry Date -->
+        <MudGrid>
+            <MudItem xs="6">
+                <MudText Typo="Typo.caption" Class="holder-info-label">@GetTranslation("CardHolder")</MudText>
+                <MudText Typo="Typo.body1" Class="holder-info-text">@GetCardHolderName()</MudText>
+            </MudItem>
+            <!-- Expiry Date -->
+            <MudItem xs="3" Class="expiry-date-container">
+                <MudText Typo="Typo.caption" Class="expiry-date-label">@GetTranslation("Expires")</MudText>
+                <MudText Typo="Typo.body1" Class="expiry-date-text">@GetCardExpiry()</MudText>
+            </MudItem>
+            <MudItem xs="3">
+                <MudText Typo="Typo.caption" Class="expiry-date-label">@GetTranslation("CSV")</MudText>
+                <MudText Typo="Typo.body1" Class="expiry-date-text">@GetCardCVC()</MudText>
+            </MudItem>
+        </MudGrid>
+
+        <!-- Card Logo -->
+        <MudText Typo="Typo.h6" Class="card-logo">@GetCardType()</MudText>
+
+    </MudPaper>
+
+
+
+
+   @*  <MudPaper Class="d-flex flex-row justify-content-end align-items-end px-3">
+
+        <MudRadio T="CardDetails" Value="@BuildData" Color="@AppColors.BASE_COLOR_ENUM"></MudRadio>
+   
+            <MudIconButton Class="mx-2" Icon="@Icons.Material.Filled.Edit" Variant="Variant.Text" Color="Color.Default"  OnClick="@OnEditClick" />
+
+           <MudIconButton Class="mx-2" Icon="@Icons.Material.Filled.Delete" Variant="Variant.Text" Color="Color.Error"  OnClick="@OnDeleteClick" />
+    </MudPaper> *@
+
+</MudContainer>
+
+    
+
+
+
+
+
+@code {
+    [Parameter] public string Title { get; set; } = "Payment Card";
+    [Parameter] public CardDetails BuildData { get; set; }
+    [Parameter] public string BgColor  { get; set; }
+    [Parameter] public EventCallback<CardDetails> OnEdit { get; set; }
+    [Parameter] public EventCallback<CardDetails> OnDelete { get; set; }
+    [Parameter] public EventCallback<CardDetails> OnSetDefault { get; set; }
+    [Parameter] public bool IsDefault { get; set; } = false;
+
+    protected override void OnInitialized()
+    {
+        languageService.OnLanguageChanged += ChangeLanguage;
+        ChangeLanguage(CurrentLanguage);
+
+        if (BuildData != null && BuildData.IsSelected)
+            BgColor = AppColors.BASE_COLOR_FOUCS;
+        StateHasChanged();
+    }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            CurrentLanguage = await _manageLanguageService.GetLanguageAsync();
+            InvokeAsync(StateHasChanged);
+        }
+
+
+    }
+    private void ChangeLanguage(string language)
+    {
+
+        CurrentLanguage = language;
+        StateHasChanged();
+    }
+    private string GetCardNumber()
+    {
+        // Replace with logic to fetch card number from BuildData
+        return BuildData?.GetType().GetProperty("CardNumber")?.GetValue(BuildData)?.ToString() ?? "**** **** **** ****";
+    }
+
+    private string GetCardHolderName()
+    {
+        // Replace with logic to fetch card holder name from BuildData
+        return BuildData?.GetType().GetProperty("HolderName")?.GetValue(BuildData)?.ToString() ?? "John Doe";
+    }
+
+    private string GetCardCVC()
+    {
+        // Replace with logic to fetch CVV from BuildData
+        return BuildData?.GetType().GetProperty("CVC")?.GetValue(BuildData)?.ToString() ?? "***";
+    }
+
+    private string GetCardExpiry()
+    {
+        // Replace with logic to fetch expiry date from BuildData
+        return BuildData?.GetType().GetProperty("ExpirationDate")?.GetValue(BuildData)?.ToString() ?? "MM/YY";
+    } 
+
+    private string GetCardType()
+    {
+        // Replace with logic to fetch expiry date from BuildData
+        return BuildData?.GetType().GetProperty("CardType")?.GetValue(BuildData)?.ToString() ?? "VISA";
+    }
+
+    private async Task OnEditClick()
+    {
+        if (OnEdit.HasDelegate)
+        {
+            await OnEdit.InvokeAsync(BuildData);
+        }
+    }
+
+    private async Task OnDeleteClick()
+    {
+        if (OnDelete.HasDelegate)
+        {
+            await OnDelete.InvokeAsync(BuildData);
+        }
+    }
+
+    private async Task SetAsDefault()
+    {
+        if (OnSetDefault.HasDelegate)
+        {
+            await OnSetDefault.InvokeAsync(BuildData);
+        }
+    }
+
+    private Dictionary<string, string> TransEn = new Dictionary<string, string>()
+{
+    { "SetDefault", "Set as Default" },
+    { "Edit", "Edit" },
+    { "Delete", "Delete" },
+    { "CardHolder", "Card Holder" },
+    { "Expires", "Expires" },
+    { "CSV", "CSV" }
+};
+
+    private Dictionary<string, string> TransAr = new Dictionary<string, string>()
+{
+    { "SetDefault", "تعيين كافتراضي" },
+    { "Edit", "تعديل" },
+    { "Delete", "حذف" },
+    { "CardHolder", "حامل البطاقة" },
+    { "Expires", "تاريخ الانتهاء" },
+    { "CSV", "الرمز الأمني" }
+};
+
+    private string CurrentLanguage = "ar"; 
+
+    private string GetTranslation(string key)
+    {
+        return CurrentLanguage == "ar"
+            ? TransAr.GetValueOrDefault(key, key)
+            : TransEn.GetValueOrDefault(key, key);
+    }
+
+}

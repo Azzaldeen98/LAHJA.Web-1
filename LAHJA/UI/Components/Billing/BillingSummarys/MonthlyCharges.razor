@@ -1,0 +1,81 @@
+﻿@using ApexCharts
+
+
+
+@if (Params == null)
+{
+    <MudAlert Severity="Severity.Error">@Error</MudAlert>
+}
+else
+{
+
+
+
+
+
+
+  
+
+
+        <ApexChart TItem="MyData"
+                   Title=" Use orders within a day">
+
+            <ApexPointSeries TItem="MyData"
+                             Items="Params"
+                             Name="Net Profit"
+                             SeriesType="SeriesType.Bar"
+                             XValue="e => e.Category"
+                             YValue="e=> e.NetProfit" />
+
+
+
+
+        </ApexChart>
+        }
+
+
+
+
+ 
+  }
+
+
+ 
+
+@code {
+
+
+
+    public string Error { get; set; } = "No Data";
+    private List<MyData> Params { get; set; } = new();
+    protected override void OnInitialized()
+    {
+        Params.Add(new MyData { Category = "Jan", NetProfit = 12, Revenue = 33 });
+        Params.Add(new MyData { Category = "Feb", NetProfit = 43, Revenue = 42 });
+        Params.Add(new MyData { Category = "Mar", NetProfit = 112, Revenue = 23 });
+
+        Params.Add(new MyData { Category = "Jan", NetProfit = 12, Revenue = 80});
+
+        Params.Add(new MyData { Category = "Feb", NetProfit = 43, Revenue = 60 });
+
+        Params.Add(new MyData { Category = "Mar", NetProfit = 112, Revenue = 23 });
+
+
+
+        Params.Add(new MyData { Category = "Jan", NetProfit = 12, Revenue = 10 });
+
+        Params.Add(new MyData { Category = "Feb", NetProfit = 43, Revenue = 15 });
+
+        Params.Add(new MyData { Category = "Mar", NetProfit = 112, Revenue = 90 });
+
+
+
+    }
+
+    public class MyData
+    {
+        public string Category { get; set; }
+        public int NetProfit { get; set; }
+        public int Revenue { get; set; }
+    }
+}

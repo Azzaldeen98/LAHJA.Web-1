@@ -1,0 +1,55 @@
+﻿@using Client.Shared.UI.Components.Errors
+
+@inherits ErrorBoundaryBase
+@inject ILogger<CustomErrorBoundary> Logger
+@inject NavigationManager Navigation
+
+@if (CurrentException is not null) 
+{
+
+
+    <LayoutView Layout="@typeof(MainLayout)">
+        <MudAlert Severity="Severity.Error" Icon="@Icons.Material.Outlined.ErrorOutline"  Class="mb-4">
+
+            <MudText Typo="Typo.h6" Class="fw-bold">An unexpected error occurred</MudText>
+            <MudText Class="mb-3">@CurrentException?.Message</MudText>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Recover" StartIcon="@Icons.Material.Filled.Refresh">
+                Retry
+            </MudButton>
+
+            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="ContactSupport" StartIcon="@Icons.Material.Filled.Mail" Class="ml-2">
+                Contact Support
+            </MudButton>
+        </MudAlert>
+    </LayoutView>
+
+    <ErrorComponent />
+
+
+}
+else {
+
+
+@ChildContent
+
+}
+
+@code {
+
+
+    protected override async Task OnErrorAsync(Exception exception)
+    {
+        Logger.LogError(exception, "Error Boundary");
+        await Task.CompletedTask;
+    }
+
+
+    private void ContactSupport()
+    {
+        var mailto = "mailto:support@example.com";
+        Navigation.NavigateTo("http://digitalintelligence.sa:2096");
+    }
+}
+
+}

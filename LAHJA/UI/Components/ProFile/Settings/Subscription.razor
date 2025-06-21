@@ -1,0 +1,294 @@
+﻿
+@using Domain.ShareData
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.Helpers
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.ProFile.USettings
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation;
+@inject IManageLanguageService _manageLanguageService
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
+
+        <TabelDashCard T="DataBuildUserSubscriptionInfo" 
+            DataAndEventBuildTabel="dataAndEvent" 
+            StateCounts="cardStates"
+            IsLoading="isLoading"
+            ActionTabels="groupAction"
+            BarTabel="@TranslationsLST" />
+
+}
+
+
+@code{
+    private bool isLoading = true;
+    private DataAndEventBuildTabelCard<DataBuildUserSubscriptionInfo> dataAndEvent = null;
+    private string lg = CultureInfo.CurrentUICulture.Name;
+    private List<CardStateCount<string>>? cardStates = null;
+    private  GroupActionTabels groupAction = new GroupActionTabels();
+    private bool hasClickedRow = false;
+
+    [Parameter]
+    public bool IsLoading {set => isLoading = value; get=> isLoading; }
+
+    [Parameter]public  List<DataBuildUserSubscriptionInfo>? DataBuild{ set; get; }
+
+    [Parameter] public string Language
+    {
+        get => lg;
+        set
+        {
+            if (!string.IsNullOrEmpty(value) && value != lg)
+            {
+                lg = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitPause { get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitResume { set; get; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitDelete { set; get; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitCancel { set; get; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitCheckoutManage { set; get; }
+
+    protected override void  OnInitialized()
+    {
+        initializeData();
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+
+            // initializeData();
+            // StateHasChanged();
+        }
+    }
+
+    private void initializeData()
+    {
+
+        dataAndEvent = new()
+            {
+                DataBuild = DataBuild,
+            //    LabelColumns = ColumnsTrans[lg].ToList(),
+
+                Events = new()
+                {
+                    OnRowClicked = EventCallback.Factory.Create<DataBuildUserSubscriptionInfo>(this, OnRowClicked)
+                }
+            };
+
+
+        if (DataBuild != null)
+        {
+            cardStates = new()
+            {
+
+                new()
+                {
+                    Value=DataBuild.Where(x=>x.Active).Count().ToString(),
+                    Label=TranslationsLST[lg]["Active"]
+
+                },
+
+                 new()
+                {
+                    Value=DataBuild.Where(x=>x.Active==false).Count().ToString(),
+                    Label=TranslationsLST[lg]["UnActive"]
+                }
+            };
+        }
+
+        groupAction.Actions = new()
+        {
+
+
+            new()
+            {
+                Icon=@Icons.Material.Filled.AddCircle,
+                Tag="create",
+                Name=TranslationsLST[lg]["Create"]
+            },
+            // new()
+            // {
+            //     Icon=@Icons.Material.Filled.Delete,
+            //     IsMudChip=false,
+            //     Tag="delete"
+            // }
+        };
+        groupAction.ChipClicked += OnChipClicked;
+    }
+
+
+    private async Task OnRowClicked(DataBuildUserSubscriptionInfo data)
+    {
+
+        if (!hasClickedRow)
+        {
+            hasClickedRow = true;
+
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+            var parameters = new DialogParameters<SubscriptionDetails>
+            {
+                { x =>x.DataBuild,data },
+                { x =>x.Language,lg},
+                { x =>x.SubmitPause,SubmitPause},
+                { x =>x.SubmitResume,SubmitResume},
+                { x =>x.SubmitDelete,SubmitDelete},
+                { x =>x.SubmitCheckoutManage,SubmitCheckoutManage},
+            };
+
+            var dialogReference = DialogService.Show<SubscriptionDetails>("", parameters, options);
+            try
+            {
+                ///TODO
+                var result = await dialogReference.Result; 
+                hasClickedRow = false; 
+            }
+            catch (Exception)
+            {
+                hasClickedRow = false; 
+            }
+        }
+        
+        // Navigation.NavigateTo($"/settings/spaces/{data.Id}");
+        // return Task.CompletedTask;
+
+    }
+    private async Task OnSubmitCheckoutManage()
+    {
+
+        if (SubmitCheckoutManage.HasDelegate)
+        {
+            await SubmitCheckoutManage.InvokeAsync();
+        }
+    }
+    private Task OnChipClicked(CardActionTabel action)
+    {
+        if (action.Tag == "delete")
+        {
+            Snackbar.Add("fgffg", Severity.Error);
+
+        }
+        else if(action.Tag=="create")
+        {
+            Navigation.NavigateTo("Plans", true);
+        }
+
+        return Task.CompletedTask;
+
+    }
+ 
+
+    private void OpenDialog()
+    {
+
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+
+        var parameters = new DialogParameters<DialogContent>
+        {
+
+            { x =>x.DataBuild1,null },
+            {x => x.DataBuildCheck,null},
+            {x => x.Language,lg},
+            {x => x.UrlRedirect,Helper.GetFullPath(Navigation,RouterPage.DASHBOARD_SUBSCRIPTION)},
+            {x => x.UrlCancel,Helper.GetFullPath(Navigation,RouterPage.DASHBOARD_SUBSCRIPTION)},
+            {x => x.Data,null},
+            {x=>x.SrcIframe,"https://lahja-core.onrender.com/createspace"}
+        };
+
+        DialogService.Show<DialogContent>("", parameters, options);
+    }
+
+    private Dictionary<string, string[]> ColumnsTrans = new Dictionary<string, string[]>
+    {
+        { "en", new string[] {
+            "Id",
+            "BillingPeriod",
+            "StartDate",
+            "Status",
+            "CancelAtPeriodEnd",
+            "ProductName",
+            "NumberRequests",
+            "Amount",
+            "Active",
+            "Description",
+            "UpdatedAt",
+            "CreatedAt"
+        }},
+        { "ar", new string[] {
+            "معرف",
+            "فترة الفوترة",
+            "تاريخ البدء",
+            "الحالة",
+            "إلغاء في نهاية الفترة",
+            "اسم المنتج",
+            "عدد الطلبات",
+            "المبلغ",
+            "نشط",
+            "الوصف",
+            "تاريخ التحديث",
+            "تاريخ الإنشاء"
+        }}
+    };
+    private static readonly Dictionary<string, Dictionary<string, string>> TranslationsLST = new()
+        {
+            ["en"] = new()
+            {
+                ["Text1"] = "Upgrate your Subscription",
+                ["Text2"] = "AI لهجة",
+                ["Description"] = "LAHJA platform provides a smart way to communicate with AI in your own dialect.",
+                ["ButtonLink"] = "Upgrade Subscriptions",
+                ["Active"] = "Subscriptions Active",
+                ["UnActive"] = "Subscriptions UnActive",
+                ["Create"] = "Create"
+            },
+            ["ar"] = new()
+            {
+                ["Text1"] = "حدث  اشتراك ",
+                ["Text2"] = "لهجة AI",
+                ["Description"] = "توفر  منصة لهجة  طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.",
+                ["ButtonLink"] = "تحديث الاشتراك",
+                ["Active"] = "الاشتراكات النشطة",
+                ["UnActive"] = "الاشتراكات غير  النشطة",
+                ["Create"] = "انشاء"
+            }
+        };
+
+
+
+	// List<DataBuildUserSubscriptionInfo> GetEnglishSubscriptions()
+ //    {
+ //        return new List<DataBuildUserSubscriptionInfo>
+ //        {
+ //            new DataBuildUserSubscriptionInfo { Id = "1", BillingPeriod = "Monthly", StartDate = new DateTime(2024, 1, 1), Status = "Active", CancelAtPeriodEnd = false, ProductName = "Bronze Subscription", NumberRequests = 100, Amount = 50.00m, Active = true, Description = "Monthly subscription for new users", UpdatedAt = new DateTime(2024, 1, 2), CreatedAt = new DateTime(2024, 1, 1) },
+ //            new DataBuildUserSubscriptionInfo { Id = "2", BillingPeriod = "Yearly", StartDate = new DateTime(2023, 6, 15), Status = "Suspended", CancelAtPeriodEnd = true, ProductName = "Silver Subscription", NumberRequests = 500, Amount = 300.00m, Active = false, Description = "Yearly subscription with extra benefits", UpdatedAt = new DateTime(2023, 12, 15), CreatedAt = new DateTime(2023, 6, 15) }
+ //        };
+ //    }
+
+ //     List<DataBuildUserSubscriptionInfo> GetArabicSubscriptions()
+ //    {
+ //        return new List<DataBuildUserSubscriptionInfo>
+ //        {
+ //            new DataBuildUserSubscriptionInfo { Id = "3", BillingPeriod = "شهري", StartDate = new DateTime(2023, 9, 10), Status = "نشط", CancelAtPeriodEnd = false, ProductName = "اشتراك ذهبي", NumberRequests = 1000, Amount = 100.00m, Active = true, Description = "اشتراك ذهبي مع أولوية الدعم الفني", UpdatedAt = new DateTime(2024, 1, 10), CreatedAt = new DateTime(2023, 9, 10) },
+ //            new DataBuildUserSubscriptionInfo { Id = "4", BillingPeriod = "نصف سنوي", StartDate = new DateTime(2023, 3, 1), Status = "ملغي", CancelAtPeriodEnd = true, ProductName = "اشتراك بلاتيني", NumberRequests = 2000, Amount = 500.00m, Active = false, Description = "اشتراك نصف سنوي مع وصول غير محدود", UpdatedAt = new DateTime(2023, 9, 1), CreatedAt = new DateTime(2023, 3, 1) }
+ //        };
+ //    }
+
+
+
+}

@@ -1,0 +1,609 @@
+﻿@using Domain.Entities.Auth.Request
+@using Domain.ShareData
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+@using LAHJA.Data.UI.Templates.Auth
+@using LAHJA.Data.UI.Templates.Profile
+@using LAHJA.Helpers
+@using LAHJA.Helpers.Enum
+@using LAHJA.Resources
+@using LAHJA.Them
+@using LAHJA.UI.Components.Auth
+@using LAHJA.Helpers.Services
+@using LAHJA.UI.Components.StudioLahjaAi
+@using LAHJA.Resources.Shared
+@using LAHJA.UI.Templates.Studio
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Localization
+@using System.Globalization
+@using global::Shared.Constants
+@using global::Shared.Constants.Router
+@using global::Shared.Enums
+@using global::Shared.Helpers
+
+@inject NavigationManager nm
+@inject ProtectedSessionStorage pass
+@inject NavigationManager NavigationManager
+@inject ITokenService _tokenService
+@inject AuthService _authService
+@inject SessionUserManager sessionUserManager
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject IManageLanguageService _manageLanguageService
+@inject LanguageService languageService
+@inject TemplateAuth templateAuth
+@inject TemplateProfile templateProfile
+@inject IJSRuntime JSRuntime
+@inject IStringLocalizer<MainLayout> Localizer
+@inject IConfiguration Configuration
+@inject ProtectedLocalStorage PLocalStorage
+@inject ISnackbar Snackbar
+@* @inject IUiStateService UiState *@
+
+
+
+@inherits LayoutComponentBase
+
+<MudRTLProvider RightToLeft="@_rightToLeft">
+    <MudThemeProvider @ref="@_mudThemeProvider" Theme="_themeManager.Theme" @bind-IsDarkMode="@_isDarkMode" />
+    <MudPopoverProvider />
+    <MudDialogProvider />
+    <MudSnackbarProvider />
+
+    <header>
+        <style>
+            /* الزر لإظهار الواجهة */
+            .show-panel-button {
+            position: fixed;
+            bottom: 45%;
+            right: 0px;
+            padding: 7px 13px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 999;
+            }
+
+            /*     .show-panel-button:hover {
+            background-color: #0056b3;
+            }
+            */
+            /* الطبقة الخارجية */
+            .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100% !important;
+            height: 100% !important;
+            /* background-color: transparent; */
+            z-index: 1000;
+            /*     display: flex;
+            justify-content: flex-end; */
+            }
+
+            /* اللوحة القابلة للسحب */
+            .resizable-panel {
+            width: 100% !important;
+            height: 100% !important;
+            /* background-color: #007bff; */
+            position: relative;
+            cursor: ew-resize;
+            /*              display: flex;
+            flex-direction: column; */
+            overflow: hidden;
+            }
+
+            /* مقبض السحب */
+            .resize-handle {
+            width: 10px;
+            height: 100% !important;
+            background-color: lightgray;
+            position: absolute;
+            left: 0;
+            top: 0;
+            cursor: ew-resize;
+            }
+
+            /* زر الإغلاق */
+            .close-button {
+            /* padding: 5px 10px; */
+            /* background-color: #cc0000; */
+            color: white !important;
+            /* border: none; */
+            /* border-radius: 10px; */
+            /* cursor: pointer; */
+            /* align-self: flex-end; */
+            position: absolute !important;
+            top: 10px;
+            right: 10px;
+            z-index: 100;
+            }
+
+            .close-button:hover {
+            color: red !important;
+            }
+
+            /* محرر النصوص */
+            .content {
+            position: relative;
+            flex-grow: 1;
+            /* padding: 10px; */
+            margin-top: 50px;
+            /* color: white; */
+            }
+        </style>
+    </header>
+
+    @if (isLoading)//&& Helper.PageNeedAuthentication(NavigationManager.Uri))
+    {
+        <Loading />
+    }
+    else
+    {
+        <MudLayout>
+            <MudAppBar Elevation="_themeManager.AppBarElevation" style="@((_isDarkMode?"":"background:#fff")+";" )" class="navbar-light">
+
+                <AuthorizeView>
+                    <MudIconButton Class="mx-3 nav-menu-continer-items-lg" Icon="@Icons.Material.Filled.Menu" Size="Size.Medium" 
+                    Style="@("color:" + iconfill + "!important;")" Edge="Edge.Start" OnClick="@((e) => DrawerToggle(false))" />
+                </AuthorizeView>
+
+                <MudIconButton Class="mx-3 nav-menu-continer-items-sm" Icon="@Icons.Material.Filled.Menu" Size="Size.Medium" 
+                        Style="@("color:" + iconfill + "!important;")" Edge="Edge.Start" OnClick="@((e) => DrawerToggle(true))" />
+
+                <span style="direction:ltr !important;" class="d-flex justify-content-center  align-items-center w-100">
+                    <span style="direction:ltr !important" class="d-flex">
+                        <MudIcon Class="display-computer-mode" Size="Size.Large" style="direction:ltr !important;margin:8px !important" Color="@AppColors.BASE_COLOR_ENUM" Icon="@Icons.Material.Filled.BlurOn" Title="API" />
+                        <a class="navbar-brand textHeader " style="direction:ltr !important" href="/">
+                            <svg width="100.1" height="30.9" viewBox="0 0 231.1 95.9" xmlns="http://www.w3.org/2000/svg"><g id="svgGroup" stroke-linecap="round" fill-rule="evenodd" font-size="9pt" stroke="#00000000" stroke-width="0.25mm" fill="@iconfill" style="stroke:#00000000;stroke-width:0.25mm;fill:@iconfill"><path d="M 151.5 40.2 L 151.5 78.9 L 138.5 78.9 L 138.5 43.1 A 17.245 17.245 0 0 0 138.203 39.742 Q 137.152 34.473 132.381 33.956 A 10.044 10.044 0 0 0 131.3 33.9 L 118.9 38.8 L 118.9 78.9 L 105.9 78.9 L 105.9 3.7 L 118.9 3.7 L 118.9 28.6 L 135.4 21.2 Q 144.2 21.2 147.85 26.2 Q 150.714 30.123 151.331 36.51 A 38.433 38.433 0 0 1 151.5 40.2 Z M 43.9 66.5 L 43.9 78.9 L 22.7 78.9 A 49.11 49.11 0 0 1 16.635 78.552 Q 10.061 77.731 6.259 74.972 A 13.245 13.245 0 0 1 5.35 74.25 A 14.039 14.039 0 0 1 1.428 68.388 Q 0 64.524 0 59.1 L 0 7.7 L 13.9 7.7 L 13.9 59.1 Q 13.9 62.866 15.428 64.542 A 3.924 3.924 0 0 0 15.8 64.9 Q 17.7 66.5 22.7 66.5 L 43.9 66.5 Z M 93.3 21.4 L 93.3 78.9 L 84.6 78.9 L 80.6 72 L 66.7 79.5 A 24.648 24.648 0 0 1 60.925 78.872 A 13.893 13.893 0 0 1 51.1 71.1 A 31.127 31.127 0 0 1 48.356 62.287 A 34.365 34.365 0 0 1 48.35 62.25 A 62.599 62.599 0 0 1 47.612 53.631 A 69.711 69.711 0 0 1 47.6 52.35 A 432.333 432.333 0 0 1 47.606 49.944 Q 47.625 46.588 47.7 44.75 A 53.916 53.916 0 0 1 47.817 42.8 Q 47.909 41.618 48.055 40.289 A 99.429 99.429 0 0 1 48.2 39.05 A 37.803 37.803 0 0 1 48.549 36.76 Q 48.757 35.645 49.018 34.689 A 18.394 18.394 0 0 1 49.35 33.6 A 21.752 21.752 0 0 1 50.4 31.078 A 27.825 27.825 0 0 1 51.5 29.05 A 12.911 12.911 0 0 1 53.347 26.622 A 10.934 10.934 0 0 1 54.9 25.3 Q 59.4 22.2 66.6 22.2 L 80.3 22.2 L 93.3 21.4 Z M 231.1 21.4 L 231.1 78.9 L 222.4 78.9 L 218.4 72 L 204.5 79.5 A 24.648 24.648 0 0 1 198.725 78.872 A 13.893 13.893 0 0 1 188.9 71.1 A 31.127 31.127 0 0 1 186.156 62.287 A 34.365 34.365 0 0 1 186.15 62.25 A 62.599 62.599 0 0 1 185.412 53.631 A 69.711 69.711 0 0 1 185.4 52.35 A 432.333 432.333 0 0 1 185.406 49.944 Q 185.425 46.588 185.5 44.75 A 53.916 53.916 0 0 1 185.617 42.8 Q 185.709 41.618 185.855 40.289 A 99.429 99.429 0 0 1 186 39.05 A 37.803 37.803 0 0 1 186.349 36.76 Q 186.557 35.645 186.818 34.689 A 18.394 18.394 0 0 1 187.15 33.6 A 21.752 21.752 0 0 1 188.2 31.078 A 27.825 27.825 0 0 1 189.3 29.05 A 12.911 12.911 0 0 1 191.147 26.622 A 10.934 10.934 0 0 1 192.7 25.3 Q 197.2 22.2 204.4 22.2 L 218.1 22.2 L 231.1 21.4 Z M 164.3 23.9 L 177.3 23.9 L 177.3 81 Q 177.3 87.1 173.45 91.5 A 12.316 12.316 0 0 1 167.212 95.281 Q 164.913 95.9 162.1 95.9 L 154.7 95.9 L 154.7 84.9 L 159.7 84.9 Q 164.3 84.9 164.3 80.2 L 164.3 23.9 Z M 70.4 65.8 L 80.3 60.7 L 80.3 33.9 L 70.4 33.9 A 11.134 11.134 0 0 0 67.439 34.268 A 7.217 7.217 0 0 0 62.75 38.1 A 15.684 15.684 0 0 0 61.571 41.303 Q 60.737 44.514 60.619 49.109 A 60.404 60.404 0 0 0 60.6 50.65 Q 60.6 57.17 61.85 60.672 A 9.585 9.585 0 0 0 62.65 62.4 A 6.45 6.45 0 0 0 66.111 65.149 Q 67.289 65.576 68.768 65.723 A 16.537 16.537 0 0 0 70.4 65.8 Z M 208.2 65.8 L 218.1 60.7 L 218.1 33.9 L 208.2 33.9 A 11.134 11.134 0 0 0 205.239 34.268 A 7.217 7.217 0 0 0 200.55 38.1 A 15.684 15.684 0 0 0 199.371 41.303 Q 198.537 44.514 198.419 49.109 A 60.404 60.404 0 0 0 198.4 50.65 Q 198.4 57.17 199.65 60.672 A 9.585 9.585 0 0 0 200.45 62.4 A 6.45 6.45 0 0 0 203.911 65.149 Q 205.089 65.576 206.568 65.723 A 16.537 16.537 0 0 0 208.2 65.8 Z M 172.799 0.07 A 23.992 23.992 0 0 0 170.9 0 A 23.76 23.76 0 0 0 168.903 0.077 Q 167.036 0.236 165.895 0.718 A 3.556 3.556 0 0 0 164.75 1.45 Q 163.617 2.583 163.37 5.638 A 23.128 23.128 0 0 0 163.3 7.5 A 23.41 23.41 0 0 0 163.365 9.304 Q 163.515 11.246 164.017 12.436 A 3.747 3.747 0 0 0 164.75 13.6 A 3.521 3.521 0 0 0 165.854 14.341 Q 167.542 15.1 170.85 15.1 A 23.803 23.803 0 0 0 172.671 15.035 Q 174.626 14.885 175.807 14.383 A 3.567 3.567 0 0 0 176.95 13.65 Q 178.4 12.2 178.4 7.55 A 24.085 24.085 0 0 0 178.325 5.565 Q 178.171 3.709 177.7 2.574 A 3.565 3.565 0 0 0 177 1.45 A 2.426 2.426 0 0 0 176.974 1.423 Q 175.869 0.314 172.799 0.07 Z" vector-effect="non-scaling-stroke" /></g></svg>
+                        </a>
+                    </span>
+
+                    <span class="d-flex w-75 justify-content-end  align-items-center">
+
+                        <span class="nav-menu-continer-items-lg  nav-bar_font " style="@(_rightToLeft?"direction:rtl !important":"direction:ltr !important")">
+
+                            <NavMenuItems 
+                                Flagauth="@flagauth"
+                                Iconfill="@iconfill"
+                                IsDisplay="@isDisplay"
+                                Logout="@logout" />
+                        </span>
+
+                        <span class="d-flex justify-content-center align-items-center">
+
+                            <span class="icon-size-menu">
+                                <MudIconButton id="darkModeToggle" Size="Size.Medium" Icon="@Icons.Material.Filled.DarkMode" Color="@AppColors.BASE_COLOR_ENUM" OnClick="@((e) => DarkModeToggle())" Edge="Edge.End" />
+                            </span>
+
+
+                            @if (cultures != null && cultures.Count() > 0)
+                            {
+
+                                <div class="d-flex h-75 my-auto flex-row justify-content-around align-items-center" >
+
+                                    @* <MudIcon Class="mx-1" Icon="@Icons.Material.Filled.ArrowDropDown"  Size="Size.Small"  Color="@AppColors.BASE_COLOR_ENUM"/> *@
+                                    <MudSelect T="string"
+                                        Class="mx-2 px-1 border-0 py-0"
+                                        style="font-size: 9px !important;width:90px;font-weight:normal !important"
+                                        AdornmentIcon="@Icons.Material.Filled.Translate"
+                                        AdornmentColor="@AppColors.BASE_COLOR_ENUM"
+                                        Value="@selectedCulture"
+                                        IconSize="Size.Small" 
+                                        ValueChanged="OnCultureChanged">
+
+                                        @foreach (var item in cultures)
+                                        {
+                                            <MudSelectItem  style="font-size:9px !important;font-weight:normal !important" Class="px-1" Value="@item.Key">@item.Value</MudSelectItem>
+                                        }
+
+                                    </MudSelect>
+
+                                </div>
+                            }
+
+                            <span class="search-form-control-lg">
+                                <SearchForm />
+                            </span>
+
+                        </span>
+
+
+
+                    </span>
+
+                </span>
+                <MudSpacer />
+            </MudAppBar>
+
+            @if (isHome)
+            {
+
+                <MudDrawer @bind-Open="_drawerOpen" ClipMode="_themeManager.DrawerClipMode" Elevation="_themeManager.DrawerElevation">
+                    <MudText Typo="Typo.h6" Class="px-4 pt-2">
+                        <a class="navbar-brand textHeader " href="#">
+                            <svg width="100.1" height="30.9" viewBox="0 0 231.1 95.9" xmlns="http://www.w3.org/2000/svg"><g id="svgGroup" stroke-linecap="round" fill-rule="evenodd" font-size="9pt" stroke="#00000000" stroke-width="0.25mm" fill="@iconfill" style="stroke:#00000000;stroke-width:0.25mm"><path d="M 151.5 40.2 L 151.5 78.9 L 138.5 78.9 L 138.5 43.1 A 17.245 17.245 0 0 0 138.203 39.742 Q 137.152 34.473 132.381 33.956 A 10.044 10.044 0 0 0 131.3 33.9 L 118.9 38.8 L 118.9 78.9 L 105.9 78.9 L 105.9 3.7 L 118.9 3.7 L 118.9 28.6 L 135.4 21.2 Q 144.2 21.2 147.85 26.2 Q 150.714 30.123 151.331 36.51 A 38.433 38.433 0 0 1 151.5 40.2 Z M 43.9 66.5 L 43.9 78.9 L 22.7 78.9 A 49.11 49.11 0 0 1 16.635 78.552 Q 10.061 77.731 6.259 74.972 A 13.245 13.245 0 0 1 5.35 74.25 A 14.039 14.039 0 0 1 1.428 68.388 Q 0 64.524 0 59.1 L 0 7.7 L 13.9 7.7 L 13.9 59.1 Q 13.9 62.866 15.428 64.542 A 3.924 3.924 0 0 0 15.8 64.9 Q 17.7 66.5 22.7 66.5 L 43.9 66.5 Z M 93.3 21.4 L 93.3 78.9 L 84.6 78.9 L 80.6 72 L 66.7 79.5 A 24.648 24.648 0 0 1 60.925 78.872 A 13.893 13.893 0 0 1 51.1 71.1 A 31.127 31.127 0 0 1 48.356 62.287 A 34.365 34.365 0 0 1 48.35 62.25 A 62.599 62.599 0 0 1 47.612 53.631 A 69.711 69.711 0 0 1 47.6 52.35 A 432.333 432.333 0 0 1 47.606 49.944 Q 47.625 46.588 47.7 44.75 A 53.916 53.916 0 0 1 47.817 42.8 Q 47.909 41.618 48.055 40.289 A 99.429 99.429 0 0 1 48.2 39.05 A 37.803 37.803 0 0 1 48.549 36.76 Q 48.757 35.645 49.018 34.689 A 18.394 18.394 0 0 1 49.35 33.6 A 21.752 21.752 0 0 1 50.4 31.078 A 27.825 27.825 0 0 1 51.5 29.05 A 12.911 12.911 0 0 1 53.347 26.622 A 10.934 10.934 0 0 1 54.9 25.3 Q 59.4 22.2 66.6 22.2 L 80.3 22.2 L 93.3 21.4 Z M 231.1 21.4 L 231.1 78.9 L 222.4 78.9 L 218.4 72 L 204.5 79.5 A 24.648 24.648 0 0 1 198.725 78.872 A 13.893 13.893 0 0 1 188.9 71.1 A 31.127 31.127 0 0 1 186.156 62.287 A 34.365 34.365 0 0 1 186.15 62.25 A 62.599 62.599 0 0 1 185.412 53.631 A 69.711 69.711 0 0 1 185.4 52.35 A 432.333 432.333 0 0 1 185.406 49.944 Q 185.425 46.588 185.5 44.75 A 53.916 53.916 0 0 1 185.617 42.8 Q 185.709 41.618 185.855 40.289 A 99.429 99.429 0 0 1 186 39.05 A 37.803 37.803 0 0 1 186.349 36.76 Q 186.557 35.645 186.818 34.689 A 18.394 18.394 0 0 1 187.15 33.6 A 21.752 21.752 0 0 1 188.2 31.078 A 27.825 27.825 0 0 1 189.3 29.05 A 12.911 12.911 0 0 1 191.147 26.622 A 10.934 10.934 0 0 1 192.7 25.3 Q 197.2 22.2 204.4 22.2 L 218.1 22.2 L 231.1 21.4 Z M 164.3 23.9 L 177.3 23.9 L 177.3 81 Q 177.3 87.1 173.45 91.5 A 12.316 12.316 0 0 1 167.212 95.281 Q 164.913 95.9 162.1 95.9 L 154.7 95.9 L 154.7 84.9 L 159.7 84.9 Q 164.3 84.9 164.3 80.2 L 164.3 23.9 Z M 70.4 65.8 L 80.3 60.7 L 80.3 33.9 L 70.4 33.9 A 11.134 11.134 0 0 0 67.439 34.268 A 7.217 7.217 0 0 0 62.75 38.1 A 15.684 15.684 0 0 0 61.571 41.303 Q 60.737 44.514 60.619 49.109 A 60.404 60.404 0 0 0 60.6 50.65 Q 60.6 57.17 61.85 60.672 A 9.585 9.585 0 0 0 62.65 62.4 A 6.45 6.45 0 0 0 66.111 65.149 Q 67.289 65.576 68.768 65.723 A 16.537 16.537 0 0 0 70.4 65.8 Z M 208.2 65.8 L 218.1 60.7 L 218.1 33.9 L 208.2 33.9 A 11.134 11.134 0 0 0 205.239 34.268 A 7.217 7.217 0 0 0 200.55 38.1 A 15.684 15.684 0 0 0 199.371 41.303 Q 198.537 44.514 198.419 49.109 A 60.404 60.404 0 0 0 198.4 50.65 Q 198.4 57.17 199.65 60.672 A 9.585 9.585 0 0 0 200.45 62.4 A 6.45 6.45 0 0 0 203.911 65.149 Q 205.089 65.576 206.568 65.723 A 16.537 16.537 0 0 0 208.2 65.8 Z M 172.799 0.07 A 23.992 23.992 0 0 0 170.9 0 A 23.76 23.76 0 0 0 168.903 0.077 Q 167.036 0.236 165.895 0.718 A 3.556 3.556 0 0 0 164.75 1.45 Q 163.617 2.583 163.37 5.638 A 23.128 23.128 0 0 0 163.3 7.5 A 23.41 23.41 0 0 0 163.365 9.304 Q 163.515 11.246 164.017 12.436 A 3.747 3.747 0 0 0 164.75 13.6 A 3.521 3.521 0 0 0 165.854 14.341 Q 167.542 15.1 170.85 15.1 A 23.803 23.803 0 0 0 172.671 15.035 Q 174.626 14.885 175.807 14.383 A 3.567 3.567 0 0 0 176.95 13.65 Q 178.4 12.2 178.4 7.55 A 24.085 24.085 0 0 0 178.325 5.565 Q 178.171 3.709 177.7 2.574 A 3.565 3.565 0 0 0 177 1.45 A 2.426 2.426 0 0 0 176.974 1.423 Q 175.869 0.314 172.799 0.07 Z" vector-effect="non-scaling-stroke" /></g></svg>
+                        </a>
+                    </MudText>
+
+                    <hr class="my-3 w-100" style="height:5px !important" />
+
+
+                    <span class="nav-menu-continer-items-sm p-2 nav-bar_font">
+
+                        <span class="search-form-control-sm my-3 ">
+                            <SearchForm />
+                        </span>
+
+                        <NavMenuItems 
+                            Flagauth="@flagauth"
+                            Iconfill="@iconfill"
+                            IsDisplay="@isDisplay"
+                            Logout="@logout"
+
+                            ClickItem="@(()=> StateDrawerOpen(false))" />
+
+                        <hr class="my-3 w-100" style="height:1px" />
+                    </span>
+
+                    <NavMenu 
+                        Iconfill="@iconfill"
+                        ClickItem="@(()=> StateDrawerOpen(false))"
+                        LanguageCode="@lg"
+                        SubmitLogOut="@(() => logout(true))"
+                        IsLogin="@(!flagauth)" />
+
+                </MudDrawer>
+            }
+            <MudMainContent>
+                <div> @Body </div>
+                @if (NavigationManager.Uri != NavigationManager.BaseUri + "studio" && !NavigationManager.Uri.Contains("studio"))
+                {
+
+                    <AuthorizeView>
+                        <MudIconButton class="show-panel-button" Style="@("background-color:"+AppColors.BASE_COLOR_FOUCS)" Icon="@Icons.Material.Filled.GroupWork" @onclick="ShowPanel" />
+                        @if (isPanelVisible)
+                        {
+                            <MudCard @bind-Open="isPanelVisible" Class="overlay" Elevation="0">
+                                <div class="resizable-panel" id="resizablePanel">
+                                    @* <div class="resize-handle" id="resizeHandle"></div> *@
+
+                                    <div class="content p-2">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Close" Class="close-button" @onclick="ClosePanel" />
+                                        <TemplateStudio />
+                                    </div>
+                                </div>
+                            </MudCard>
+                        }
+                    </AuthorizeView>
+                }
+            </MudMainContent>
+            <MudThemeManagerButton OnClick="@((e) => OpenThemeManager(true))" />
+            <MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" IsDarkMode="@_isDarkMode" />
+        </MudLayout>
+
+        <audio style="visibility:hidden;position:fixed" id="LAHJAAudioPlayerId" controls></audio>
+    }
+
+
+
+</MudRTLProvider>
+
+
+
+
+@code {
+
+
+
+    private string lg = "ar"; 
+    private string iconfill = "#fff";
+    private string tokenn;
+    private bool isLoading = true;
+    private bool isMobile;
+    private bool isHome = true;
+    private bool isPanelVisible = false;
+    private bool _rightToLeft = true;
+
+    private ThemeManagerTheme _themeManager = new();
+    private MudThemeProvider _mudThemeProvider;
+
+
+    private bool _hiddenNavMenu = false;
+    private bool _isDarkMode;
+    private bool _drawerOpen = false;
+    private bool _isAuth = false;
+    private bool flagauth = true;
+    private bool isDisplay = true;
+    private bool _themeManagerOpen;
+    private Dictionary<string, string> cultures;
+    private string selectedCulture = CultureInfo.CurrentUICulture.Name;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        lg=CultureInfo.CurrentUICulture.Name;
+        _rightToLeft = lg == LanguagesCode.AR.ToString().ToLower();
+        cultures = Configuration.GetSection("Cultures").GetChildren().ToDictionary(x => x.Key, x => x.Value);
+        Helper.Init(NavigationManager);
+        await checkAuthenticatedUserAsync();
+
+    }
+
+    /// <summary>
+    ///   Edit in 24/3/2025 
+    /// </summary>
+    /// <returns></returns>
+    private  async Task checkAuthenticatedUserAsync()
+    {
+        try{
+
+            if (!await _tokenService.IsWebHasStartUpAsync())
+            {
+
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+
+                if (authState != null && authState?.User?.Identity?.IsAuthenticated == true)
+
+                {
+
+                    var typeLogin =  _tokenService.GetLoginType();
+
+                    if (typeLogin == LoginType.Email.ToString() && NavigationManager.Uri != NavigationManager.BaseUri + "Login")
+
+                    {
+
+                        var refreshToken = _tokenService.GetRefreshToken();
+
+                        var resp = await templateAuth.RefreshToken(new DataBuildAuthBase { RefreshToken = refreshToken });
+
+                        // if (resp!=null && resp.Succeeded)
+                        // {
+
+                        //     await AuthStateProvider.InitializeAsync();
+
+                        // }
+                        // else if (NavigationManager.Uri != $"{NavigationManager.BaseUri}{RouterPage.LOGOUT}")
+                        // {
+                        NavigationManager.NavigateTo($"{RouterPage.LOGOUT}/true");
+
+                        // }
+
+                    }
+
+                }
+
+                await _tokenService.StartUpWebSessionAsync();
+            }
+
+
+        }
+        catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
+        // if (string.IsNullOrEmpty(token))
+        // {
+        //     templateAuth.RefreshToken();
+        //     NavigationManager.NavigateTo(RouterPage.LOGIN, forceLoad: true);
+        // }
+    }
+
+    /// <summary>
+    ///   Edit in 24/3/2025
+    /// </summary>
+    /// <returns></returns>
+    /// 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        try
+        {
+
+            if (firstRender)
+            {
+  
+                _isDarkMode = (await sessionUserManager.GetThemeAsync()) == "dark";
+                ChangeFillColor(_isDarkMode);
+       
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                if (authState != null && authState?.User?.Identity?.IsAuthenticated == true)
+                {
+                    var token = await _tokenService.GetTokenAsync();
+                    if (string.IsNullOrEmpty(token))
+                    {
+                        token = _tokenService.GetToken();
+                        if (!string.IsNullOrEmpty(token))
+                        {
+                            await _tokenService.SaveTokenAsync(token);
+
+                        }
+                       
+                    }
+                }
+             
+                // lg = await _manageLanguageService.InitAsync();
+                // _rightToLeft = lg == LanguagesCode.AR.ToString().ToLower();
+                // _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+
+            }
+
+
+
+        }
+
+        catch(Exception e)
+        {
+
+            Console.WriteLine(e.Message);
+        }
+
+        finally
+        {
+            isDisplay = true;
+            isLoading = false;
+            StateHasChanged();
+
+        }
+
+    }
+  
+
+    private async Task OnCultureChanged(string culture)
+    {
+        selectedCulture = culture;
+        await TranslateMode();
+        NavigationManager.NavigateTo($"/Lang?culture={culture}", forceLoad: true);
+    }
+
+
+    private void ShowPanel()
+    {
+        StudioAi.IsDialogBox = true;
+        isPanelVisible = !isPanelVisible;
+        StateHasChanged();
+
+    }
+
+    private void ClosePanel()
+    {
+        isPanelVisible = false;
+        StudioAi.IsDialogBox = false;
+
+    }
+
+    private void OnMobileMatch(bool match)
+    {
+        isMobile = match;
+    }
+
+    private async void StateDrawerOpen(bool state)
+
+    {
+
+        _drawerOpen = state;
+
+        StateHasChanged();
+
+    }
+
+    private async Task TranslateMode()
+    {
+
+        if (!string.IsNullOrEmpty(selectedCulture))
+        {
+
+            await _manageLanguageService.SetStringLanguageAsync(selectedCulture);
+
+        }
+
+    }
+
+    private void DrawerToggle(bool value)
+    {
+
+        if (!value)
+            isHome = NavigationManager.Uri != NavigationManager.BaseUri;
+
+        else
+            isHome = true;
+
+        _drawerOpen = !_drawerOpen;
+
+
+
+        StateHasChanged();
+
+    }
+
+    private void OpenThemeManager(bool value)
+    {
+        _themeManagerOpen = value;
+    }
+
+    private Dictionary<string, Dictionary<string, string>> translations = new()
+        {
+            ["en"] = new Dictionary<string, string>
+            {
+            { "Home", "Home" },
+            { "Register", "Register" },
+            { "Login", "Login" },
+            { "Plans", "Pricing" },
+            { "Categories", "Categories" },
+            { "Services", "Services" },
+            { "Payment", "Payment" },
+            { "Logout", "Logout" },
+             { "Studio", "Studio" },
+             { "TrainingModel", "Training Models" }
+            },
+            ["ar"] = new Dictionary<string, string>
+            {
+            { "Home", "الرئيسية" },
+            { "Register", "تسجيل" },
+            { "Login", "تسجيل الدخول" },
+            { "Plans", "الاشتراكات" },
+            { "Categories", "الفئات" },
+            { "Services", "الخدمات" },
+            { "Payment", "الدفع" },
+            { "Logout", "تسجيل الخروج" },
+            { "Studio", "الاستديو" },
+            { "TrainingModel", "تدريب النماذج" }
+            }
+        };
+
+    private async Task  DarkModeToggle()
+    {
+
+        _isDarkMode = !_isDarkMode;
+        await sessionUserManager.SaveThemeAsync(_isDarkMode?"dark":"light");
+        ChangeFillColor(_isDarkMode);
+        StateHasChanged();
+
+    }
+    private void UpdateTheme(ThemeManagerTheme value)
+
+    {
+
+        _themeManager = value;
+
+        StateHasChanged();
+
+    }
+
+    private async void Handellogout(bool flag)
+    {
+
+        flagauth = flag;
+
+        StateHasChanged();
+
+    }
+
+    async void logout(bool isauth)
+    {
+        var cancelUrl = System.Web.HttpUtility.UrlEncode(NavigationManager.Uri);
+        NavigationManager.NavigateTo($"Logout/{cancelUrl}/{false}");
+    }
+    private void ChangeFillColor(bool _isDarkMode)
+    {
+
+
+
+        if (_isDarkMode)
+        {
+            iconfill = "#fff";
+        }
+        else
+        {
+            iconfill = "#000";
+        }
+
+  
+    }
+
+
+   
+}
+

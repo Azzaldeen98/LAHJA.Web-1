@@ -1,0 +1,35 @@
+﻿ @page "/ConfirmEmail"
+ @using LAHJA.UI.Components.Auth
+ @inject LAHJA.Data.UI.Templates.Auth.TemplateAuth Template
+ @inject NavigationManager Navigation
+ @using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+ 
+ <ConfirmationEmail Code="@Code" Email="@Email"  OnSubmitConfirmEmail="Template.BuilderComponents.SubmitConfirmEmail" />
+
+ @code {
+     string Email { get; set; }
+     string Code { get; set; }
+
+     protected override void OnInitialized()
+     {
+
+         var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+         var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+         if (queryParams.ContainsKey("email"))
+         {
+             Email = queryParams["email"];
+         }
+
+         if (queryParams.ContainsKey("code"))
+         {
+             Code = queryParams["code"];
+         }
+         base.OnInitialized();
+     }
+
+
+
+
+ }

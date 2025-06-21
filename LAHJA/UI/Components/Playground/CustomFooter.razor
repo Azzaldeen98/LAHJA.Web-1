@@ -1,0 +1,130 @@
+﻿@* 
+<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
+    <div class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800">
+        <div class="max-sm:min-w-full">
+            <div class="flex flex-col overflow-y-auto overflow-x-hidden container max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem)]">
+                <div class="group/message group grid grid-cols-[1fr,2.5rem] items-start gap-2 px-3.5 pb-6 pt-4 hover:bg-gray-100/70 2xl:grid-cols-[130px,1fr,2.5rem] 2xl:grid-rows-1 2xl:gap-4 2xl:px-6 dark:border-gray-800 dark:hover:bg-gray-800/30 border-b">
+                    <div class="col-span-2 pb-1 pt-3 text-sm font-semibold uppercase 2xl:col-span-1 2xl:pb-2">user</div>
+                    <textarea placeholder="Enter user message" class="resize-none overflow-hidden rounded bg-transparent px-2 py-2.5 ring-gray-100 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring group-hover/message:ring 2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900" rows="1" tabindex="2" style="height: 41px;"></textarea>
+                    <button tabindex="0" type="button" class="mt-1.5 size-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 group-hover/message:block sm:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" data-svelte-h="svelte-qqwqr1">✕</button></div><div class="group/message group grid grid-cols-[1fr,2.5rem] items-start gap-2 px-3.5 pb-6 pt-4 hover:bg-gray-100/70 2xl:grid-cols-[130px,1fr,2.5rem] 2xl:grid-rows-1 2xl:gap-4 2xl:px-6 dark:border-gray-800 dark:hover:bg-gray-800/30 border-b"><div class="col-span-2 pb-1 pt-3 text-sm font-semibold uppercase 2xl:col-span-1 2xl:pb-2">assistant</div> 
+                    <textarea autofocus="" placeholder="Enter assistant message" class="resize-none overflow-hidden rounded bg-transparent px-2 py-2.5 ring-gray-100 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring group-hover/message:ring 2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900" rows="1" tabindex="2" style="height: 41px;"></textarea> <button tabindex="0" type="button" class="mt-1.5 size-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 group-hover/message:block sm:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">✕</button></div> <button class="flex px-3.5 py-6 hover:bg-gray-50 md:px-6 dark:hover:bg-gray-800/50"><div class="flex items-center gap-2 !p-0 text-sm font-semibold"><svg class="text-lg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"><path fill="currentColor" d="M16 2A14.172 14.172 0 0 0 2 16a14.172 14.172 0 0 0 14 14a14.172 14.172 0 0 0 14-14A14.172 14.172 0 0 0 16 2Zm8 15h-7v7h-2v-7H8v-2h7V8h2v7h7Z"></path>
+<path fill="none" d="M24 17h-7v7h-2v-7H8v-2h7V8h2v7h7v2z"></path></svg> Add message</div></button></div> </div></div> <div class="fixed inset-x-0 bottom-0 flex h-20 items-center justify-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute">
+    <div class="flex flex-1 justify-start gap-x-2"><button type="button" class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"><svg class="text-black dark:text-white" style="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path fill="currentColor" d="M2.131 13.63a10 10 0 0 1 .001-3.26c1.101.026 2.092-.502 2.477-1.431c.385-.93.058-2.003-.74-2.763a10 10 0 0 1 2.306-2.307c.76.798 1.834 1.125 2.763.74c.93-.385 1.458-1.376 1.431-2.477a10 10 0 0 1 3.261 0c-.026 1.102.502 2.092 1.431 2.477c.93.385 2.003.058 2.763-.74a10 10 0 0 1 2.307 2.306c-.798.76-1.125 1.834-.74 2.764s1.376 1.458 2.477 1.43a10 10 0 0 1 0 3.262c-1.102-.027-2.092.501-2.477 1.43c-.385.93-.058 2.004.74 2.764a10 10 0 0 1-2.306 2.306c-.76-.798-1.834-1.125-2.764-.74s-1.458 1.376-1.43 2.478a10 10 0 0 1-3.262-.001c.027-1.101-.502-2.092-1.43-2.477c-.93-.385-2.004-.058-2.764.74a10 10 0 0 1-2.306-2.306c.798-.76 1.125-1.834.74-2.763c-.385-.93-1.376-1.458-2.478-1.431M12 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6"></path></svg> Settings</button> <button type="button" class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M12 12h2v12h-2z" fill="currentColor"></path><path d="M18 12h2v12h-2z" fill="currentColor"></path><path d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20z" fill="currentColor"></path><path d="M12 2h8v2h-8z" fill="currentColor"></path></svg></button></div> <div class="flex flex-1 flex-shrink-0 items-center justify-center gap-x-8 text-center text-sm text-gray-500"><span class="max-xl:hidden">0 tokens · Latency 0ms</span></div> <div class="flex flex-1 justify-end gap-x-2"><button type="button" class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700"><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32" style="transform: rotate(360deg);"><path d="M31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7z" fill="currentColor"></path><path d="M1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7z" fill="currentColor"></path><path d="M12.419 25.484L17.639 6l1.932.518L14.35 26z" fill="currentColor"></path></svg> View Code</button> <button type="button" class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:focus:ring-gray-700 bg-black hover:bg-gray-900 dark:bg-blue-600 dark:hover:bg-blue-700">Run <span class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70" data-svelte-h="svelte-xzm0rz">⌘<span class="translate-y-px">↵</span></span></button></div></div></div> *@
+
+
+<div class="relative divide-y divide-gray-200 dark:divide-gray-800">
+    @if (isVisible)
+    {
+        
+    <div class="flex h-[calc(100dvh-5rem-120px)] divide-x divide-gray-200 overflow-x-auto overflow-y-hidden *:w-full max-sm:w-dvw md:h-[calc(100dvh-5rem)] md:pt-3 dark:divide-gray-800">
+        <div class="max-sm:min-w-full">
+            <div class="flex flex-col overflow-y-auto overflow-x-hidden container max-h-[calc(100dvh-5.8rem-2.5rem-75px)] md:max-h-[calc(100dvh-5.8rem)]">
+                <div class="group/message group grid grid-cols-[1fr,2.5rem] items-start gap-2 px-3.5 pb-6 pt-4 hover:bg-gray-100/70 2xl:grid-cols-[130px,1fr,2.5rem] 2xl:grid-rows-1 2xl:gap-4 2xl:px-6 dark:border-gray-800 dark:hover:bg-gray-800/30 border-b">
+                    <div class="col-span-2 pb-1 pt-3 text-sm font-semibold uppercase 2xl:col-span-1 2xl:pb-2">user</div> <textarea placeholder="Enter user message" class="resize-none overflow-hidden rounded bg-transparent px-2 py-2.5 ring-gray-100 hover:resize-y hover:bg-white focus:resize-y focus:bg-white focus:ring group-hover/message:ring 2xl:px-3 dark:ring-gray-600 dark:hover:bg-gray-900 dark:focus:bg-gray-900" rows="1" tabindex="2" autofocus="" style="height: 41px;"></textarea> <button tabindex="0" type="button" class="mt-1.5 size-8 rounded-lg border border-gray-200 bg-white text-xs font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 group-hover/message:block sm:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700" data-svelte-h="svelte-qqwqr1">✕</button>
+                </div>
+                <button class="flex px-3.5 py-6 hover:bg-gray-50 md:px-6 dark:hover:bg-gray-800/50">
+                    <div class="flex items-center gap-2 !p-0 text-sm font-semibold">
+                        <svg class="text-lg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32">
+                            <path fill="currentColor" d="M16 2A14.172 14.172 0 0 0 2 16a14.172 14.172 0 0 0 14 14a14.172 14.172 0 0 0 14-14A14.172 14.172 0 0 0 16 2Zm8 15h-7v7h-2v-7H8v-2h7V8h2v7h7Z">
+
+                            </path>
+                            <path fill="none" d="M24 17h-7v7h-2v-7H8v-2h7V8h2v7h7v2z"></path>
+                        </svg> Add message
+                    </div>
+                </button>
+               
+
+                
+                
+
+            </div>
+        </div>
+            
+            
+    </div>
+    }
+    else
+    {
+     <Customlayout />
+    }
+    <div class="fixed inset-x-0 bottom-0 flex h-20 items-center justify-center gap-2 overflow-hidden whitespace-nowrap px-3 md:absolute">
+        <div class="flex flex-1 justify-start gap-x-2">
+            <button type="button" class="flex h-[39px] items-center gap-1 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 md:hidden dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+                <svg class="text-black dark:text-white" style="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M2.131 13.63a10 10 0 0 1 .001-3.26c1.101.026 2.092-.502 2.477-1.431c.385-.93.058-2.003-.74-2.763a10 10 0 0 1 2.306-2.307c.76.798 1.834 1.125 2.763.74c.93-.385 1.458-1.376 1.431-2.477a10 10 0 0 1 3.261 0c-.026 1.102.502 2.092 1.431 2.477c.93.385 2.003.058 2.763-.74a10 10 0 0 1 2.307 2.306c-.798.76-1.125 1.834-.74 2.764s1.376 1.458 2.477 1.43a10 10 0 0 1 0 3.262c-1.102-.027-2.092.501-2.477 1.43c-.385.93-.058 2.004.74 2.764a10 10 0 0 1-2.306 2.306c-.76-.798-1.834-1.125-2.764-.74s-1.458 1.376-1.43 2.478a10 10 0 0 1-3.262-.001c.027-1.101-.502-2.092-1.43-2.477c-.93-.385-2.004-.058-2.764.74a10 10 0 0 1-2.306-2.306c.798-.76 1.125-1.834.74-2.763c-.385-.93-1.376-1.458-2.478-1.431M12 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6">
+                    </path>
+                </svg> Settings
+            </button>
+            <button  type="button" class="flex size-[39px] flex-none items-center justify-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+                <svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32">
+                    <path d="M12 12h2v12h-2z" fill="currentColor"></path>
+                    <path d="M18 12h2v12h-2z" fill="currentColor"></path>
+                    <path d="M4 6v2h2v20a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8h2V6zm4 22V8h16v20z" fill="currentColor">
+
+                    </path>
+                    <path d="M12 2h8v2h-8z" fill="currentColor"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="flex flex-1 flex-shrink-0 items-center justify-center gap-x-8 text-center text-sm text-gray-500"><span class="max-xl:hidden">0 tokens · Latency 0ms</span></div> <div class="flex flex-1 justify-end gap-x-2">
+                <button @onclick="ToggleVisibility" type="button" class="flex h-[39px] items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
+                <svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32" style="transform: rotate(360deg);">
+                    <path d="M31 16l-7 7l-1.41-1.41L28.17 16l-5.58-5.59L24 9l7 7z" fill="currentColor"></path>
+                    <path d="M1 16l7-7l1.41 1.41L3.83 16l5.58 5.59L8 23l-7-7z" fill="currentColor"></path>
+                    <path d="M12.419 25.484L17.639 6l1.932.518L14.35 26z" fill="currentColor">
+                    </path>
+                </svg>
+                @buttonText
+            </button>
+            <button @onclick="OpenText" type="button" class="flex h-[39px] w-24 items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:focus:ring-gray-700 bg-black hover:bg-gray-900 dark:bg-blue-600 dark:hover:bg-blue-700">Run <span class="inline-flex gap-0.5 rounded border border-white/20 bg-white/10 px-0.5 text-xs text-white/70" data-svelte-h="svelte-xzm0rz">⌘<span class="translate-y-px">↵</span></span></button>
+        </div>
+    </div>
+    @if (isTextVisible)
+    {
+
+        <div id="default-modal" aria-hidden="true" class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-black/85"><div role="dialog" tabindex="-1" class="relative max-h-full w-full max-w-xl p-4 outline-none">
+            <form class="relative rounded-lg bg-white shadow dark:bg-gray-900">
+                <div class="flex items-center justify-between rounded-t border-b p-4 md:px-5 md:py-4 dark:border-gray-800"><h3 class="flex items-center gap-2.5 text-lg font-semibold text-gray-900 dark:text-white"><img alt="Hugging Face's logo" class="w-7" src="https://huggingface.co/front/assets/huggingface_logo-noborder.svg"> Add a Hugging Face Token</h3>
+                        <button @onclick="CloseText" type="button" class="ms-auto inline-flex h-8 w-8 items-center justify-center rounded-lg bg-transparent text-sm text-gray-400 hover:bg-gray-200 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"><svg class="text-xl" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1.1em" height="1.1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M24 9.4L22.6 8L16 14.6L9.4 8L8 9.4l6.6 6.6L8 22.6L9.4 24l6.6-6.6l6.6 6.6l1.4-1.4l-6.6-6.6L24 9.4z" fill="currentColor"></path></svg> <span class="sr-only">Close modal</span></button>
+                    </div> <div class="p-4 md:p-5"><p class="mb-5 text-base leading-relaxed text-gray-800 2xl:text-balance dark:text-gray-300">You need a free Hugging Face token to use this application. <strong class="font-semibold">Make sure you create a token with Inference API permission.</strong><br> Your token is kept safe by only being used from your browser.</p> <div><label for="hf-token" class="text-smd mb-3 block font-medium text-gray-900 dark:text-white">Hugging Face Token</label> <input required="" placeholder="Enter HF Token" type="text" id="hf-token" name="hf-token" class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"></div> <label class="mt-4 flex items-center gap-x-1.5 text-gray-900 dark:text-gray-200"><input type="checkbox"> <p class="text-sm leading-none">Save to local storage for future use</p></label></div> <div class="flex items-center justify-between rounded-b border-t border-gray-200 p-4 md:p-5 dark:border-gray-800"><a href="https://huggingface.co/settings/tokens/new?globalPermissions=inference.serverless.write&amp;tokenType=fineGrained" tabindex="-1" target="_blank" class="rounded-lg border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Create new token</a> <button type="submit" class="rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700">Submit</button></div>
+                </form>
+            </div>
+        </div>
+
+    }
+
+
+</div>
+
+
+@code {
+    // حالة التحكم في رؤية النص الأساسي
+    private bool isVisible = false;
+
+    // نص الزر
+    private string buttonText => isVisible ? " View Code" : "Hide Code";
+
+    // وظيفة التبديل بين الرؤية والإخفاء
+    private void ToggleVisibility()
+    {
+        isVisible = !isVisible;
+    }
+    // حالة ظهور النص
+    private bool isTextVisible = false;
+
+    // وظيفة فتح النص
+    private void OpenText()
+    {
+        isTextVisible = true;
+    }
+
+    // وظيفة إغلاق النص
+    private void CloseText()
+    {
+        isTextVisible = false;
+    }
+   
+}
+
+
+

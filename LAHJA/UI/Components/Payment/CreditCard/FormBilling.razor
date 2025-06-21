@@ -1,0 +1,388 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Billing
+@using System.ComponentModel.DataAnnotations
+@using LAHJA.Data.UI.Components.Payment.DataBuildBillingBase
+@using LAHJA.Them
+@inject ISnackbar Snackbar
+@inherits PaymentCard<DataBuildBillingBase>
+@using MudBlazor
+
+@page "/billing-details"
+
+<MudContainer Class="mt-16">
+    <MudCard>
+        <MudCardHeader Class="p-0 d-flex flex-row justify-content-center align-items-center ">
+            <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">@GetTranslation("Title")</MudText>
+        </MudCardHeader>
+        <MudCardActions Class="p-0 d-flex flex-row justify-content-end">
+            <MudButton OnClick="@OnEdit" Variant="Variant.Outlined" EndIcon="@editIcon" Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" m-3")" Size="Size.Medium">
+                @GetTranslation("Edit")
+            </MudButton>
+        </MudCardActions>
+        <MudCardContent>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="@GetTranslation("Email")" @bind-Value="billingContact.Email" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="@GetTranslation("Mobile")" @bind-Value="billingContact.MobilePhoneNumber" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="@GetTranslation("PersonalNumber")" @bind-Value="billingContact.MobilePhoneNumber" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="@GetTranslation("FirstName")" @bind-Value="billingContact.FullName" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="@GetTranslation("LastName")" @bind-Value="billingContact.FullName" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="@GetTranslation("Address")" @bind-Value="billingContact.Address1" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="@GetTranslation("PostalCode")" @bind-Value="billingContact.ZipCode" ReadOnly="_readOnly" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="@GetTranslation("PostalArea")" @bind-Value="billingContact.City" ReadOnly="_readOnly" />
+                </MudItem>
+
+                @if (!_readOnly)
+                {
+                    <MudItem xs="12" Class="d-flex justify-center">
+                        <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="SaveChanges" Color="@AppColors.BASE_COLOR_ENUM" Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" mt-8 w-100")" Size="Size.Large">
+                            @GetTranslation("Save")
+                        </MudButton>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudCardContent>
+    </MudCard>
+</MudContainer>
+
+
+@code {
+
+    private string CurrentLanguage = "ar";
+    private MudForm form;
+    private string editIcon = Icons.Material.Filled.Edit;
+    private DataBuildBillingBase billingContact;
+    private bool _readOnly = true;
+    [Parameter]
+    public bool ReadOnly
+    {
+        get => _readOnly; set
+        {
+            _readOnly = value;
+            StateHasChanged();
+        }
+    }
+    [Parameter] public string Title { get; set; } = "Payment Info";
+
+    private Dictionary<string, string> TransEn = new Dictionary<string, string>()
+    {
+        { "Title", "Billing Contact Details" },
+        { "Email", "Email" },
+        { "Mobile", "Mobile number" },
+        { "PersonalNumber", "Personal number" },
+        { "FirstName", "First name" },
+        { "LastName", "Last name" },
+        { "Address", "Address" },
+        { "PostalCode", "Postal code" },
+        { "PostalArea", "Postal Area" },
+        { "Save", "Save" },
+        { "Edit", "Edit" }
+    };
+
+    private Dictionary<string, string> TransAr = new Dictionary<string, string>()
+    {
+        { "Title", "تفاصيل الاتصال بالفوترة" },
+        { "Email", "البريد الإلكتروني" },
+        { "Mobile", "رقم الهاتف المحمول" },
+        { "PersonalNumber", "رقم الهوية الشخصية" },
+        { "FirstName", "الاسم الأول" },
+        { "LastName", "الاسم الأخير" },
+        { "Address", "العنوان" },
+        { "PostalCode", "الرمز البريدي" },
+        { "PostalArea", "المنطقة البريدية" },
+        { "Save", "حفظ" },
+        { "Edit", "تعديل" }
+    };
+
+    private string GetTranslation(string key)
+    {
+        if (CurrentLanguage == "ar")
+        {
+            return TransAr.ContainsKey(key) ? TransAr[key] : key;
+        }
+        else
+        {
+            return TransEn.ContainsKey(key) ? TransEn[key] : key;
+        }
+    }
+    private void OnEdit()
+    {
+        if (_readOnly)
+        {
+            editIcon = Icons.Material.Filled.Cancel;
+        }
+        else
+        {
+            editIcon = Icons.Material.Filled.Edit;
+            billingContact = getCloneData(Params);
+        }
+        _readOnly = !_readOnly;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (Params != null)
+            {
+                billingContact = getCloneData(Params);
+            }
+            else
+            {
+                billingContact = new DataBuildBillingBase();
+            }
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private DataBuildBillingBase getCloneData(DataBuildBillingBase Params)
+    {
+        return new DataBuildBillingBase
+            {
+                FullName = Params.FullName,
+                Email = Params.Email,
+                MobilePhoneNumber = Params.MobilePhoneNumber,
+                Address1 = Params.Address1,
+                City = Params.City,
+                State = Params.State,
+                ZipCode = Params.ZipCode,
+                Country = Params.Country,
+                Currency = Params.Currency
+            };
+    }
+
+    private async Task SaveChanges()
+    {
+        try
+        {
+            if (OnClickSave.HasDelegate && billingContact != null)
+            {
+                await OnClickSave.InvokeAsync(billingContact);
+                _readOnly = !_readOnly;
+                editIcon = Icons.Material.Filled.Edit;
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private async void Cancle()
+    {
+        try
+        {
+            // Optionally reset or handle cancel logic here
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+}
+
+
+
+
+@* @using LAHJA.Data.UI.Components.Base
+ @using LAHJA.Data.UI.Components.Billing
+
+
+ @using System.ComponentModel.DataAnnotations
+ @using LAHJA.Them
+ @inject ISnackbar Snackbar
+
+ @inherits PaymentCard<DataBuildBillingBase>
+ @using LAHJA.Data.UI.Components.Payment.DataBuildBillingBase
+ @using MudBlazor
+ 
+
+
+     <MudContainer Class="mt-16" MaxWidth="MaxWidth.Medium">
+     <MudCard>
+         <MudCardHeader Class="p-0 d-flex flex-row justify-content-center align-items-center ">
+                <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">@Title</MudText>
+           </MudCardHeader>
+           <MudCardActions Class="p-0 d-flex flex-row justify-content-end">
+             <MudButton OnClick="@OnEdit" Variant="Variant.Outlined" EndIcon="@editIcon" Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" m-3")" Size="Size.Medium"></MudButton>
+           </MudCardActions>
+           <MudCardContent>
+             <MudGrid>
+                 <MudItem xs="12">
+                     <MudTextField T="string" Label="Email" @bind-Value="billingContact.Email" ReadOnly="_readOnly" />
+                 </MudItem>
+                 <MudItem xs="12">
+                     <MudTextField T="string" Label="Mobile number" @bind-Value="billingContact.MobilePhoneNumber" ReadOnly="_readOnly" />
+                 </MudItem>
+                 <MudItem xs="12">
+                     <MudTextField T="string" Label="Personal number" @bind-Value="billingContact.MobilePhoneNumber" ReadOnly="_readOnly" />
+                 </MudItem>
+                 <MudItem xs="6">
+                     <MudTextField T="string" Label="First name" @bind-Value="billingContact.FullName" ReadOnly="_readOnly" />
+                 </MudItem>
+                 <MudItem xs="6">
+                     <MudTextField T="string" Label="Last name" @bind-Value="billingContact.FullName" />
+                 </MudItem>
+                 <MudItem xs="12">
+                     <MudTextField T="string" Label="Address" @bind-Value="billingContact.Address1" ReadOnly="_readOnly" />
+                 </MudItem>
+                 <MudItem xs="6">
+                     <MudTextField T="string" Label="Postal code" @bind-Value="billingContact.ZipCode" ReadOnly="_readOnly" />
+                 </MudItem>
+                 <MudItem xs="6">
+                     <MudTextField T="string" Label="Postal Area" @bind-Value="billingContact.City" ReadOnly="_readOnly" />
+                 </MudItem>
+                 @if (_readOnly == false)
+                 {
+                     <MudItem xs="12" Class="d-flex justify-center">
+                 <MudButton Variant="Variant.Filled" DropShadow="false" OnClick="SaveChanges" Color="@AppColors.BASE_COLOR_ENUM" Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" mt-8")"
+                            Size="Size.Large">Continue to Payment</MudButton>
+                 </MudItem>
+                 }
+             </MudGrid>
+               </MudCardContent>
+             </MudCard>
+ </MudContainer>
+
+
+ @code{
+     private MudForm form;
+     private string editIcon = Icons.Material.Filled.Edit;
+
+     [Parameter] public string Title { get; set; } = "Payment Info";
+
+     public DataBuildBillingBase billingContact;
+     [Parameter] public bool ReadOnly { get => _readOnly; set {
+             _readOnly = value;
+             StateHasChanged();
+         } }
+
+     private bool _readOnly = true;
+
+     private void  OnEdit()
+     {
+         if (_readOnly)
+         {
+             editIcon = Icons.Material.Filled.Cancel;
+         }
+         else
+         {
+             editIcon = Icons.Material.Filled.Edit;
+             billingContact = getCloneData(Params);
+         }
+         _readOnly = !_readOnly ;
+
+         StateHasChanged();
+
+     }
+     protected override async Task OnInitializedAsync()
+     {
+         try
+         {
+             OnEdit();
+             if (Params != null)
+             {
+                 // _readOnly = true;
+                 billingContact = getCloneData(Params);
+
+             }
+             else
+             {
+                 billingContact = new DataBuildBillingBase();
+             }
+
+             StateHasChanged();
+         }
+         catch
+         {
+
+         }
+
+
+
+     }
+
+     private DataBuildBillingBase getCloneData(DataBuildBillingBase Params)
+     {
+         return  new DataBuildBillingBase
+             {
+                 FullName = Params.FullName,
+                 Email = Params.Email,
+                 MobilePhoneNumber = Params.MobilePhoneNumber,
+                 Address1 = Params.Address1,
+                 City = Params.City,
+                 State = Params.State,
+                 ZipCode = Params.ZipCode,
+                 Country = Params.Country,
+                 Currency = Params.Currency
+             };
+     }
+     private  async Task   SaveChanges()
+     {
+         try
+         {
+
+
+
+             if (OnClickSave.HasDelegate && billingContact!=null)
+             {
+
+                 await OnClickSave.InvokeAsync(billingContact);
+             }
+           
+
+
+         }
+         catch(Exception ex)
+         {
+
+             Snackbar.Add(ex.Message, Severity.Error);
+         }
+
+     }
+     private async void Cancle()
+     {
+         try
+         {
+
+           
+               
+            
+         }
+         catch(Exception ex)
+         {
+
+         }
+     }
+   
+ }
+
+
+
+ 
+
+
+
+ 
+ *@

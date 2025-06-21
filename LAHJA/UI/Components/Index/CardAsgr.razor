@@ -1,0 +1,210 @@
+﻿@using Domain.ShareData
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@inject IManageLanguageService _manageLanguageService
+@inject LanguageService languageService
+
+          
+<section class="position-relative pt-0 pb-0 pb-xl-8">
+    <div class="container px-xl-7">
+        <div class="row align-items-center" style="justify-content:center">
+            <!-- Image -->
+            <div class="col-lg-6 position-relative pe-xl-6 mb-5 mb-lg-0 wroput">
+                <img src="ai-robot.png" class="rounded-4 z-index-2 position-relative wave-image wimrepot" alt="@GeneralData.AboutImageAlt">
+            </div>
+
+            <!-- Content -->
+            <div class="col-lg-6 ms-auto">
+                <!-- Skill set -->
+                <div class="d-flex align-items-center" style="max-width: 30rem;">
+                    <h2 class="display-4 textHeader mb-0" style="    font-size: 3rem !important;">@GeneralData.ProductsCount</h2>
+                    <h6 class="mb-0 ms-3 tser" >@GeneralData.ProductsDescription</h6>
+                </div>
+
+                <hr class="border-primary border-opacity-50 mt-4 mb-5"> <!-- Divider -->
+                <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6">
+                    <!-- API Tab -->
+                    <MudTabPanel Text="@ApiTabData.Title" Icon="@Icons.Material.Filled.Api" ToolTip="@ApiTabData.Tooltip">
+                        <p class="mb-2">@ApiTabData.Description</p>
+                        <ul class="list-group list-group-borderless mb-3" style="background-color:transparent !important">
+                            @foreach (var feature in ApiTabData.Features)
+                            {
+                                <li class="list-group-item d-flex pb-0" style="background-color:transparent !important">
+                                    <i class="bi bi-patch-check me-2"></i>@feature
+                                </li>
+                            }
+                        </ul>
+                    </MudTabPanel>
+
+                    <!-- Build Tab -->
+                    <MudTabPanel Text="@BuildTabData.Title" Icon="@Icons.Material.Filled.Build" ToolTip="@BuildTabData.Tooltip">
+                        <p class="mb-2">@BuildTabData.Description</p>
+                        <ul class="list-group list-group-borderless mb-3">
+                            @foreach (var feature in BuildTabData.Features)
+                            {
+                                <li class="list-group-item d-flex pb-0" style="background-color:transparent !important">
+                                    <i class="bi bi-patch-check text-success me-2"></i>@feature
+                                </li>
+                            }
+                        </ul>
+                    </MudTabPanel>
+
+                    <!-- Bug Report Tab -->
+                    <MudTabPanel Text="@BugReportTabData.Title" Icon="@Icons.Material.Filled.BugReport" ToolTip="@BugReportTabData.Tooltip">
+                        <p class="mb-2">@BugReportTabData.Description</p>
+                        <ul class="list-group list-group-borderless mb-3">
+                            @foreach (var feature in BugReportTabData.Features)
+                            {
+                                <li class="list-group-item d-flex pb-0" style="background-color:transparent !important;">
+                                    <i class="bi bi-patch-check text-success me-2"></i>@feature
+                                </li>
+                            }
+                        </ul>
+                    </MudTabPanel>
+                </MudTabs>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- AI hand -->
+    <div class="position-absolute top-100 start-0 translate-middle ms-9 mt-4 z-index-9 d-none d-xl-block">
+        <img src="ai-hand.png" alt="@GeneralData.HandImageAlt" class="aos ms-9 ps-6 aos-init aos-animate" data-aos="fade-right" data-aos-delay="100" data-aos-duration="800" data-aos-easing="ease-in-out">
+    </div>
+</section>
+
+@code {
+    private string CurrentLanguage = "ar"; 
+
+    private GeneralTranslation GeneralData { get; set; }
+    private Translation ApiTabData { get; set; }
+    private Translation BuildTabData { get; set; }
+    private Translation BugReportTabData { get; set; }
+
+
+
+    private class Translation
+    {
+        public string Title { get; set; }
+        public string Tooltip { get; set; }
+        public string Description { get; set; }
+        public List<string> Features { get; set; }
+    }
+
+    public class GeneralTranslation
+    {
+        public string AboutImageAlt { get; set; }
+        public string HandImageAlt { get; set; }
+        public string ProductsCount { get; set; }
+        public string ProductsDescription { get; set; }
+    }
+
+    private static readonly Dictionary<string, GeneralTranslation> GeneralTranslations = new()
+        {
+            ["en"] = new GeneralTranslation
+            {
+                AboutImageAlt = "About Image",
+                HandImageAlt = "AI Hand",
+                ProductsCount = "366+",
+                ProductsDescription = "Products successfully launched"
+            },
+            ["ar"] = new GeneralTranslation
+            {
+                AboutImageAlt = "صورة حول",
+                HandImageAlt = "يد AI",
+                ProductsCount = "366+",
+                ProductsDescription = "منتجات تم إطلاقها بنجاح"
+            }
+        };
+
+    private static readonly Dictionary<string, Translation> ApiTabTranslations = new()
+        {
+            ["en"] = new Translation
+            {
+                Title = "API",
+                Tooltip = "ToolTip One",
+                Description = "We strive to be the trusted partner...",
+                Features = new List<string> { "Advanced AI technology", "Boosting efficiency...", "Driving sustainable growth..." }
+            },
+            ["ar"] = new Translation
+            {
+                Title = "API",
+                Tooltip = "الأداة الأولى",
+                Description = "نسعى لنكون الشريك الموثوق...",
+                Features = new List<string> { "تقنية الذكاء الاصطناعي المتقدمة", "زيادة الكفاءة...", "تحقيق النمو المستدام..." }
+            }
+        };
+
+    private static readonly Dictionary<string, Translation> BuildTabTranslations = new()
+        {
+            ["en"] = new Translation
+            {
+                Title = "Build",
+                Tooltip = "ToolTip Two",
+                Description = "Effective design communicates...",
+                Features = new List<string> { "Tailored solutions", "Proven track record", "Cost-effectiveness" }
+            },
+            ["ar"] = new Translation
+            {
+                Title = "بناء",
+                Tooltip = "الأداة الثانية",
+                Description = "التصميم الفعال يعبر عن هوية علامتك...",
+                Features = new List<string> { "حلول مخصصة", "سجل حافل", "فعالية من حيث التكلفة" }
+            }
+        };
+
+    private static readonly Dictionary<string, Translation> BugReportTabTranslations = new()
+        {
+            ["en"] = new Translation
+            {
+                Title = "Bug Report",
+                Tooltip = "ToolTip Three",
+                Description = "We provide a range of tools...",
+                Features = new List<string> { "Digital pioneers", "Continuous learning", "Inspiring transformation" }
+            },
+            ["ar"] = new Translation
+            {
+                Title = "تقرير الأخطاء",
+                Tooltip = "الأداة الثالثة",
+                Description = "نوفر مجموعة من الأدوات...",
+                Features = new List<string> { "رواد رقميون", "تعلم مستمر", "إلهام التحول" }
+            }
+        };
+
+
+    protected override void OnInitialized()
+    {
+
+        languageService.OnLanguageChanged += UpdateContent;
+        UpdateContent(CurrentLanguage);
+
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            CurrentLanguage = await _manageLanguageService.GetLanguageAsync();
+            UpdateContent(CurrentLanguage);
+            StateHasChanged();
+
+        }
+    }
+
+
+
+    private async void UpdateContent(string languageCode)
+    {
+        GeneralData = GeneralTranslations[languageCode];
+        ApiTabData = ApiTabTranslations[languageCode];
+        BuildTabData = BuildTabTranslations[languageCode];
+        BugReportTabData = BugReportTabTranslations[languageCode];
+
+        InvokeAsync(StateHasChanged);
+
+    }
+}
+
+
+

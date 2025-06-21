@@ -1,0 +1,172 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Components.Web
+@namespace LAHJA.Pages
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/_reboot.css" rel="stylesheet" />
+  
+      <link href="css/site.css" rel="stylesheet" />
+    <link href="css/APICSS/Index-CvNW6sLS.css" rel="stylesheet" />
+    <link href="css/APICSS/Index-CJeiS5ET.css" rel="stylesheet" />
+    <link href="css/APICSS/Index-BAQumg2K.css" rel="stylesheet" />
+    <link href="css/APICSS/Index-CptIZeFZ.css" rel="stylesheet" />
+    <link href="css/APICSS/index-CKyT5UbA.css" rel="stylesheet" />
+    <link href="css/APICSS/theme.css" rel="stylesheet" />
+    <link href="css/APICSS/Index-C43SQM_O.css" rel="stylesheet" />
+    <link href="css/APICSS/Textbox-D8IAzrZj.css" rel="stylesheet" />
+    <link href="css/APICSS/Blocks-yLdzXwzS.css" rel="stylesheet" />
+    <link href="css/APICSS/Button-CTZL5Nos.css" rel="stylesheet" />
+    <link href="css/APICSS/Index-B0JJ6p9c.css" rel="stylesheet"   />
+    
+    <link href="css/APICSS/0.XJrekLIM.css" rel="stylesheet"   />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+
+    <!-- Include Highlight.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
+    @*
+    <link href="css/_reboot.css" rel="stylesheet" />
+
+
+    <link href="css/_utilities.scss" rel="stylesheet" />
+    <link href="css/_dark-mode.scss" rel="stylesheet" />
+         <link href="css/_reboot.css" rel="stylesheet" />
+                  <link href="css/_navbar.scss" rel="stylesheet" />   *@
+
+    @*  <link href="css/color-mode.scss" rel="stylesheet" />
+         <link href="css//reboot.scss" rel="stylesheet" /> *@
+    <link href="css/_reboot.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="css/navbar.css" rel="stylesheet" />
+    <link href="css/As.css" rel="stylesheet" />
+    <!-- wwwroot/index.html -->
+    <link href="css/animations.css" rel="stylesheet">
+
+    <link href="LAHJA.styles.css" rel="stylesheet" />
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/MudBlazor.ThemeManager/MudBlazorThemeManager.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+
+</head>
+@* style="background:#000212" *@
+<body >
+    <component type="typeof(App)" render-mode="ServerPrerendered" />
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script>
+        // When the user clicks the button, the page scrolls to the top
+        function OnScrollEvent() {
+            document.getElementById("chatContainer").scrollTop = 0;
+        }
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="_content/Blazor-ApexCharts/js/apex-charts.min.js"></script>
+    <script src="_content/Blazor-ApexCharts/js/blazor-apex-charts.js"></script>
+    <script src="Build/site.js"></script>
+    <script src="Build/storage.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+
+        <script src="CSS/manipulator.js"</script>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/stripeInterop.js"></script>
+    <script type="module" src="js/models.js"></script>
+
+    <!-- Add Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Notification -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="js/notifications.js"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const panel = document.getElementById('resizablePanel');
+            const handle = document.getElementById('resizeHandle');
+            let isResizing = false;
+
+            // بدء السحب (الفأرة)
+            handle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                e.preventDefault();
+            });
+
+            // بدء السحب (اللمس)
+            handle.addEventListener('touchstart', (e) => {
+                isResizing = true;
+                e.preventDefault(); // منع السلوك الافتراضي
+            });
+
+            // السحب أثناء التحريك (الفأرة)
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                const newWidth = window.innerWidth - e.clientX;
+                if (newWidth > 200) {
+                    panel.style.width = ${ newWidth } px;
+                }
+            });
+
+            // السحب أثناء التحريك (اللمس)
+            document.addEventListener('touchmove', (e) => {
+                if (!isResizing) return;
+                const touch = e.touches[0]; // أخذ أول نقطة لمس
+                const newWidth = window.innerWidth - touch.clientX;
+                if (newWidth > 200) {
+                    panel.style.width = ${ newWidth } px;
+                }
+            });
+
+            // إنهاء السحب (الفأرة)
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+            });
+
+            // إنهاء السحب (اللمس)
+            document.addEventListener('touchend', () => {
+                isResizing = false;
+            });
+        });
+    </script>
+    <!-- Initialize Highlight.js -->
+    <script>
+        hljs.highlightAll();
+    </script>
+</body>
+</html>
+

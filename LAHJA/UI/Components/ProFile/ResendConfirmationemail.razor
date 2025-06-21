@@ -1,0 +1,41 @@
+﻿@* @inject NavigationManager NavigationManager
+ *@
+
+ @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+
+ @if(false){
+<div style="margin-top: 3%;" class="bg-gradient-to-b py-3 text-sm md:text-base from-yellow-50 to-yellow-100 dark:from-yellow-500 dark:to-yellow-600 dark:text-gray-950">
+    <div class="container">
+        <form class="flex flex-col justify-between md:flex-row md:items-center" method="post" action="/email_confirmation">
+            <input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NzE1MzE0NTAsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJlYWFkMDUyZmVjMDVkZjZiMTk5NGFkZmVhMmVjZDY5YTY0YTIwZjA0OTY3ODZjOGJkMmQwOTFmYWUxMWJlM2I3In0=">
+            <div class="mb-2 md:mb-0">
+                Please check your email address for a confirmation link
+            </div>
+            @*    <button @onclick="NavigateToAnotherPage"  type="submit">
+                Resend confirmation email
+            </button> *@
+            <a class="btn-1 text-sm @GetActiveClass("/email_confirmation")" href="/email_confirmation">
+                Resend confirmation email
+            </a>
+
+        </form>
+    </div>
+</div>
+ }
+@code {
+    // private void NavigateToAnotherPage()
+    // {
+    //     NavigationManager.NavigateTo("email_confirmation");
+    // }
+ 
+        private string GetActiveClass(string href)
+        {
+            return NavigationManager.Uri.Contains(href) ? "active" : string.Empty;
+        }
+
+        [Inject]
+        private NavigationManager NavigationManager { get; set; } = default!;
+    }
+

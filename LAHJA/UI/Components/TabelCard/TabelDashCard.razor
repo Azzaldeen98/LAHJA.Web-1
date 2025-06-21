@@ -1,0 +1,122 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Plan
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.Icon
+@using LAHJA.UI.Components.TabelCard
+
+@typeparam T
+
+<style>
+
+
+    .custom {
+        /*         justify-content: flex-end; /* محاذاة العناصر لليمين */
+        */ /* /*              margin-top: -6%;}
+     */ */ display: flex;
+        /*    flex-wrap: wrap; */
+        gap: 10px;
+    }
+
+    .Clearable {
+        height: 175%;
+        margin-top: -18%;
+    }
+</style>
+
+<div class="p-5 w-100">
+    <div class="p-1 RCardP">
+
+        @if (BarTabel != null && BarTabel.Any())
+        {
+            <CardShowExperience IsShowImage="false" Translations="BarTabel" />
+        }
+
+
+        @if (StateCounts != null && StateCounts.Any())
+        {
+            <StateCountCard  Params="StateCounts" />
+        }
+
+        @if (ActionTabels != null)
+        {
+            <ActionTabelCard Params="ActionTabels.Actions" ChipClicked="ActionTabels.ChipClicked" />
+        }
+       
+
+    </div>
+
+    <TableSkeleton IsDisplay="isLoading" />
+
+    @if (_dataAndEventBuildTabel != null && _dataAndEventBuildTabel?.DataBuild != null && _dataAndEventBuildTabel.DataBuild.Any()==true)
+    {
+        <TabelData T="T"
+                   DataBuild="_dataAndEventBuildTabel.DataBuild"
+                   Events="_dataAndEventBuildTabel.Events"
+                   LabelColumns="_dataAndEventBuildTabel.LabelColumns"
+                   FixedHeader="_dataAndEventBuildTabel.FixedHeader" />
+    }
+    else if (!isLoading)
+    {
+        <PlanCreateStart Params="PlanCreateStartData" OnClick="ActionTabels.ChipClicked" />
+    }
+
+</div>
+
+
+
+@code {
+    private bool isLoading = true;
+
+    private DataAndEventBuildTabelCard<T>? _dataAndEventBuildTabel { set; get; }
+
+    [Parameter] public bool IsLoading { set => isLoading = value; get => isLoading; }
+
+    [Parameter] public DataAndEventBuildTabelCard<T>? DataAndEventBuildTabel{ set
+        {
+           
+            if (value != null)
+            {
+                _dataAndEventBuildTabel = value;
+                StateHasChanged();
+            }
+          
+        }
+        get => _dataAndEventBuildTabel;
+    }
+    // بيانات افتراضية مشابهة لبيانات JSON التي قدمتها
+    [Parameter] public List<CardStateCount<string>>? StateCounts { set; get; }
+
+    [Parameter]
+    public PlanCreateStartData PlanCreateStartData { set; get; } = new();
+    [Parameter] public GroupActionTabels? ActionTabels { set; get; }
+
+    [Parameter]
+    public Dictionary<string, Dictionary<string, string>> BarTabel { set; get; } = new();
+
+
+
+    private bool fixedheader = true;
+    
+    private string _string = string.Empty;
+
+    // فهرس اللغة
+    private int languageIndex = 0; // 0 لـ اللغة الإنجليزية و 1 لـ اللغة العربية
+
+    // بيانات الترجمة
+  
+  
+    protected override void OnInitialized()
+    {
+        
+
+
+    }
+  
+
+
+
+
+   
+}
+   
+

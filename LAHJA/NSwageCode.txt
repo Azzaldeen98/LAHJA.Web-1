@@ -1,0 +1,801 @@
+﻿// هذا الملف تم إنشاؤه تلقائيًا لتحليل الكود
+
+// Class: AuthClient
+//   Method: LogoutAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (object)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RegisterAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (RegisterRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: LoginAsync
+//     Return Type: System.Threading.Tasks.Task<AccessTokenResponse>
+//     Parameter: useCookies (bool?)
+//     Parameter: useSessionCookies (bool?)
+//     Parameter: body (LoginRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RefreshAsync
+//     Return Type: System.Threading.Tasks.Task<AccessTokenResponse>
+//     Parameter: body (RefreshRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CustomMapIdentityApiApi_confirmEmailAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (ConfirmEmailRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResendConfirmationEmailAsync
+//     Return Type: System.Threading.Tasks.Task<string>
+//     Parameter: body (ResendConfirmationEmailRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ForgotPasswordAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (ForgotPasswordRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResetPasswordAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (ResetPasswordRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ExternalLoginAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: provider (string)
+//     Parameter: returnUrl (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ExternalLoginCallbackAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: returnUrl (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: AuthorizationSessionClient
+//   Method: GetSessionsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SessionVm>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateAuthorizationSessionAsync
+//     Return Type: System.Threading.Tasks.Task<AuthorizationSessionWebResponse>
+//     Parameter: body (CreateAuthorizationWebRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSessionAsync
+//     Return Type: System.Threading.Tasks.Task<SessionVm>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteAuthorizationSessionAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSessionByTokenAsync
+//     Return Type: System.Threading.Tasks.Task<SessionVm>
+//     Parameter: token (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetActiveSessionAsync
+//     Return Type: System.Threading.Tasks.Task<SessionVm>
+//     Parameter: userId (string)
+//     Parameter: type (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AuthorizationSessionAsync
+//     Return Type: System.Threading.Tasks.Task<AuthorizationSessionCoreResponse>
+//     Parameter: body (ValidateTokenRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateForDashboardAsync
+//     Return Type: System.Threading.Tasks.Task<AuthorizationSessionWebResponse>
+//     Parameter: body (CreateAuthorizationForDashboard)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateForListServicesAsync
+//     Return Type: System.Threading.Tasks.Task<AuthorizationSessionWebResponse>
+//     Parameter: body (CreateAuthorizationForListServices)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateForAllServicesAsync
+//     Return Type: System.Threading.Tasks.Task<AuthorizationSessionWebResponse>
+//     Parameter: body (CreateAuthorizationForServices)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: EncryptFromWebAsync
+//     Return Type: System.Threading.Tasks.Task<TokenVm>
+//     Parameter: body (EncryptTokenRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: EncryptFromCoreAsync
+//     Return Type: System.Threading.Tasks.Task<TokenVm>
+//     Parameter: sesstionToken (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: EncryptFromCore2Async
+//     Return Type: System.Threading.Tasks.Task<TokenVm>
+//     Parameter: encrptedToken (string)
+//     Parameter: coreToken (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ValidateWebTokenAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: token (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ValidateCreateTokenAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: token (string)
+//     Parameter: coreToken (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ValidateCoreTokenAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: token (string)
+//     Parameter: coreToken (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: PauseAuthorizationSessionAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResumeAuthorizationSessionAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: CheckoutClient
+//   Method: CreateCheckoutAsync
+//     Return Type: System.Threading.Tasks.Task<CheckoutResponse>
+//     Parameter: body (CheckoutOptions)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ManageAsync
+//     Return Type: System.Threading.Tasks.Task<CheckoutResponse>
+//     Parameter: body (SessionCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: DashboardClient
+//   Method: ServiceUsageDataAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<StatisticsUsedRequests>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ServiceUsersCountAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ServiceUsersCount>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ServiceUsageAndRemainingAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<StatisticsUsedRequests>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UsageAndRemainingRequestsAsync
+//     Return Type: System.Threading.Tasks.Task<StatisticsUsedRequests>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetRequestsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RequestData>>
+//     Parameter: filterBy (FilterBy?)
+//     Parameter: startDate (System.DateTimeOffset?)
+//     Parameter: endDate (System.DateTimeOffset?)
+//     Parameter: requestType (RequestType?)
+//     Parameter: groupBy (DateTimeFilter?)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetRequestsByDatetimeAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RequestData>>
+//     Parameter: filterBy (FilterBy?)
+//     Parameter: startDate (System.DateTimeOffset?)
+//     Parameter: endDate (System.DateTimeOffset?)
+//     Parameter: requestType (RequestType?)
+//     Parameter: groupBy (DateTimeFilter?)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetRequestsByStatusAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ServiceDataTod>>
+//     Parameter: filterBy (FilterBy?)
+//     Parameter: startDate (System.DateTimeOffset?)
+//     Parameter: endDate (System.DateTimeOffset?)
+//     Parameter: requestType (RequestType?)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ModelAiServiceRequestsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiServiceData>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: InvoicesClient
+//   Method: GetInvoicesAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Invoice>>
+//     Parameter: customerId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetInvoiceAsync
+//     Return Type: System.Threading.Tasks.Task<Invoice>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ManageClient
+//   Method: TwofaAsync
+//     Return Type: System.Threading.Tasks.Task<TwoFactorResponse>
+//     Parameter: body (TwoFactorRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: InfoGETAsync
+//     Return Type: System.Threading.Tasks.Task<InfoResponse>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: InfoPOSTAsync
+//     Return Type: System.Threading.Tasks.Task<InfoResponse>
+//     Parameter: body (InfoRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: MasterClient
+//   Method: LanguagesAllAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<LanguageView>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: LanguagesPOSTAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: lg (string)
+//     Parameter: body (LanguageCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: LanguagesGETAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: code (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CategoriesGETAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: name (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CategoriesPOSTAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: lg (string)
+//     Parameter: body (CategoryCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: TypesGETAsync
+//     Return Type: System.Threading.Tasks.Task<TypeModelView>
+//     Parameter: name (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ActiveAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<TypeModelView>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: TypesPOSTAsync
+//     Return Type: System.Threading.Tasks.Task<TypeModelView>
+//     Parameter: lg (string)
+//     Parameter: body (TypeModelCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DialectAsync
+//     Return Type: System.Threading.Tasks.Task<DialectView>
+//     Parameter: languageId (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DialectsAllAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<DialectView>>
+//     Parameter: languageId (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DialectsAsync
+//     Return Type: System.Threading.Tasks.Task<DialectView>
+//     Parameter: lg (string)
+//     Parameter: body (DialectCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AdvertisementsGETAsync
+//     Return Type: System.Threading.Tasks.Task<AdvertisementView>
+//     Parameter: id (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: Active2Async
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AdvertisementView>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AdvertisementsPOSTAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: lg (string)
+//     Parameter: body (AdvertisementCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AdvertisementtabAsync
+//     Return Type: System.Threading.Tasks.Task<AdvertisementTabView>
+//     Parameter: id (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AdvertisementtabsAllAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<AdvertisementTabView>>
+//     Parameter: advertisementId (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AdvertisementtabsAsync
+//     Return Type: System.Threading.Tasks.Task<AdvertisementTabView>
+//     Parameter: lg (string)
+//     Parameter: body (AdvertisementTabCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ModelAiClient
+//   Method: GetStartStudioAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<Item>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelSpechStudioAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.IDictionary<string, object>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelTextStudioAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.IDictionary<string, object>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelChatStudioAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.IDictionary<string, object>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsAiAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<ModelAiResponse>
+//     Parameter: body (ModelAiCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByTypeAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ArrayResponse>>
+//     Parameter: type (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetCategoriesByTypeAsync
+//     Return Type: System.Threading.Tasks.Task<ArrayResponse>
+//     Parameter: type (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetLanguagesByAsync
+//     Return Type: System.Threading.Tasks.Task<ArrayResponse>
+//     Parameter: type (string)
+//     Parameter: category (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByCategoryAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: category (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: FilterMaodelAiAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: body (FilterModelAI)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: FilterMaodelAi2Async
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: body (FilterModelAI)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByGenderAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: gender (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByDialectAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: dialect (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByLanguageAndDialectAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: language (string)
+//     Parameter: dialect (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByLanguageDialectTypeAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: language (string)
+//     Parameter: dialect (string)
+//     Parameter: type (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByIsStandardAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: isStandard (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByTypeAndGenderAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: type (string)
+//     Parameter: gender (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelsByLanguageAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: language (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<ModelAiResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<ModelAiResponse>
+//     Parameter: id (string)
+//     Parameter: body (ModelAiUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSettingModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<ModelPropertyValues>
+//     Parameter: langage (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetValueFilterServiceAsync
+//     Return Type: System.Threading.Tasks.Task<ValueFilterModel>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ModelGatewayClient
+//   Method: GetModelGatwaysAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelGatewayResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateModelGatewayAsync
+//     Return Type: System.Threading.Tasks.Task<ModelGatewayResponse>
+//     Parameter: body (ModelGatewayCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetModelGatewayAsync
+//     Return Type: System.Threading.Tasks.Task<ModelGatewayResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateModelGatewayAsync
+//     Return Type: System.Threading.Tasks.Task<ModelGatewayResponse>
+//     Parameter: id (string)
+//     Parameter: body (ModelGatewayUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteModelGatewayAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DefaultModelGatewayAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: NotifacationClient
+//   Method: NotifyUserByEmailAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: email (string)
+//     Parameter: subject (string)
+//     Parameter: htmlMessage (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: NotifyAllUsersByEmailAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: subject (string)
+//     Parameter: htmlMessage (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: PaymentClient
+//   Method: GetMethodsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PaymentMethodResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateBillingInformationAsync
+//     Return Type: System.Threading.Tasks.Task<CustomerResponse>
+//     Parameter: body (BillingInformationRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: MakePaymentMethodDefaultAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: paymentMethodId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteMethodAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSetupIntentsAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CancelAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ConfirmAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreatePaymentMethodAsync
+//     Return Type: System.Threading.Tasks.Task<PaymentResponse>
+//     Parameter: body (PaymentMethodsRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateCustomerSessionAsync
+//     Return Type: System.Threading.Tasks.Task<PaymentResponse>
+//     Parameter: body (PaymentMethodsRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: PermissionClient
+//   Method: GetAllAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: PlansClient
+//   Method: GetPlansAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PlanView>>
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreatePlanAsync
+//     Return Type: System.Threading.Tasks.Task<PlanResponse>
+//     Parameter: lg (string)
+//     Parameter: body (PlanCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AsGroupAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PlanView>>
+//     Parameter: langauge (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetPlanAsync
+//     Return Type: System.Threading.Tasks.Task<PlanView>
+//     Parameter: id (string)
+//     Parameter: lg (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdatePlanAsync
+//     Return Type: System.Threading.Tasks.Task<PlanResponse>
+//     Parameter: id (string)
+//     Parameter: body (PlanUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeletePlanAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: PriceClient
+//   Method: GetPricesAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<PriceResponse>>
+//     Parameter: productId (string)
+//     Parameter: active (bool?)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreatePriceAsync
+//     Return Type: System.Threading.Tasks.Task<PriceResponse>
+//     Parameter: body (PriceCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetPriceAsync
+//     Return Type: System.Threading.Tasks.Task<PriceResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdatePriceAsync
+//     Return Type: System.Threading.Tasks.Task<PriceResponse>
+//     Parameter: id (string)
+//     Parameter: body (PriceUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SearchAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (PriceSearchOptions)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ProductClient
+//   Method: GetProductsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ProductResponse>>
+//     Parameter: startingAfter (string)
+//     Parameter: endingBefore (string)
+//     Parameter: limit (long?)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateProductAsync
+//     Return Type: System.Threading.Tasks.Task<ProductResponse>
+//     Parameter: body (ProductCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetProductAsync
+//     Return Type: System.Threading.Tasks.Task<ProductResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateProductAsync
+//     Return Type: System.Threading.Tasks.Task<ProductResponse>
+//     Parameter: id (string)
+//     Parameter: body (ProductUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteProductAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SearchAllAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ProductResponse>>
+//     Parameter: query (string)
+//     Parameter: limit (int?)
+//     Parameter: page (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ProfileClient
+//   Method: UserAsync
+//     Return Type: System.Threading.Tasks.Task<UserResponse>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (UserRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetCustomerAsync
+//     Return Type: System.Threading.Tasks.Task<CustomerResponse>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SubscriptionsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SubscriptionResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ModelAisAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ModelAiResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ServicesAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ServiceResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ServicesModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ServiceResponse>>
+//     Parameter: modelAiId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SpacesSubscriptionAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SpaceResponse>>
+//     Parameter: subscriptionId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SpaceSubscriptionAsync
+//     Return Type: System.Threading.Tasks.Task<SpaceResponse>
+//     Parameter: subscriptionId (string)
+//     Parameter: spaceId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RequestsSubscriptionAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RequestResponse>>
+//     Parameter: subscriptionId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RequestsServiceAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RequestResponse>>
+//     Parameter: serviceId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: RequestClient
+//   Method: GetRequests2Async
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RequestResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateRequestAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceDataTod>
+//     Parameter: body (RequestCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetRequestAsync
+//     Return Type: System.Threading.Tasks.Task<RequestResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteRequestAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateEventAsync
+//     Return Type: System.Threading.Tasks.Task<EventRequestResponse>
+//     Parameter: body (EventRequestRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AllowedAsync
+//     Return Type: System.Threading.Tasks.Task<RequestAllowed>
+//     Parameter: serviceId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: RolesClient
+//   Method: RolesAllAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<object>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RolesPOSTAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (RoleCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RolesGETAsync
+//     Return Type: System.Threading.Tasks.Task<RoleResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RolesDELETEAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AssignPermissionAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: body (RolePermitionAssign)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ServiceClient
+//   Method: GetServicesAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ServiceResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateServiceAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceResponse>
+//     Parameter: body (ServiceCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetServiceAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateServiceAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: body (ServiceUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteServiceAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: ServiceMethodClient
+//   Method: GetServiceMethodsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<ServiceMethodResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateServiceMethodsAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceMethodResponse>
+//     Parameter: body (ServiceMethodCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetServiceMethodAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceMethodResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateServiceMethodsAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceMethodResponse>
+//     Parameter: id (string)
+//     Parameter: body (ServiceMethodUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteServiceMethodsAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: SettingClient
+//   Method: SettingAllAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<object>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SettingPOSTAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceResponse>
+//     Parameter: body (SettingCreate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SettingGETAsync
+//     Return Type: System.Threading.Tasks.Task<ServiceResponse>
+//     Parameter: name (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SettingPUTAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: name (string)
+//     Parameter: body (SettingUpdate)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: SettingDELETEAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: name (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: SpaceClient
+//   Method: GetSpacesAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SpaceResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateSpaceAsync
+//     Return Type: System.Threading.Tasks.Task<SpaceResponse>
+//     Parameter: body (CreateSpaceRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSpaceAsync
+//     Return Type: System.Threading.Tasks.Task<SpaceResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: UpdateSpaceAsync
+//     Return Type: System.Threading.Tasks.Task<SpaceResponse>
+//     Parameter: id (string)
+//     Parameter: body (UpdateSpaceRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: DeleteSpaceAsync
+//     Return Type: System.Threading.Tasks.Task<DeletedResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetByTokenAsync
+//     Return Type: System.Threading.Tasks.Task<SpaceResponse>
+//     Parameter: token (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetBySubscriptionIdAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SpaceResponse>>
+//     Parameter: subscriptionId (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSpacesByRamAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SpaceResponse>>
+//     Parameter: ram (int)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: SubscriptionsClient
+//   Method: GetSubscriptionsAsync
+//     Return Type: System.Threading.Tasks.Task<System.Collections.Generic.ICollection<SubscriptionResponse>>
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CreateSubscriptionAsync
+//     Return Type: System.Threading.Tasks.Task<SubscriptionCreateResponse>
+//     Parameter: body (SubscriptionCreateRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: GetSubscriptionAsync
+//     Return Type: System.Threading.Tasks.Task<SubscriptionResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: PauseCollectionAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: body (SubscriptionUpdateRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResumeCollectionAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CancelSubscriptionAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: CancelAtEndAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: RenewAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResumeAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: body (SubscriptionResumeRequest)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResetRequestsAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: ResetSpacesAsync
+//     Return Type: System.Threading.Tasks.Task
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+
+// Class: UserClient
+//   Method: GetUserAsync
+//     Return Type: System.Threading.Tasks.Task<UserResponse>
+//     Parameter: id (string)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AssignServiceAsync
+//     Return Type: System.Threading.Tasks.Task<UserResponse>
+//     Parameter: body (AssignService)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AssignModelAiAsync
+//     Return Type: System.Threading.Tasks.Task<UserResponse>
+//     Parameter: body (AssignModelAi)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+//   Method: AssignRoleAsync
+//     Return Type: System.Threading.Tasks.Task<UserResponse>
+//     Parameter: body (RoleAssign)
+//     Parameter: cancellationToken (System.Threading.CancellationToken)
+

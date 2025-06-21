@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JS
+
+@using LAHJA.Them
+
+
+<div class="w-full" type="button" aria-haspopup="dialog" aria-expanded="false">
+    <div class="relative flex h-full max-w-full flex-1 flex-col">
+        <div class="relative h-0">
+            <div class="absolute bottom-3 space-y-2 z-20"></div>
+        </div>
+        <div class="group relative flex w-full items-center">
+            <div id="composer-background" class="flex w-full flex-col gap-1.5 rounded-[26px] px-2.5 py-1.5 bg-[#f4f4f4] dark:bg-token-main-surface-secondary">
+                <div class="flex items-end gap-1.5 pl-4 md:gap-2">
+                    <div class="-ml-2.5 mb-1 flex">
+                        <InputFile OnChange="HandleFileUpload" class="hidden" />
+                        <button type="button" @onclick="AttachFiles" aria-label="أرفق ملفات" class="flex items-center h-8 w-8 rounded-lg hover:bg-black/10">
+                            <svg width="24" height="24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 7C9 4.23858 11.2386 2 14 2C16.7614 2 19 4.23858 19 7V15C19 18.866 15.866 22 12 22C8.13401 22 5 18.866 5 15V9C5 8.44772 5.44772 8 6 8C6.55228 8 7 8.44772 7 9V15C7 17.7614 9.23858 20 12 20C14.7614 20 17 17.7614 17 15V7C17 5.34315 15.6569 4 14 4C12.3431 4 11 5.34315 11 7V15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15V9C13 8.44772 13.4477 8 14 8C14.5523 8 15 8.44772 15 9V15C15 16.6569 13.6569 18 12 18C10.3431 18 9 16.6569 9 15V7Z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="flex flex-1 flex-col">
+                        @*                         <textarea @bind="UserInput" class="block h-10 w-full resize-none border-0 bg-transparent px-0 py-2 text-token-text-primary placeholder:text-token-text-secondary" placeholder="تحدث مع ChatGPT" style="display: none;"></textarea>
+                        *@                      <textarea @bind="UserInput"  placeholder="تحدث مع Ai " class="block h-10 w-full resize-none border-0 bg-transparent px-0 py-2 text-token-text-primary placeholder:text-token-text-secondary textarea-card-D"></textarea>
+                    </div>
+                    <div>
+                      
+                        <button @onclick="SendMessage" disabled="@string.IsNullOrWhiteSpace(UserInput)" data-testid="send-button" aria-label="إرسال السؤال" class="flex h-8 w-8 items-center justify-center rounded-full  text-white" style="@($"background:{AppColors.BASE_COLOR_FOUCS}")">
+                            @if (!isrun)
+                            {
+                                <svg width="32" height="32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15.1918 8.90615C15.6381 8.45983 16.3618 8.45983 16.8081 8.90615L21.9509 14.049C22.3972 14.4953 22.3972 15.2189 21.9509 15.6652C21.5046 16.1116 20.781 16.1116 20.3347 15.6652L17.1428 12.4734V22.2857C17.1428 22.9169 16.6311 23.4286 15.9999 23.4286C15.3688 23.4286 14.8571 22.9169 14.8571 22.2857V12.4734L11.6652 15.6652C11.2189 16.1116 10.4953 16.1116 10.049 15.6652C9.60265 15.2189 9.60265 14.4953 10.049 14.049L15.1918 8.90615Z" />
+                                </svg>
+                            }
+                            else{
+                                <MudIconButton Icon="@Icons.Material.Filled.AutoAwesome" OnClick="@(() =>SendMessage())"  />
+
+                                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    @code {
+    private string UserInput { get; set; } = string.Empty;
+    [Parameter] public Action<string>? ActionSendedr{ set; get; }
+    bool isrun = false;
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        // التعامل مع الملفات المرفقة
+        var files = e.GetMultipleFiles();
+        await JS.InvokeVoidAsync("alert", $"تم اختيار {files.Count} ملف/ملفات");
+    }
+
+    private async Task AttachFiles()
+    {
+        // فتح نافذة اختيار الملفات عبر JavaScript
+        await JS.InvokeVoidAsync("document.getElementById", "fileInput").AsTask();
+    }
+
+    private void SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(UserInput))
+        {
+
+            ActionSendedr(UserInput);
+            // تنفيذ عملية الإرسال
+            // Console.WriteLine($"تم إرسال: {UserInput}");
+            UserInput = string.Empty;
+        }
+    }
+}

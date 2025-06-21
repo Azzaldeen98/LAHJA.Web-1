@@ -1,0 +1,300 @@
+﻿ @page "/TextToText"
+@using Domain.ShareData
+@using LAHJA.Data.UI.Components.ServiceCard
+ 
+@using LAHJA.Data.UI.Components.ServiceVM
+@using LAHJA.UI.Components.Plan
+@using LAHJA.UI.Components.SoundShow
+@using LAHJA.UI.Components.StudioLahjaAi
+@using MudBlazor
+
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+
+<MudDivider Class="my-4" />
+
+
+
+
+
+<MudContainer MaxWidth="MaxWidth.Large" >
+
+
+
+    <iframe src="https://modelspeech.onrender.com/t2speech/"
+            width="100%"
+            height="600"
+            style="border: none;height:500px">
+    </iframe>
+
+
+@*     <AddFormTextOrSpeech TypeLanguage="@IsEnglish" DataBuild="@addformdatabuild" />
+ *@    @*   <AddFormTextOrSpeechh/> *@
+
+  
+  
+
+
+</MudContainer>
+
+<MudDivider Class="my-4" />
+<MudDivider Class="my-4" />
+<MudContainer MaxWidth="MaxWidth.Medium" >
+
+
+    <PlanServiceCompoent DataBuild="dataBuildplan" IsArabic="@IsEnglish" />
+
+</MudContainer>
+
+
+<MudDivider Class="my-4" />
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+
+
+ <InformationService/>
+
+
+
+
+
+</MudContainer>
+  <MudDivider Class="my-4" />
+<MudDivider Class="my-4" />
+<MudContainer MaxWidth="MaxWidth.Medium">
+
+
+    <HeaderTextAndSpeechCompoent IsArabic="@IsEnglish" />
+
+</MudContainer>
+
+   
+
+
+
+ 
+ @code
+{
+
+
+    [Parameter]
+    public bool IsEnglish { get; set; } = true;
+
+    [Parameter] public EventCallback<OnDataResult> Submit { get; set; }
+
+    [Parameter]
+    public ContentServiceInformationModelPige? Param { get; set; } = new ContentServiceInformationModelPige();
+
+
+    [Parameter] public OnDataResult DataBuildReturn { get; set; } = null;
+
+
+
+
+
+
+
+    List<LanguageModel> addformdatabuild;
+    List<ServiceaAppModel> dataBuildplan;
+
+    private List<LanguageModel> languages = new List<LanguageModel>
+    {
+
+
+
+
+
+        new LanguageModel { Id = 1, Name = "Arabic",TypeFeture="TextToSPeech", Dialects = new List<DialectModel>
+            {
+
+
+
+
+                new DialectModel { Id = 1, Name = "Najdi", Services = new List<ServiceaAppModel>
+                {
+                    new ServiceaAppModel { Id = "1", IdFetureApp = "F001", Name = " Text Service A", Descrption = "This is Service A Text To Text", Price = 100.50m,Type="TxT" },
+                 
+ 
+                    new ServiceaAppModel { Id = "2", IdFetureApp = "F002", Name = "Speech  Service D", Descrption = "This is Service B Speech ", Price = 150.00m,Type="Sound" }
+
+                }},
+
+
+
+
+                new DialectModel { Id = 2, Name = "Hijazi", Services = new List<ServiceaAppModel>
+                {
+                     new ServiceaAppModel { Id = "1", IdFetureApp = "F001", Name = "Service H_A", Descrption = "This is Service A", Price = 100.50m,Type="TXT" },
+                    new ServiceaAppModel { Id = "2", IdFetureApp = "F002", Name = "Service H_B", Descrption = "This is Service B", Price = 150.00m,Type="Sound" }
+
+                }}
+            }
+        },
+
+         new LanguageModel { Id = 2, Name = "English", Dialects = new List<DialectModel>
+            {
+                new DialectModel { Id = 3, Name = "US", Services = new List<ServiceaAppModel>
+                {
+                    new ServiceaAppModel { Id = "5", Name = "Service US_A", Descrption = "This is Service E", Price = 200.75m,Type="Sound" }
+
+                }}
+
+            }
+        }
+    };
+
+
+    private List<LanguageModel> languagesar = new List<LanguageModel>
+{
+    new LanguageModel { Id = 1, Name = "العربية", Dialects = new List<DialectModel>
+        {
+            new DialectModel { Id = 1, Name = "نجدي", Services = new List<ServiceaAppModel>
+            {
+                new ServiceaAppModel { Id = "1", IdFetureApp = "F001", Name = "الخدمة أ", Descrption = "هذه هي الخدمة أ", Price = 100.50m, Type = "TxT" },
+            
+                new ServiceaAppModel { Id = "2", IdFetureApp = "F002", Name = "الخدمة د", Descrption = "هذه هي الخدمة ب", Price = 150.00m, Type = "Sound" }
+            }},
+            new DialectModel { Id = 2, Name = "حجازي", Services = new List<ServiceaAppModel>
+            {
+                new ServiceaAppModel { Id = "1", IdFetureApp = "F001", Name = "الخدمة ح_أ", Descrption = "هذه هي الخدمة أ", Price = 100.50m, Type = "TXT" },
+                new ServiceaAppModel { Id = "2", IdFetureApp = "F002", Name = "الخدمة ح_ب", Descrption = "هذه هي الخدمة ب", Price = 150.00m, Type = "Sound" }
+            }}
+        }
+    },
+    new LanguageModel { Id = 2, Name = "الإنجليزية", Dialects = new List<DialectModel>
+        {
+            new DialectModel { Id = 3, Name = "الأمريكية", Services = new List<ServiceaAppModel>
+            {
+                new ServiceaAppModel { Id = "5", Name = "الخدمة US_أ", Descrption = "هذه هي الخدمة هـ", Price = 200.75m, Type = "Sound" }
+            }}
+        }
+    }
+};
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+
+
+
+    }
+
+
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+            IsEnglish = true; 
+            addformdatabuild = languages;
+            dataBuildplan = languages
+                     .SelectMany(language => language.Dialects)
+                     .SelectMany(dialect => dialect.Services)
+                    .ToList();
+        }
+        else
+        {
+            IsEnglish =false;
+
+            addformdatabuild = languagesar;
+            dataBuildplan = languagesar
+      .SelectMany(language => language.Dialects)
+  .SelectMany(dialect => dialect.Services)
+  .ToList();
+
+
+        }
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+ 
+}
+
+
+
+
+     
+     
+  
+
+
+
+
+
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code
+{
+
+    [Parameter]
+
+
+    public DataBuildServicePage DataBuildPage { get; set; }
+
+}

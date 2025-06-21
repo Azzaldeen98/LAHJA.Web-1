@@ -1,0 +1,194 @@
+﻿@using Domain.ShareData
+@using LAHJA.Helpers.Services
+ @inject LanguageService languageService
+ @inject IManageLanguageService _manageLanguageService
+
+
+<div Class="container" MaxWidth="MaxWidth.Large">
+    <MudPaper Elevation="0" Class="pa-4 d-flex flex-column  justify-content-center align-items-center">
+
+        <MudText Typo="Typo.h3">@title</MudText>
+        <MudExpansionPanels>
+            @if (FAQItems != null && FAQItems.Count()>0){
+                @foreach (var item in FAQItems)
+                {
+                    <MudExpansionPanel Text="@item.Question">
+                        <MudText>
+                            @item.Answer
+                        </MudText>
+                    </MudExpansionPanel>
+                }
+            }
+        </MudExpansionPanels>
+    </MudPaper>
+</div>
+
+@code {
+
+    public class FAQItem
+    {
+        public string Question { get; set; }
+        public string Answer { get; set; }
+    }
+
+    private string title = "";
+
+    private List<FAQItem> FAQItems;
+
+    protected override void OnInitialized()
+    {
+        languageService.OnLanguageChanged += setLocalization;
+        setLocalization("ar");
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            setLocalization(currentLanguage);
+            await  InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void setLocalization(string langCode)
+    {
+        FAQItems = (langCode == "ar") ? getArFAQ() : getEnFAQ();
+        title = (langCode == "ar") ? " الأسئلة الشائعة (FAQ)" : "Frequently Asked Questions (FAQ)";
+        StateHasChanged();
+    }
+
+    private List<FAQItem> getArFAQ()
+    {
+        return new List<FAQItem>{
+        new FAQItem
+        {
+            Question = "ما هو تحويل الصوت إلى نص؟",
+            Answer = "تحويل الصوت إلى نص هو عملية تحويل التسجيلات الصوتية إلى نصوص مكتوبة باستخدام تقنيات التعرف على الكلام. يتم استخدام هذه التقنية لتحويل المحادثات الصوتية، المقابلات، المحاضرات، والاجتماعات إلى نصوص يمكن معالجتها بسهولة."
+        },
+        new FAQItem
+        {
+            Question = "هل يدعم نظام تحويل الصوت إلى نص اللغات واللهجات المختلفة؟",
+            Answer = "نعم، يدعم النظام العديد من اللغات واللهجات، بما في ذلك اللهجات المحلية، مثل اللهجة النجدية. كما يمكن تخصيص النظام لتحسين الدقة في التعرف على لغات ولهجات معينة."
+        },
+        new FAQItem
+        {
+            Question = "كيف يمكنني استخدام خدمة تحويل النص إلى صوت؟",
+            Answer = "يمكنك استخدام خدمة تحويل النص إلى صوت عن طريق إدخال النص المراد تحويله إلى النظام، الذي سيقوم بتوليد صوت بشري طبيعي وفقًا للنص. يمكن تخصيص الصوت والنبرة حسب احتياجاتك."
+        },
+        new FAQItem
+        {
+            Question = "ما هي أنواع النصوص التي يمكن تحويلها إلى صوت؟",
+            Answer = "يمكن تحويل النصوص القصيرة، الطويلة، أو المعقدة إلى صوت. على سبيل المثال، يمكن تحويل المقالات، الكتب، أو حتى النصوص التفاعلية في التطبيقات."
+        },
+        new FAQItem
+        {
+            Question = "هل يمكن تخصيص الصوت الذي يُنتج عند تحويل النص إلى صوت؟",
+            Answer = "نعم، يمكنك تخصيص الصوت من حيث النبرة والسرعة. يمكنك أيضًا اختيار الصوت (ذكر أو أنثى) الذي يناسب تطبيقك."
+        },
+        new FAQItem
+        {
+            Question = "هل يمكن تحويل النص إلى لهجة معينة؟",
+            Answer = "نعم، نقدم خدمة تحويل النصوص إلى لهجات محلية مثل اللهجة النجدية، الحجازية، وغيرها. يمكن أيضًا تخصيص النبرة والسرعة لتناسب الاحتياجات المحلية."
+        },
+        new FAQItem
+        {
+            Question = "ما هو استخدام خدمة الدردشة الفورية؟",
+            Answer = "خدمة الدردشة الفورية هي نظام يعتمد على الذكاء الاصطناعي للتفاعل مع المستخدمين بشكل فوري، والإجابة على استفساراتهم. تستخدم هذه الخدمة في دعم العملاء، المساعدات الشخصية، والتفاعل مع المستخدمين في التطبيقات المختلفة."
+        },
+        new FAQItem
+        {
+            Question = "هل يمكن دمج هذه الخدمات مع التطبيقات الخاصة بي؟",
+            Answer = "نعم، نقدم API مفتوح للتكامل مع الأنظمة والتطبيقات الأخرى، مما يتيح لك دمج خدمات تحويل الصوت إلى نص، تحويل النص إلى صوت، تحويل النص إلى لهجة، والدردشة الفورية بسهولة."
+        },
+        new FAQItem
+        {
+            Question = "هل يحتاج النظام إلى اتصال بالإنترنت؟",
+            Answer = "نعم، بعض الخدمات قد تتطلب اتصالاً بالإنترنت، خاصة عندما يتم معالجة البيانات على الخوادم. ولكن هناك أيضًا خيارات لتشغيل بعض الخدمات محليًا في بيئات لا تدعم الاتصال المستمر بالإنترنت."
+        },
+        new FAQItem
+        {
+            Question = "كيف يمكنني تخصيص الخدمة لتناسب احتياجاتي؟",
+            Answer = "يمكنك تخصيص الخدمة من خلال تحديد إعدادات الصوت، النبرة، السرعة، اللهجات، بالإضافة إلى تكامل الأنظمة عبر API. إذا كانت لديك متطلبات خاصة، يمكننا العمل معك لتوفير حل مخصص يناسب احتياجاتك."
+        },
+        new FAQItem
+        {
+            Question = "هل يمكنني استخدام الخدمة في التطبيقات متعددة المنصات؟",
+            Answer = "نعم، يمكن استخدام هذه الخدمات عبر مختلف المنصات مثل الهواتف المحمولة (Android و iOS)، وأجهزة الكمبيوتر، ويمكن أيضًا دمجها في تطبيقات الويب والتطبيقات التي تعمل في الخلفية."
+        },
+        new FAQItem
+        {
+            Question = "ما هي تكلفة استخدام هذه الخدمات؟",
+            Answer = "تعتمد تكلفة الخدمة على الخطة التي تختارها وعدد الطلبات التي تحتاج إليها. يمكنك التواصل معنا للحصول على تفاصيل حول الأسعار وفقًا لاحتياجاتك."
+        }
+    };
+    }
+    private List<FAQItem> getEnFAQ()
+    {
+        return new List<FAQItem>{
+                new FAQItem
+                {
+                    Question = "What is speech-to-text conversion?",
+                    Answer = "Speech-to-text conversion is the process of transforming audio recordings into written text using speech recognition technologies. This technology is used to transcribe conversations, interviews, lectures, and meetings into manageable text."
+                },
+                new FAQItem
+                {
+                    Question = "Does the speech-to-text system support different languages and dialects?",
+                    Answer = "Yes, the system supports various languages and dialects, including local accents like the Najdi dialect. The system can also be customized to improve accuracy for specific languages and dialects."
+                },
+                new FAQItem
+                {
+                    Question = "How can I use the text-to-speech service?",
+                    Answer = "You can use the text-to-speech service by entering the text you want to convert into the system, which will generate a natural human-like voice based on the text. The voice and tone can be customized according to your needs."
+                },
+                new FAQItem
+                {
+                    Question = "What types of text can be converted to speech?",
+                    Answer = "Short, long, or complex texts can be converted to speech. For example, articles, books, or even interactive texts in applications can be processed."
+                },
+                new FAQItem
+                {
+                    Question = "Can the voice generated in text-to-speech be customized?",
+                    Answer = "Yes, you can customize the voice in terms of tone and speed. You can also choose the voice (male or female) that suits your application."
+                },
+                new FAQItem
+                {
+                    Question = "Can text be converted to a specific dialect?",
+                    Answer = "Yes, we offer text conversion services to local dialects such as the Najdi, Hijazi, and others. The tone and speed can also be tailored to meet local needs."
+                },
+                new FAQItem
+                {
+                    Question = "What is the use of the instant chat service?",
+                    Answer = "The instant chat service is an AI-powered system that interacts with users in real time, answering their inquiries. It is used in customer support, personal assistants, and user interaction in various applications."
+                },
+                new FAQItem
+                {
+                    Question = "Can these services be integrated with my applications?",
+                    Answer = "Yes, we provide an open API for integration with other systems and applications, allowing you to seamlessly integrate services like speech-to-text, text-to-speech, text-to-dialect conversion, and instant chat."
+                },
+                new FAQItem
+                {
+                    Question = "Does the system require an internet connection?",
+                    Answer = "Yes, some services may require an internet connection, especially when processing data on servers. However, there are also options for running certain services locally in environments that do not support continuous internet connectivity."
+                },
+                new FAQItem
+                {
+                    Question = "How can I customize the service to meet my needs?",
+                    Answer = "You can customize the service by configuring voice settings, tone, speed, and dialects, as well as system integration via API. If you have specific requirements, we can work with you to provide a tailored solution."
+                },
+                new FAQItem
+                {
+                    Question = "Can I use the service on multiple platforms?",
+                    Answer = "Yes, these services can be used across various platforms such as mobile phones (Android and iOS), computers, and can also be integrated into web applications and background processes."
+                },
+                new FAQItem
+                {
+                    Question = "What is the cost of using these services?",
+                    Answer = "The cost of the service depends on the plan you choose and the number of requests you need. You can contact us for details about pricing based on your requirements."
+                }
+            };
+    }
+  
+
+    
+}

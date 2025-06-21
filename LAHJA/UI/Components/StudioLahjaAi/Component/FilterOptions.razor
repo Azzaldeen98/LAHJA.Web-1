@@ -1,0 +1,104 @@
+﻿@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+@using LAHJA.Them
+@* <MudDrawer @bind-Open="@IsVisible" Fixed="false" Anchor="Anchor.End"
+           Elevation="0" Variant="@DrawerVariant.Temporary" Class="h-100">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">@Title</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudList T="object" Class="d-flex flex-column justify-content-center align-items-center">
+            @foreach (var filter in Filters)
+            {
+                <MudListItem Text="@filter.Title" @bind-Expanded="filter.IsExpanded" Error="@filter.HasError" ErrorText="@filter.ErrorMessage">
+                    <NestedList>
+                        @if (filter.Options != null && filter.Options.Any())
+                        {
+                            <MudRadioGroup T="FilterItemData" ValueChanged="@filter.OnSelectionChanged" Class="mb-3 d-flex justify-content-around border p-3">
+                                @foreach (var option in filter.Options)
+                                {
+                                    <MudRadio Class="md-item-font" Value="@option" Color="@AppColors.BASE_COLOR_ENUM">@option.Text[CurrentLanguage]</MudRadio>
+                                }
+                            </MudRadioGroup>
+                        }
+                    </NestedList>
+                </MudListItem>
+                <MudDivider />
+            }
+        </MudList>
+    </MudNavMenu>
+</MudDrawer> *@
+@*  <MudPaper Class="pa-4 border h-100">
+     @if (Filters != null)
+     {
+         @foreach (var filter in Filters)
+         {
+             <MudText Typo="Typo.subtitle1">@filter.Title</MudText>
+             <MudRadioGroup T="FilterItemData" ValueChanged="@(filter.OnSelectionChanged)" Class="mb-3 d-flex justify-content-around border p-3">
+                 @foreach (var option in filter.Options)
+                 {
+                     <MudRadio Class="md-item-font" Value="@option" Color="@AppColors.BASE_COLOR_ENUM">@option.Text[CurrentLanguage]</MudRadio>
+                 }
+             </MudRadioGroup>
+         }
+     }
+ </MudPaper> *@
+
+<div class="d-flex flex-row justify-content-around ">
+    @if (Filters != null)
+    {
+        @foreach (var filter in Filters)
+        {
+            @* <MudText Typo="Typo.subtitle1">@filter.Title</MudText> *@
+
+            <div class="mx-1 ">
+            
+                    <FilterItemSelected Filter="filter" CurrentLanguage="@CurrentLanguage"  />
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public string CurrentLanguage { get; set; } = "en";
+
+    [Parameter]
+    public List<StudioFilterDefinition> Filters { get; set; } = new();
+
+
+
+
+}
+
+@code {
+
+
+
+
+    // [Parameter] public bool IsVisible { get; set; }
+    // [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    // [Parameter] public string Title { get; set; } = "Settings";
+    // [Parameter] public string CurrentLanguage { get; set; } = "en";
+    // [Parameter] public List<StudioFilterDefinition<FilterItemData>> Filters { get; set; } = new();
+
+//     public class FilterItemData
+//     {
+//         public int Id { get; set; } = 0;
+//         public string Identifier { get; set; }
+//         public Dictionary<string, string> Text { get; set; }
+//         public string Icon { get; set; }
+//         public Type Component { get; set; }
+//         public string TypeModel { get; set; }
+//     }
+
+
+//     public class FilterDefinition<FilterItemData>
+// {
+//     public string Title { get; set; }
+//     public bool IsExpanded { get; set; }
+//     public bool HasError { get; set; }
+//     public string ErrorMessage { get; set; }
+//         public List<FilterItemData> Options { get; set; } = new();
+//         public EventCallback<FilterItemData> OnSelectionChanged { get; set; }
+// }
+}

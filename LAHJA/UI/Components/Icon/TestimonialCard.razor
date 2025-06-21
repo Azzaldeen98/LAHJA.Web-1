@@ -1,0 +1,138 @@
+﻿@using Domain.ShareData
+@using LAHJA.Helpers.Services
+ @using System.Collections.Generic
+@using LAHJA.Data.UI.Components.Base
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+<style>
+    .swiper-container {
+        width: 100%;
+        height: auto;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .swiper-slide {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .avatar-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+    }
+
+    .cont {
+        max-width: 1200px;
+        margin: auto;
+       
+    }
+</style>
+
+<h2 class="testimonials-title">@title</h2>
+<div class=" px-4 py-5 position-relative" id="hanging-icons" style="margin-top: 0%;">
+
+
+
+    <div class="row">
+        <div class="col-lg-9 col-xl-7 mx-auto cont">
+            <div class="swiper-container mt-6">
+                <!-- Wrapper for Swiper slides -->
+                <div class="swiper-wrapper">
+                    @foreach (var testimonial in Testimonials)
+                    {
+                        <div class="swiper-slide text-center">
+                            <div class="avatar avatar-lg flex-shrink-0 mb-3">
+                                <img class="avatar-img rounded-circle" src="@testimonial.ImageUrl" alt="avatar">
+                            </div>
+                            <blockquote class="mb-4">
+                                <p class="fs-6  mb-0">@testimonial.Message</p>
+                            </blockquote>
+                            <h6 class="mb-0">@testimonial.Name</h6>
+                            <span>@testimonial.Role</span>
+                        </div>
+                    }
+                </div>
+
+                <!-- Swiper navigation -->
+                @* <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+                *@
+                <!-- Swiper pagination -->
+                <div class="swiper-pagination"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+</div>
+@code {
+
+    private List<Testimonial> Testimonials;
+    private string title;
+    protected override void OnInitialized()
+    {
+        languageService.OnLanguageChanged += setLocalization;
+        setLocalization("ar");
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            setLocalization(currentLanguage);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void setLocalization(string langCode)
+    {
+        Testimonials = (langCode == "ar") ? getTestimonialsAr() : getTestimonialsEn();
+        title = (langCode == "ar") ? "ماذا يقول عملاؤنا" : "What Our Customers Say";
+        StateHasChanged();
+    }
+
+    private List<Testimonial> getTestimonialsEn()
+    {
+        return new List<Testimonial>{
+            new Testimonial { Name = "Louis Ferguson", Role = "Web Developer", Message = "Our passion for customer excellence is just one reason why we are the market leader. We've always worked very hard to give our customers the best experience. Was out laughter raptures returned outweigh. Luckily cheered colonel I do we attack highest enabled...", ImageUrl = "assets/images/avatar/02.jpg" },
+            new Testimonial { Name = "Emma Watson", Role = "UI/UX Designer", Message = "Our passion for customer excellence is just one reason why we are the market leader. We've always worked very hard to give our customers the best experience. Was out laughter raptures returned outweigh. Luckily cheered colonel I do we attack highest enabled...", ImageUrl = "assets/images/avatar/04.jpg" },
+            new Testimonial { Name = "Jacqueline Miller", Role = "Product Designer", Message = "Our passion for customer excellence is just one reason why we are the market leader. We've always worked very hard to give our customers the best experience. Was out laughter raptures returned outweigh. Luckily cheered colonel I do we attack highest enabled....", ImageUrl = "assets/images/avatar/09.jpg" }
+        };
+    }
+    private List<Testimonial> getTestimonialsAr()
+    {
+        return new List<Testimonial>
+{
+    new Testimonial
+    {
+        Name = "لويس فيرغسون",
+        Role = "مطور ويب",
+        Message = "شغفنا بتميز العملاء هو مجرد أحد الأسباب التي تجعلنا رواد السوق. لقد عملنا دائمًا بجد لتقديم أفضل تجربة لعملائنا. كان من حسن الحظ أن شجعنا العقيد على الهجوم بالوسائل الأفضل...",
+        ImageUrl = "assets/images/avatar/02.jpg"
+    },
+    new Testimonial
+    {
+        Name = "إيما واتسون",
+        Role = "مصممة UI/UX",
+        Message = "شغفنا بتميز العملاء هو مجرد أحد الأسباب التي تجعلنا رواد السوق. لقد عملنا دائمًا بجد لتقديم أفضل تجربة لعملائنا. كان من حسن الحظ أن شجعنا العقيد على الهجوم بالوسائل الأفضل...",
+        ImageUrl = "assets/images/avatar/04.jpg"
+    },
+    new Testimonial
+    {
+        Name = "جاكلين ميلر",
+        Role = "مصممة منتجات",
+        Message = "شغفنا بتميز العملاء هو مجرد أحد الأسباب التي تجعلنا رواد السوق. لقد عملنا دائمًا بجد لتقديم أفضل تجربة لعملائنا. كان من حسن الحظ أن شجعنا العقيد على الهجوم بالوسائل الأفضل...",
+        ImageUrl = "assets/images/avatar/09.jpg"
+    }
+};
+
+    }
+}

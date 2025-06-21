@@ -1,0 +1,179 @@
+ @using MudBlazor
+ @using LAHJA.Data.UI.Components.ServiceCard 
+ @using Microsoft.AspNetCore.Components
+ @inject IDialogService DialogService
+ @inject NavigationManager Navigation
+ @using LAHJA.Them
+
+<MudCard Elevation="25" Class="rounded-lg pb-4 card-hover">
+
+@if(Param!=null)
+{
+
+
+
+
+
+    
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.h6">@Param.DataBuild.NameCompoent</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+
+            <MudTooltip Text="@Param.DataBuild.TolTabText" Color="Color.Primary" Placement="Placement.Top">
+                    <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" OnClick="OpenDialogAsyncS" />
+            </MudTooltip>
+        </CardHeaderActions>
+    </MudCardHeader>
+
+ 
+    <MudCardContent>
+        
+        <MudForm @ref="form"   ValidationDelay="300" OnValidSubmit="Onsubmit" OnInvalidSubmit="Onsubmit" >
+           
+            <MudTextField T="string" 
+                          Label="Text" 
+                          HelperText="Choose a Text" 
+                          InputType="InputType.Text"
+                          Validation="@(new Func<string, IEnumerable<string>>(TextStrength))" 
+                          Required="true" 
+                          RequiredError="Text is required!" 
+                          @bind-Value="@textSpeech" />
+            
+            
+
+
+            <MudSelect @bind-Value="SelectedDialect" Label="Select Dialect" FullWidth="true" Class="mb-3"
+                       Required="true" RequiredError="Language is required!"> 
+                @foreach (var dialect in Param.DataBuild.AvailableDialects)
+                {
+                    <MudSelectItem Value="@dialect">@dialect</MudSelectItem>
+                }
+            </MudSelect>
+            
+            
+                <MudButton Disabled="@_processing" Color="@AppColors.BASE_COLOR_ENUM" FullWidth="true"
+                           EndIcon="@Icons.Material.Filled.Send" Variant="Variant.Filled" Class="mb-3" OnClick="Onsubmit">
+                @if (_processing)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">Processing</MudText>
+                }
+                else
+                {
+                    <MudText>Click me</MudText>
+                }
+            </MudButton>
+        </MudForm>
+       
+    
+        @if (OnResult!=null && OnResult.Sccess&& OnResult.OperationType=="TextToDialect")
+        {
+            <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-3">Converted Text:@OnResult.Text</MudText>
+            <MudButton OnClick="ShareResult" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" FullWidth="true" 
+                       Variant="Variant.Filled">Share</MudButton>
+        }
+
+    </MudCardContent>
+
+
+
+
+
+
+
+
+
+
+}
+else
+{
+  <h1>error </h1>
+}
+  
+</MudCard>
+
+@code {
+
+    private MudForm form;  
+    private bool _processing = false;
+
+
+
+    private void testing()
+    {
+        Navigation.NavigateTo("/TextToText");
+    }
+
+    [Parameter] public TextToDialectComponent? Param { get; set; }
+
+    [Parameter] public EventCallback ShareResult { get; set; }
+
+    [Parameter] public EventCallback<OnDataResult> OnSubmit{ get; set; }
+
+    [Parameter] public OnDataResult? OnResult{get;set;}=null;
+
+
+  private bool flag1=false;
+  private string textSpeech="";
+  private string SelectedDialect="";
+
+   private IEnumerable<string>TextStrength(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            yield return "Text cannot be empty.";
+
+
+        if (value.Length <6)
+            yield return "Password must be at least 8 characters long.";
+        if (!value.Any(ch =>"!@#$%^&*()".Contains(ch)))
+            yield return "Password must include at least one special character (!@#$%^&*()).";
+    }
+
+private async Task Onsubmit()
+
+{
+        try
+        {
+
+                        _processing = true;
+                        await Task.Delay(2000);
+                    _processing = false;
+
+                                    if (OnSubmit.HasDelegate)
+                                        {
+                                            OnDataResult obj=new OnDataResult()
+                                            {
+                                                    Text=textSpeech,
+                                                    OperationType="TextToDialect",
+                                                    Sccess=false,
+                                                    SelectLanguage=SelectedDialect,
+                                                    TypeSend="Send"
+                                            };
+
+                                            await OnSubmit.InvokeAsync(obj);
+                                            
+
+                                        }
+                                        flag1=true;
+                                    StateHasChanged();
+            
+
+        }
+    
+                catch (Exception ex)
+                {
+
+                }
+       
+         
+}
+ private Task OpenDialogAsyncS()
+    {
+           
+           var options = new DialogOptions { CloseOnEscapeKey = true,MaxWidth = MaxWidth.Medium };
+
+        return DialogService.ShowAsync<DialogUsageExample_Dialog>("Simple Dialog", options);
+    }
+}

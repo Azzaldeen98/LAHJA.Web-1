@@ -1,0 +1,30 @@
+﻿@using LAHJA.Data.UI.Components.Base
+
+@if (Params != null)
+{
+
+	<TextBarCard Params="@Params.CardTextBar" />
+
+	<IconCardBase Params="@Params.IconCard" />
+
+}
+
+
+
+
+@code {
+
+	[Parameter] public CardTextAndIconBar? Params { set; get; }
+
+
+
+	protected override void OnInitialized()
+	{
+
+
+
+
+	}
+
+
+}

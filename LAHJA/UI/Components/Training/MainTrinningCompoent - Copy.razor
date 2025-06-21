@@ -1,0 +1,280 @@
+﻿ 
+
+ 
+@using Domain.ShareData
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@using MudBlazor
+
+@page "/ShowTriningInformation"
+@inject ISnackbar Snackbar
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+ 
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-8">
+
+
+
+    <MudText Typo="Typo.body1">@title</MudText>
+
+    <MudGrid>
+         
+        
+     
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Class="pa-3">
+                <MudText Typo="Typo.body1" Class="mb-2">@bestScoreText</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="@AppColors.BASE_COLOR_ENUM">@metrics.BestScore</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Class="pa-3">
+                <MudText Typo="Typo.body1" Class="mb-2"  >@restoredEpochText</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="@AppColors.BASE_COLOR_ENUM">@metrics.RestoredEpoch</MudText>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Class="pa-3">
+                <MudText Typo="Typo.body1" Class="mb-2" >@stoppedEpochText</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="@AppColors.BASE_COLOR_ENUM">@metrics.StoppedEpoch</MudText>
+            </MudCard>
+        </MudItem>
+
+
+
+
+
+
+
+
+
+
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="pa-3">
+                <MudText Typo="Typo.body1" Class="mb-2" >@validationLossText</MudText>
+                <MudChart ChartType="ChartType.Bar" ChartSeries="@Series" Class="ma-2" Style="height: 250px;" />
+            </MudCard>
+
+
+
+
+        </MudItem>
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="pa-3">
+                <MudText Typo="Typo.body1" Class="mb-2"  >@accuracyText</MudText>
+                <MudChart ChartType="ChartType.StackedBar" ChartSeries="@Serieserutey" Class="ma-2" Style="height: 250px;" />
+            </MudCard>
+        </MudItem>
+
+
+        <MudItem xs="12">
+            <MudCard Class="pa-3">
+                <MudText Typo="Typo.body1" Class="mb-2">@accuracyVsValidationLossText</MudText>
+                <MudChart ChartType="ChartType.Line" ChartSeries="@Seriess" Width="100%" Height="350px" />
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code {
+
+    [Parameter]
+
+    public bool currentLanguage { get; set; } 
+    private string title;
+    private string bestScoreText;
+    private string restoredEpochText;
+    private string stoppedEpochText;
+    private string validationLossText;
+    private string accuracyText;
+    private string accuracyVsValidationLossText;
+    private string languageSwitcherText;
+
+
+
+    private string CurrentLanguage;
+    private Metrics metrics = new Metrics
+        {
+            BestScore =0,
+            RestoredEpoch =0,
+            StoppedEpoch =0
+        };
+
+
+
+
+    public List<ChartSeries> Series = new List<ChartSeries>()
+   {
+       new ChartSeries() { Name = "United States", Data = new double[] { 2.0, 1.8, 1.6, 1.4, 1.2, 1.0 } }
+
+   };
+    public List<ChartSeries> Serieserutey = new List<ChartSeries>()
+   {
+
+       new ChartSeries() { Name = "United States", Data = new double[] {40, 20, 25, 27, 46, 60, 48, 80, 15 } }
+
+   };
+
+
+
+
+
+
+
+
+
+
+    public List<ChartSeries> Seriess = new List<ChartSeries>()
+    {
+        new ChartSeries() { Name = "Fossil", Data = new double[] { 90, 79, 72, 69, 62, 62, 55, 65, 70 } },
+        new ChartSeries() { Name = "Renewable", Data = new double[] { 10, 41, 35, 51, 49, 62, 69, 91, 148 } },
+    };
+
+
+
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+
+
+
+    }
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+
+            currentLanguage = true;
+            title = "Model Training";
+            bestScoreText = "Best Score";
+            restoredEpochText = "Restored Epoch";
+            stoppedEpochText = "Stopped Epoch";
+            validationLossText = "Validation Loss";
+            accuracyText = "Accuracy";
+            accuracyVsValidationLossText = "Accuracy vs Validation Loss";
+            SetLanguage(currentLanguage);
+        }
+        else
+        {
+            currentLanguage = false;
+            title = "تدريب  نموذج";
+            bestScoreText = "  نتيجة";
+            restoredEpochText = " رقم العملية";
+            stoppedEpochText = "عدد العمليات";
+            validationLossText = "فقدان التحقق";
+            accuracyText = "الدقة";
+            accuracyVsValidationLossText = "الدقة مقابل فقدان التحقق";
+
+
+        }
+
+
+        InvokeAsync(StateHasChanged);
+        
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+
+
+    private void SetLanguage(bool currentLanguage)
+    {
+        if (currentLanguage)
+        {
+            title = "Model Training";
+            bestScoreText = "Best Score";
+            restoredEpochText = "Restored Epoch";
+            stoppedEpochText = "Stopped Epoch";
+            validationLossText = "Validation Loss";
+            accuracyText = "Accuracy";
+            accuracyVsValidationLossText = "Accuracy vs Validation Loss";
+
+        }
+        else
+        {
+            title = "تدريب  نموذج";
+            bestScoreText = "  نتيجة";
+            restoredEpochText = "ارقم العملية ";
+            stoppedEpochText = "عدد العمليات";
+            validationLossText = "فقدان التحقق";
+            accuracyText = "الدقة";
+            accuracyVsValidationLossText = "الدقة مقابل فقدان التحقق";
+           
+
+        }
+        StateHasChanged();
+
+    }
+
+
+    public class Metrics
+    {
+        public double BestScore { get; set; }
+        public int RestoredEpoch { get; set; }
+        public int StoppedEpoch { get; set; }
+    }
+}

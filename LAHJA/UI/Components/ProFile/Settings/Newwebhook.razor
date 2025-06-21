@@ -1,0 +1,49 @@
+﻿<section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+    <div class="mb-6">
+        <div class="flex justify-between">
+            <h3 class="flex flex-row items-center text-xl font-bold">
+                New webhook
+            </h3>
+            <a slot="header" class="ml-2 mr-auto self-center text-xs text-gray-400 hover:text-gray-800" target="_blank" href="/docs/hub/webhooks"><svg class="" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M17 22v-8h-4v2h2v6h-3v2h8v-2h-3z" fill="currentColor"></path><path d="M16 8a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 8z" fill="currentColor"></path><path d="M16 30a14 14 0 1 1 14-14a14 14 0 0 1-14 14zm0-26a12 12 0 1 0 12 12A12 12 0 0 0 16 4z" fill="currentColor"></path></svg></a>
+        </div>
+    </div>
+    <div class="SVELTE_HYDRATER contents" data-target="WebhookSettings" data-props="{&quot;classNames&quot;:&quot;mt-6&quot;}">
+        <form class="flex flex-col gap-y-6 mt-6">
+            <div>
+                <label for="targets">
+                    Target repositories
+                    <div class="relative w-full">
+                        <input autocomplete="off" class="w-full dark:bg-gray-950  form-input " name="targets" placeholder="eg: stabilityai/stable-diffusion" spellcheck="false" type="text">  </div>
+                </label> 
+                <div class="mt-2 text-sm text-gray-400">
+                    Any repository on the hub you want to listen to new events, can be any model, dataset or Space. You can also
+                    subscribe to a whole user or org namespace.
+                </div>
+            </div> <label>
+                Webhook URL
+                <input type="url" class="form-input" placeholder="eg: https://example.com/post-target" required="">
+                <div class="mt-2 text-sm text-gray-400">The payload will be sent as JSON in a POST request.</div>
+            </label> 
+            <label>Secret <span class="text-gray-400">(optional)</span> 
+                <input type="text" class="form-input" pattern="[\x20-\x7F]*">
+                <div class="mt-2 text-sm text-gray-400">The secret will be sent in the X-Webhook-Secret header. Use ASCII characters.</div>
+            </label>
+            <div>
+                <div class="mb-2">Triggers</div>
+                <div class="flex items-center">
+                    <label class="mr-4 flex items-center">
+                        <input type="checkbox" class="form-input mr-1.5" value="repo"> Repo update</label> 
+                        <label class="flex items-center">
+                            <input type="checkbox" class="form-input mr-1.5" value="discussion"> Community (PR &amp; discussions)</label>
+                            </div> 
+                            <div class="mt-2 text-sm text-gray-400">Choose which events will trigger the webhook.
+                                <a href="/docs/hub/webhooks" target="_blank" class="underline">Read more about webhooks payloads</a>.</div>
+                                </div> 
+                                <div class="flex items-center">
+                                    <button type="submit" class="btn-1">Create webhook</button>
+                                    <a class="btn-1 ml-2 w-fit" href="/settings/webhooks">Cancel</a>
+                            
+                                </div>
+        </form>
+    </div>
+</section>

@@ -1,0 +1,86 @@
+﻿
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.UI.Components.General.Button
+@using LAHJA.UI.Components.General.InputField
+@using MudBlazor
+@using System.ComponentModel.DataAnnotations
+@using global::Shared.Constants.Router
+@* @inherits LayoutComponentBase *@
+@inject NavigationManager navigation;
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+
+@inherits CardAuth<DataBuildAuthBase>
+
+<MudText Typo="Typo.h6">
+    <h4 class="d-flex align-center justify-content-center flex-column">
+        Re Send Confirmation Email
+    </h4>
+</MudText>
+
+<MudCard Class="w60 mx-auto my-5 p-6 rounded-lg shadow-lg text-center dark:bg-gray-900  d-flex align-center justify-content-center flex-column">
+
+
+    <MudForm Style="width:100% !important" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+        <div class="d-flex align-center justify-content-center flex-column" style="padding:2% 2%;margin:auto 10px;width:100% !important ">
+           
+
+            @* <EmailField  Class="my-5" FullWidth Label="Email" Required="true"  Value="@email" /> *@
+            <MudTextField T="string" Label="Email" FullWidth HelperText="Enter your Emil"InputType="InputType.Email" Required="true" RequiredError="Email is valid!" @bind-Value="@email" />
+            <MudCardActions Class="col-12 mt-5 row d-flex flex-wrap justify-content-around align-content-around">
+@*                 <MudButton Variant="Variant.Filled" Color="@Color.Primary" Class="col-lg-4 col-md-7 col-sm-12" OnClick="onSubmit" Disabled="isLoading">
+                    Re Send Confirm Email
+                </MudButton>
+                <MudButton OnClick="onCloseDialog" Variant="Variant.Text" Class="col-lg-4 col-md-7 col-sm-12" Color="Color.Secondary">Cancel</MudButton>
+ *@
+                    <div class="col-lg-4 col-md-7 col-sm-12">
+                    <CustomButton  OnClick="onSubmit" IsProcessing="isLoading" Text="Re Send Confirm Email" />
+                </div>
+                        <div class="col-lg-4 col-md-7 col-sm-12">
+                            <CancelButton  OnClick="onCloseDialog"/>
+                        </div>
+            </MudCardActions>
+
+        </div>
+    </MudForm>
+
+</MudCard>
+
+
+
+@code {
+
+
+
+    // [Parameter] public string Email { get; set; }
+    // protected override void OnInitialized()
+    // {
+
+    //     if (Email != null)
+    //     {
+    //             email = Email;
+
+    //             StateHasChanged();
+    //     }
+
+    // }
+
+
+    async Task onSubmit()
+    {
+        // if (form.IsValid)
+        {
+            isLoading = true;
+            if (OnSubmitReSendConfirmEmail.HasDelegate)
+                {
+                    await OnSubmitReSendConfirmEmail.InvokeAsync(new DataBuildAuthBase { Email = email });
+                }
+            await Task.Delay(10000);
+            isLoading = false;
+        }
+    }
+}
+
+
+}
+

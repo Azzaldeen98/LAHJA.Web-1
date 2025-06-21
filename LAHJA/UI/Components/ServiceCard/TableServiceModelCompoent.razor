@@ -1,0 +1,341 @@
+﻿<style>
+
+    .mud-container {
+       
+        padding:8%!important;  
+    }
+
+    
+
+        .mud-tabs .mud-tab-panel {
+            background-color: #E3F2FD;  
+
+    .mud-list-item{
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .mud-list-item:hover {
+            background-color: #90CAF9;  
+        }
+
+    .mud-table {
+        border-radius: 8px;  
+        background-color: #FFFFFF; 
+    }
+
+     
+
+</style>
+
+
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mud-container">
+    <MudTabs Outlined="true">
+
+
+
+        <MudTabPanel Text="All" OnClick="@(()=>SelectMenu(@menuNameall))" />
+        @foreach (var menu in ListMenuModel)
+        {
+            <MudTabPanel Text="@menu.Name" OnClick="@(()=>SelectMenu(@menu))" />
+
+        }
+
+
+    </MudTabs>
+
+
+
+
+
+<MudTable Items="@Elements" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped"
+          Filter="new Func<NameServiceMenuModel,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+    <ToolBarContent>
+       
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh>Name Model</MudTh>
+        <MudTh>Publication Date</MudTh>
+        <MudTh>Install</MudTh>
+         <MudTh>Information</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+
+
+       
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Publication Date">@context.Name</MudTd>
+        <MudTd DataLabel="Count Install">@context.countInstall</MudTd>
+            <MudButton  StartIcon="@Icons.Material.Outlined.Info"  OnClick="@(()=>Link(@context))" />
+    </RowTemplate>
+
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+</MudContainer>
+
+
+@code
+{
+
+
+
+
+
+    private List<MenuNameModel> ListMenuModel = new List<MenuNameModel>()
+    {
+
+          new MenuNameModel
+        {
+            Name ="Object Detection",
+            Icon = Icons.Material.Filled.Visibility,
+            Idefinter = "CV"
+        },
+        new MenuNameModel()
+        {
+             Name = "Visual Question Answering",
+            Icon = Icons.Material.Filled.Visibility,
+            Idefinter = "CV",
+        },
+         new MenuNameModel()
+        {
+             Name = "Text To Speech",
+             Icon = Icons.Material.Filled.Visibility,
+            Idefinter = "TextSpecch"
+        },
+
+         new MenuNameModel()
+        {
+            Name = "Text To Text",
+            Icon = Icons.Material.Filled.TextSnippet,
+            Idefinter = "ModelTextToText",
+
+        }
+    };
+
+
+    private void Link(NameServiceMenuModel nameServiceMenu)
+    {
+        if (nameServiceMenu.Idefinter == "TextSpecch")
+        {
+
+        }
+        else if (nameServiceMenu.Idefinter == "ModelTextToText")
+        {
+            
+
+        }
+
+    }
+    private List<NameServiceMenuModel> ListServiceMenuModel = new List<NameServiceMenuModel>()
+    {
+
+
+                 new NameServiceMenuModel
+                {
+                    Id = "1",
+                    Name = "Model Text1",
+                    countInstall = "15000",
+                    Icon = "/images/chatgpt.png",
+                    PublicationDate = "2024-01-01",
+                    Idefinter = "TextSpecch"
+                },
+                new NameServiceMenuModel
+                {
+                    Id = "2",
+                    Name = "Model Text2",
+                    countInstall = "10000",
+                    Icon = "/images/bert.png",
+                    PublicationDate = "2023-06-15",
+                    Idefinter = "TextSpecch"
+                },
+                   new NameServiceMenuModel
+                {
+                    Id = "2",
+                    Name = "Model Text To Text 3",
+                    countInstall = "10000",
+                    Icon = "/images/bert.png",
+                    PublicationDate = "2023-06-15",
+                    Idefinter = "TextSpecch"
+                },
+
+                new NameServiceMenuModel
+                {
+                    Id = "3",
+                    Name = "YOLO",
+                    countInstall = "20000",
+                    Icon = "/images/yolo.png",
+                    PublicationDate = "2023-09-10",
+                    Idefinter = "TextSpecch"
+                },
+                new NameServiceMenuModel
+                {
+                    Id = "4",
+                    Name = "OpenCV",
+                    countInstall = "18000",
+                    Icon = "/images/opencv.png",
+                    PublicationDate = "2022-11-22",
+                    Idefinter = "ModelTextToText"
+                },
+
+          new NameServiceMenuModel
+                {
+                    Id = "4",
+                    Name = "OpenCV",
+                    countInstall = "18000",
+                    Icon = "/images/opencv.png",
+                    PublicationDate = "2022-11-22",
+                    Idefinter = "TextSpecch"
+                },
+                 new NameServiceMenuModel
+                {
+                    Id = "3",
+                    Name = "YOLO",
+                    countInstall = "20000",
+                    Icon = "/images/yolo.png",
+                    PublicationDate = "2023-09-10",
+                    Idefinter = "TextSpecch"
+                },
+                 new NameServiceMenuModel
+                {
+                    Id = "3",
+                    Name = "YOLO",
+                    countInstall = "20000",
+                    Icon = "/images/yolo.png",
+                    PublicationDate = "2023-09-10",
+                    Idefinter = "TextSpecch"
+                },
+                new NameServiceMenuModel
+                {
+                    Id = "4",
+                    Name = "OpenCV",
+                    countInstall = "18000",
+                    Icon = "/images/opencv.png",
+                    PublicationDate = "2022-11-22",
+                    Idefinter = "TextSpecch"
+                }
+
+
+
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public class MenuNameModel
+    {
+
+        public string Name { get; set; }
+        public string Icon { get; set; }
+        public string Idefinter { get; set; }
+
+
+
+    }
+
+    public class NameServiceMenuModel
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string countInstall { get; set; }
+        public string Icon { get; set; }
+        public string PublicationDate { get; set; }
+        public string Idefinter { get; set; }
+
+    }
+
+
+    MenuNameModel menuNameall = new MenuNameModel()
+        {
+            Name = "ALL",
+
+            Idefinter = "ALL"
+        };
+    private MenuNameModel? SelectedMenu;
+    private void SelectMenu(MenuNameModel menu)
+    {
+        try
+        {
+
+            if (menu.Idefinter != "ALL")
+            {
+                SelectedMenu = menu;
+                Elements = ListServiceMenuModel.Where((x => x.Idefinter == menu.Idefinter)).ToList();
+                StateHasChanged();
+            }
+            else
+            {
+                Elements = ListServiceMenuModel;
+            }
+            StateHasChanged();
+        }
+        catch
+        {
+
+        }
+
+
+    }
+
+    private bool dense = true;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString1 = "";
+
+
+    private NameServiceMenuModel selectedItem1 = null;
+    private HashSet<NameServiceMenuModel> selectedItems = new HashSet<NameServiceMenuModel>();
+    private IEnumerable<NameServiceMenuModel> Elements = new List<NameServiceMenuModel>();
+
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Elements = ListServiceMenuModel;
+        StateHasChanged();
+
+    }
+
+
+
+    private bool FilterFunc1(NameServiceMenuModel element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(NameServiceMenuModel element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.PublicationDate} {element.countInstall}.".Contains(searchString))
+            return true;
+        return false;
+    }
+
+
+
+
+}  

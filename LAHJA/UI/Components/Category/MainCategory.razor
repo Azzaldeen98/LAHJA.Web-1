@@ -1,0 +1,64 @@
+﻿ 
+ 
+@using LAHJA.Data.UI.Components.Category
+ 
+@inject ISnackbar Snackbar
+@if (DataBuild != null)
+{
+    <TemplateServecCompoent Params="DataBuild" OnSubmit="Submit" />
+}
+else
+{
+
+    <MudAlert Severity="Severity.Error">@Error</MudAlert>
+}
+
+
+@code 
+{
+
+
+
+    public string Error { get; set; } = "No Data";
+    [Parameter]
+    public bool IsAuth{ get; set; }
+    [Parameter]
+
+    public EventCallback<LAHJA.Data.UI.Components.DataBuildPlansBase> OnSubmit { get; set; }
+
+    [Parameter]
+    public IEnumerable<CategoryComponent>DataBuild { get; set; } = null;
+  
+
+
+
+   
+
+
+
+
+    private async Task Submit(CategoryComponent inputCategory)
+        {
+        try
+        {
+
+
+            if (OnSubmit.HasDelegate)
+            {
+
+
+
+                await OnSubmit.InvokeAsync(new LAHJA.Data.UI.Components.DataBuildPlansBase { CategoryId = inputCategory.Id });
+
+
+
+            }
+        }
+        catch (Exception ex)
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        }
+    
+}

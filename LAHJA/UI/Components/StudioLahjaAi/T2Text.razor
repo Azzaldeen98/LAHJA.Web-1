@@ -1,0 +1,383 @@
+@using Domain.ShareData
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+@using LAHJA.Data.UI.Models
+@using LAHJA.Data.UI.Models.Studio
+@using LAHJA.Data.UI.Templates.Services
+@using LAHJA.Helpers
+@using LAHJA.Them
+@using LAHJA.UI.Components.Base
+@using LAHJA.UI.Components.StudioLahjaAi.Component
+@using MudBlazor
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.ApiClient.Services.Query
+@using Microsoft.AspNetCore.Components
+@using System.Globalization
+
+@inherits StudioAi
+
+
+
+
+@if (!string.IsNullOrEmpty(_srcFrame))
+{
+
+    <IframeComponent Lg="@Lg"
+    StyleCss="width:100%;height:100%;border:none;"
+    IsLoading="true"
+    UrlCancel="@UrlCancel"
+    UrlRedirect="@(Helper.GetFullPath(Navigation,$"{UrlPage}"))"
+    SrcIFrame="@_srcFrame" />
+
+
+}
+
+@* @if (isLoading)
+{
+    <Loading IsLoading="@isLoading" />
+}
+ *@
+
+@* <div class="d-flex Cont-speech" >
+
+<MudCard Elevation="0" Class="rounded-lg p-0  d-flex flex-column panal-speech" >
+
+         <MudCardHeader>
+                        <CardHeaderContent>
+
+                        </CardHeaderContent>
+                        <CardHeaderActions >
+
+
+                            <MudButtonGroup Color="@AppColors.BASE_COLOR_ENUM" Style="height: 26px;width:250px">
+
+                              <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"   Color="@AppColors.BASE_COLOR_ENUM" />
+                                                                <MudIconButton Icon="@Icons.Material.Filled.Code"   Color="@AppColors.BASE_COLOR_ENUM" />
+
+                               <FilterItemSelected Filter="DataBuild.ServiceTypeFilter" CurrentLanguage="@CurrentLanguage" />
+
+                              </MudButtonGroup>
+
+
+
+                        </CardHeaderActions>
+                    </MudCardHeader>
+    @if (DataBuild != null)
+    {
+
+
+         <MudPaper  class="p-3 m-2 nav-option-speech">
+        <div class="d-flex flex-column  " style="font-size:12px !important">
+
+
+             <FilterItemSelected Filter="DataBuild.CategoriesFilter" CurrentLanguage="@CurrentLanguage" />
+             <FilterItemSelected Filter="DataBuild.LanguagesFilter" CurrentLanguage="@CurrentLanguage" />
+             <FilterItemSelected Filter="DataBuild.ServiceTypeFilter" CurrentLanguage="@CurrentLanguage" />
+             <FilterItemSelected Filter="DataBuild.ModelTypesFilter" CurrentLanguage="@CurrentLanguage" />
+             <FilterItemSelected Filter="DataBuild.DialectsFilter" CurrentLanguage="@CurrentLanguage" />
+         </div>
+         </MudPaper>
+
+    }
+
+
+
+
+    <MudCardContent Class="flex-grow-1 mt-2 border-0 p-0 w-100 p-2 overflow-auto" Style="max-height:250px;min-height:250px">
+        <div id="chat-messages" class="d-flex flex-column gap-2">
+            @if (ChatMessages != null && ChatMessages.Any())
+            {
+                @foreach (var message in ChatMessages)
+                {
+                    <MessageComponent  Message="@message" MessageToSpeech="@SpeechMessage"  />
+
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body2" Class="text-center text-muted">
+                    No messages yet. Start the conversation!
+                </MudText>
+            }
+        </div>
+    </MudCardContent>
+        <MudPaper Elevation="25" Class="d-flex flex-row w-100 " Style="padding:2%">
+            <InputCardD ActionSendedr="onInput" />
+        </MudPaper>
+    <MudCard Style="width:100%" Class="mb-3 d-flex flex-column justify-content-start align-items-start">
+
+
+
+
+
+        <MudCard Style="width:100%" Class="d-flex flex-row-reverse">
+            <MudCardContent Style="width:100%">
+
+                <MudTextField T="string"
+                              Required="true"
+                              Class="custom-focus-border py-2 rounded-3"
+                              style="font-size:12px !important; font-weight:normal !important"
+                              RequiredError="Enter your Message!"
+                              @bind-Value="@textSpeech"
+                              Placeholder="Type a message..."
+                              Variant="Variant.Outlined"
+                              MaxLines="14" />
+
+            </MudCardContent>
+            <MudCardActions Class="pt-0">
+                <MudSpacer />
+                <MudTooltip Text="Submit">
+                    <MudIconButton Disabled="@_processing" ButtonType="ButtonType.Submit" OnClick="OnSubmit" Icon="@Icons.Material.Filled.Send"
+                                   Size="Size.Medium" Color="@AppColors.BASE_COLOR_ENUM">
+                        @if (_processing)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                        }
+                        else
+                        {
+                            <MudIcon Size="Size.Medium" Icon="@Icons.Material.Filled.Send" Color="@AppColors.BASE_COLOR_ENUM" />
+                        }
+
+                    </MudIconButton>
+
+                </MudTooltip>
+
+
+
+            </MudCardActions>
+
+
+        </MudCard>
+    </MudCard>
+
+
+</MudCard>
+</div> *@
+
+@code {
+
+
+
+    private bool IsSettingsMenuVisible = false;
+    // private string CurrentLanguage = "ar";
+
+    private RenderFragment? SelectedComponent;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await CreateSessionTokenAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            // await CreateSessionTokenAsync();
+        }
+    }
+
+    public new async Task SpeechMessage(ChatMessage message)
+    {
+        message.IsProcessing = true;
+        await base.SpeechMessage(message.DisplayedContent);
+        message.IsProcessing = false;
+        StateHasChanged();
+    }
+
+
+    private string textSpeech;
+  
+    private List<ChatMessage> ChatMessages = new();
+
+   
+
+    private async Task TriggerTypingEffect(ChatMessage message)
+    {
+        if (string.IsNullOrEmpty(message.Content))
+            return;
+
+        message.DisplayedContent = string.Empty;
+        foreach (char c in message.Content)
+        {
+            message.DisplayedContent += c;
+            StateHasChanged();
+            await Task.Delay(25);
+        }
+    }
+
+
+    async void onInput(string text)
+    {
+        textSpeech = text;
+
+        StateHasChanged();
+        await OnSubmit();
+    }
+
+    private MudForm form;
+    private bool _processing = false;
+    private void testing()
+    {
+        Navigation.NavigateTo("/ServiceInforMationModel");
+    }
+
+    [Parameter] public TextToDialectComponent? Param { get; set; }
+
+    [Parameter] public EventCallback ShareResult { get; set; }
+
+    // [Parameter] public EventCallback<OnDataResult> OnSubmit { get; set; }
+
+    [Parameter] public OnDataResult? OnResult { get; set; } = null;
+
+
+    private bool flag1 = false;
+    private string SelectedDialect = "";
+
+    private IEnumerable<string> TextStrength(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            yield return "Text cannot be empty.";
+
+        if (value.Length < 6)
+            yield return "Password must be at least 8 characters long.";
+        if (!value.Any(ch => "!@#$%^&*()".Contains(ch)))
+            yield return "Password must include at least one special character (!@#$%^&*()).";
+    }
+
+    private async Task AddTextToChatMessage(string message, string bg = "#21c99569")
+    {
+        ChatMessages.Add(new ChatMessage
+            {
+                DisplayedContent = message,
+                IsUser = "System",
+                BubbleColor = bg
+            });
+
+        StateHasChanged();
+    }
+
+
+    private async Task OnSubmit()
+    {
+        try
+        {
+            _processing = true;
+
+            if (ChatMessages != null && ChatMessages.Count() > 0)
+                ChatMessages.Clear();
+
+
+
+            StateHasChanged();
+
+            if (!string.IsNullOrWhiteSpace(textSpeech))
+            {
+
+             await   AddTextToChatMessage(textSpeech);
+              
+         
+
+                var resService = await templateServices.Text2Text(new DataBuildServiceBase { Text = textSpeech, ServiceId = "1" });
+                // _processing = _TemplateServices.IsEndProcessing;
+                // 
+                if (resService.Succeeded)
+                {
+
+                    var text = resService.Data.Result;
+                    if (!string.IsNullOrWhiteSpace(text))
+                    {
+                    
+
+                        var msg = new ChatMessage
+                            {
+                                Content = text,
+                                IsUser = "System",
+                                BubbleColor = ""
+                            };
+
+                        ChatMessages?.Add(msg);
+
+                        await TriggerTypingEffect(msg);
+
+                        _processing = false;
+
+                    }
+
+                    textSpeech = "";
+                }
+                else
+                {
+                    if (resService?.Messages?.Count() > 0)
+                        Snackbar.Add( resService.Messages[0], Severity.Warning);
+                    else
+                        Snackbar.Add("Errors!!", Severity.Warning);
+
+                    _processing = false; // Snackbar.Add(resService.Messages?[0] ?? "null", Severity.Warning);
+                }
+
+
+                StateHasChanged();
+                // var response = await _T2TService.T2TAsync(new QueryRequestTextToText { Text = textSpeech });
+
+                // if (response.Succeeded)
+                // {
+                //     string decodedText = response.Data.Result;
+                //     if (!string.IsNullOrWhiteSpace(decodedText))
+                //     {
+                //         addTextToChatMessage(decodedText,"#eeeeee");
+
+                //         var msg = new ChatMessage
+                //             {
+                //                 Content = decodedText,
+                //                 IsUser = "System",
+                //                 BubbleColor = ""
+                //             };
+
+                //         ChatMessages.Add(msg);
+
+                //         await TriggerTypingEffect(msg);
+
+                //         _processing = false;
+
+                //     }
+
+
+                //     OnResult = new OnDataResult()
+                //      {
+                //              Text = decodedText,
+                //              OperationType="TextToDialect",
+                //              Sccess=true,
+                //              SelectLanguage=SelectedDialect,
+                //             TypeSend="Send"
+                //      };
+
+                //     await OnSubmit.InvokeAsync(OnResult);
+
+
+                // }
+                //   textSpeech = "";
+                //   StateHasChanged();
+
+            }
+
+        }
+
+        catch (Exception ex)
+        {
+
+        }
+
+
+    }
+
+    // private Task OpenDialogAsyncS()
+    // {
+
+    //     var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+
+    //     return DialogService.ShowAsync<DialogUsageExample_Dialog>("Simple Dialog", options);
+    // }
+}

@@ -1,0 +1,273 @@
+﻿
+@using Domain.ShareData.Base
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Payment.DataBuildBillingBase
+@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.Data.UI.Templates.CreditCard
+@using LAHJA.Data.UI.Templates.Payment
+@using LAHJA.Helpers
+@using LAHJA.Helpers.Services
+@using LAHJA.UI.Components.Billing.Shared
+@using LAHJA.UI.Components.Payment
+@using Microsoft.AspNetCore.Authorization
+@using System.Globalization
+@using global::Shared.Constants.Router
+
+@inject NavigationManager Navigation;
+@inject LAHJA.Data.UI.Templates.Plans.TemplatePlans TemplatePlan
+@inject LAHJA.Data.UI.Templates.Payment.TemplatePayment templatePayment
+@inject LAHJA.Data.UI.Templates.Subscription.TemplateSubscription templateSubscription
+
+
+@inject LAHJA.Data.UI.Templates.Billing.TemplateBilling TemplateBilling
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile TemplateProfile
+@inject LAHJA.Data.UI.Templates.CreditCard.TemplateCreditCard templateCreditCard
+
+@attribute [Authorize]
+
+@inherits BaseInitializationComponent
+
+
+@if (templatePayment != null)
+{
+    @if (isLoading)
+    {
+
+        <Loading IsLoading="isLoading" />
+
+    } else
+    {
+
+        <MainPayment 
+
+        BuildPlanData="buildPlanData" 
+        BuildBillingData="buildBillingData"
+        HasPreviousSubscription="hasActiveFreeSubscription"
+        SubmitPayment="onSubmitCheckout"
+        SubmitCancelPreviousSubscription="OnSubmitDeleteSubscription"
+        BuildCreditCardData="buildCreditCardData" 
+        SubmitSelectedActiveCard="onSubmitActiveCreditCard"
+        SubmitCreateCard="OnSubmitCreateCard"
+        SubmitUpdateCard="OnSubmitUpdateCard"
+        SubmitDeleteCard="OnSubmitDeleteCard" />
+    }
+}
+
+
+@code{
+    [Parameter] public string PlanId { get; set; } = "";
+
+    private bool isLoading = true;
+    private PlanViewModel buildPlanData;
+    private DataBuildBillingBase? buildBillingData=new();
+    private List<CardDetails>? buildCreditCardData = new();
+    private bool hasActiveFreeSubscription = false;
+    private List<string> errors;
+
+    protected override async Task OnInitializedAsync()
+    {   
+        await  base.OnInitializedAsync();
+
+        if (!string.IsNullOrEmpty(PlanId))
+        {
+            await initializeDataAsync();
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+
+    //     }
+    // }
+
+    private async Task OnSubmitDeleteSubscription(string subscriptionId)
+    {
+        if (templateSubscription.BuilderComponents.SubmitDelete != null)
+        {
+            var response = await templateSubscription.BuilderComponents.SubmitDelete(new DataBuildUserSubscriptionInfo { Id = subscriptionId });
+            if (response.Succeeded)
+            {
+                hasActiveFreeSubscription = false;
+                await getPlanDataAsync();
+
+            }
+            else
+            {
+
+            }
+        }
+
+        isLoading = false;
+        StateHasChanged();
+
+    }
+
+    private async Task initializeDataAsync()
+    {
+        if (PlanId != null)
+        {
+
+            var activeSubscription = await templateSubscription.GetUserActiveSubscriptionAsync();
+            if (activeSubscription != null && activeSubscription.Succeeded)
+            {
+
+                if (TemplatePlan.BuilderComponents.GetPlans != null)
+                {
+                    var response = await TemplatePlan.BuilderComponents.GetPlanById(new DataBuildPlansBase { PlanId = activeSubscription?.Data?.PlanId, Lg = lg });
+                    if (response.Succeeded)
+                    {
+                        hasActiveFreeSubscription = response.Data.IsFree;
+                        if (hasActiveFreeSubscription)
+                        {
+                            buildPlanData = response.Data;
+                            if (activeSubscription?.Data != null)
+                                buildPlanData.SubscriptionId = activeSubscription.Data.Id;
+                        }
+                    }
+                    
+                }
+                
+
+            }
+
+            if (!hasActiveFreeSubscription)
+            {
+              await  getPlanDataAsync();
+            }
+
+        }
+        // else
+        // {
+        //     errors = planResult.Messages;
+
+        // }
+
+        // }
+    }
+
+
+    private async Task getPlanDataAsync()
+    {
+        var planResult = await TemplatePlan.BuilderComponents.GetPlanById(new DataBuildPlansBase { PlanId = PlanId, Lg = lg });
+        if (planResult.Succeeded)
+        {
+
+
+            // await SubscriptionHelpers.filterPlansAsync();
+            buildPlanData = planResult.Data;
+            // buildPlanData.IsSubscriptionAllowed = !hasActiveFreeSubscription;
+
+
+            // var res = await TemplateProfile.GetDataBuildSubscriptions(new FilterResponseData {  lg = lg });
+            // if (res.Succeeded && res.Data?.Any()==true)
+            // {
+            //     var sub = res.Data.FirstOrDefault(x => x.PlanId == PlanId);
+            //     if (sub != null)
+            //     {
+            //         buildPlanData.Status = sub.Status;
+            //         buildPlanData.IsSubscriptionAllowed = false;
+            //         buildPlanData.IsUpgradeAllowed = false;
+            //         if (planResult.Data.Name.ToLower() == "free")
+            //         {
+
+
+
+            //         }
+            //         else
+            //         {
+            //             buildPlanData.IsSubscriptionAllowed = sub.Status.ToLower() != "active";
+            //             buildPlanData.IsUpgradeAllowed = sub.Status.ToLower() == "active";
+            //         }
+            //         buildPlanData.IsSubscriptionAllowed = sub.Status.ToLower()!="active";
+            //     }
+        }
+    }
+    private async Task initializeBillingDetailsAsync()
+    {
+
+
+        var billingsResult = await TemplateBilling.GetBillingDetails();
+
+
+        if (billingsResult.Succeeded)
+        {
+            buildBillingData = billingsResult.Data;
+        }
+        else
+        {
+            errors = billingsResult.Messages;
+        }
+
+        StateHasChanged();
+
+    }
+    private async Task initializeCreditCardDetailsAsync()
+    {
+        var creditsResult = await templateCreditCard.GetCreditCardDetails();
+
+        if (creditsResult.Succeeded)
+        {
+            buildCreditCardData = creditsResult.Data;
+        }
+        else
+        {
+            errors = creditsResult.Messages;
+        }
+
+        StateHasChanged();
+    }
+
+
+    private async Task onSubmitCheckout(PlanViewModel plan)
+    {
+        if (templatePayment.BuilderComponents.SubmitCheckout != null && plan!=null)
+            await templatePayment.BuilderComponents.SubmitCheckout(new DataBuildPaymentBase { PlanId = plan.Id });
+    }
+    private async Task onSubmitActiveCreditCard(CardDetails card)
+    {
+        if (templateCreditCard.BuilderComponents.SubmitActiveCreditCard != null && card != null)
+            await templateCreditCard.BuilderComponents.SubmitActiveCreditCard(new DataBuildCreditCardBase { CreditCard = card });
+    }
+    private async Task OnSubmitCreateCard(CardDetails data)
+    {
+        if (templateCreditCard.BuilderComponents.SubmitCreateCreditCardDetails!=null)
+        {
+            await templateCreditCard.BuilderComponents.SubmitCreateCreditCardDetails(new DataBuildCreditCardBase { CreditCard=data });
+        }
+    }
+    private async Task OnSubmitUpdateCard(CardDetails data)
+    {
+        if (templateCreditCard.BuilderComponents.SubmitUpdateCreditCardDetails != null)
+        {
+            await templateCreditCard.BuilderComponents.SubmitUpdateCreditCardDetails(new DataBuildCreditCardBase { CreditCard = data });
+        }
+    }
+    private async Task OnSubmitDeleteCard(CardDetails data)
+    {
+        if (templateCreditCard.BuilderComponents.SubmitDeleteCreditCardDetails != null)
+        {
+            await templateCreditCard.BuilderComponents.SubmitDeleteCreditCardDetails(new DataBuildCreditCardBase { CreditCard = data });
+        }
+    }
+    private async Task CheckoutAsync()
+    {
+
+        var res = await templatePayment.CheckoutAsync(new DataBuildPaymentBase { PlanId = PlanId });
+
+        if (res.Data != null)
+
+            Navigation.NavigateTo(res.Data.Url ?? RouterPage.HOME);
+    }
+
+}
+
+  

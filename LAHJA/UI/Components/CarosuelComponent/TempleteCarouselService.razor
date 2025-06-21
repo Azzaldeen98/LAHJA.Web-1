@@ -1,0 +1,116 @@
+@using LAHJA.Data.UI.Components.ServiceCard
+
+@inject ISnackbar Snackbar
+@if (Params != null)
+{
+    
+    
+   <MudCarousel Class="Params.ClassContainer" Style="height:400px;width:400px;" ShowArrows="@arrows" ShowBullets="@bullets" EnableSwipeGesture="@enableSwipeGesture" AutoCycle="@autocycle" TData="object">
+
+
+   
+        @if (@TypeCarosuelCard)
+        {
+
+            @foreach (var item in Params.DataBuild.UrlList)
+            {
+
+                <MudCarouselItem Transition="transition">
+                    <div class="Params.ClassItem" style="height:100%">
+
+
+                        <MudCardMedia Image="@item" Height="250" onclick="@(()=>Submit(@Params.DataBuild))" />
+
+                    </div>
+
+                </MudCarouselItem>
+            }
+
+        }
+        else
+        {
+
+            @foreach (var item in Params.DataBuild.UrlList)
+            {
+                
+                    <MudCarouselItem>
+                        <div class="testimonial">
+                        <MudAvatar Class="avatar" Size="Size.Large" Image="@item" />
+                            <div class="testimonial-content">
+                            <h3 class="customer-name">@Params.DataBuild.Name</h3>
+                            <p class="testimonial-text">"@Params.DataBuild.Descrption"</p>
+                            </div>
+                        </div>
+                
+
+                </MudCarouselItem>
+
+
+            }
+
+        }
+     
+     
+</MudCarousel>
+
+@if(MyAdmin)
+{
+<MudSelect @bind-Value="transition" Label="Transition" Class="ma-2">
+    <MudSelectItem Value="@Transition.Fade">Fade</MudSelectItem>
+    <MudSelectItem Value="@Transition.Slide">Slide</MudSelectItem>
+    <MudSelectItem Value="@Transition.None">None</MudSelectItem>
+</MudSelect>
+<MudSwitch @bind-Value="arrows" Color="Color.Primary">Show Arrows</MudSwitch>
+<MudSwitch @bind-Value="bullets" Color="Color.Primary">Show Bullets</MudSwitch>
+<MudSwitch @bind-Value="enableSwipeGesture" Color="Color.Primary">Enable Swipe Gesture</MudSwitch>
+<MudSwitch @bind-Value="autocycle" Color="Color.Primary">Auto Cycle (Default: 5 secs)</MudSwitch>
+
+
+
+    
+    
+}
+}
+
+else
+{
+
+
+
+<MudAlert Severity="Severity.Normal" Variant="Variant.Outlined">Eror not Server!!!</MudAlert>
+
+
+
+}
+
+@code{
+
+
+
+
+    [Parameter] public EventCallback<ResponecCarouselCard> OnClick { get; set; }
+    private bool arrows = true;
+    private bool bullets = true;
+    private bool enableSwipeGesture = true;
+    [Parameter]
+    public bool TypeCarosuelCard { get; set; } = false;
+    private bool autocycle = true;
+    private Transition transition = Transition.Slide;
+        [Parameter]
+    public CarosuelCardCompoent Params{ get; set; }
+    [Parameter]
+    public bool MyAdmin { get; set; } = false;
+
+
+    private async void Submit(CarosuelCardModel obj)
+    {
+
+ 
+         if (OnClick.HasDelegate)
+                {
+                    await OnClick.InvokeAsync(new ResponecCarouselCard(){Id=obj.Id});
+                }
+        
+
+    }
+}

@@ -1,0 +1,163 @@
+﻿ @page "/Logout"
+ @page "/Logout/{InBackend:bool}"
+ @page "/Logout/{CancelUrl}/{InBackend:bool}"
+
+@using Domain.ShareData
+@using LAHAJ.Loading
+@using LAHJA.Helpers.Services
+@using Microsoft.AspNetCore.Authorization
+@using LAHJA.UI.Components.General.Button
+@using Microsoft.AspNetCore.Components.Authorization
+@using MudBlazor
+@using global::Shared.Constants
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject LAHJA.Data.UI.Templates.Auth.TemplateAuth templateAuth
+@inject IManageLanguageService _manageLanguageService
+@inject IHttpContextAccessor HttpContextAccessor
+
+@attribute [AllowAnonymous]
+
+
+@if (!InBackend){
+
+    <MudContainer Class="d-flex flex-column align-center justify-center" Style="height: 100vh;">
+        <MudCard Class="p-4" Elevation="6" Style="animation: fadeIn 0.5s ease-in-out;">
+            <MudCardContent>
+                <MudText Typo="Typo.h5" Class="mb-3">@Trans("Question")</MudText>
+                <MudDivider Class="mb-3" />
+                <MudStack Direction="Row" Spacing="2" JustifyContent="Center">
+                    <CustomButton OnClick="ConfirmLogout" Text="@Trans("Logout")" />
+                    <CancelButton Lang="@lg" OnClick="CancelLogout" />
+                </MudStack>
+                <MudText Color="Color.Error" Class="mt-2">@errorMessage</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudContainer>
+}
+
+<Loading IsLoading="isLoading" />
+
+@code
+{
+    private string token;
+    private bool isLoading = false;
+    private string errorMessage;
+    private string lg = "ar";
+
+    [Parameter]
+    public EventCallback<bool>OnClickLogout{ get; set; }
+
+    [Parameter]
+    public bool FlagDev { get; set; } = true;
+
+    [Parameter]
+    public bool InBackend { get; set; } = true;  
+    [Parameter]
+    public string CancelUrl { get; set; }
+
+    Dictionary<string, Dictionary<string, string>> labels = new()
+    {
+        { "ar", new Dictionary<string, string> { 
+            { "Question", "هل أنت متأكد أنك تريد تسجيل الخروج؟" },
+            { "Logout", "نعم، تسجيل الخروج" }
+        } },
+        { "en", new Dictionary<string, string> { 
+            { "Question", "Are you sure you want to log out?" },
+            { "Logout", "Yes, Logout" }
+        } }
+    };
+
+
+
+    private string Trans(string key)
+    {
+        return labels.ContainsKey(lg) &&
+        labels[lg].ContainsKey(key) ? labels[lg][key] : "";
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(CancelUrl))
+        {
+            CancelUrl = System.Web.HttpUtility.UrlDecode(CancelUrl);
+        }
+
+        await logoutAsync();
+    }
+
+    private  async Task logoutAsync()
+    {
+
+        if (InBackend)
+        {
+            isLoading = true;
+
+            await logOutAsync();
+        }
+        else
+        {
+            lg = CultureInfo.CurrentUICulture.Name;
+
+        }
+
+        StateHasChanged(); 
+
+    }
+
+
+    private async Task logOutAsync()
+    {
+
+        await templateAuth.LogoutAsync();
+        
+       
+        @* Navigation.NavigateTo(RouterPage.HOME, forceLoad: true); *@
+
+    }
+    
+
+    private async Task ConfirmLogout()
+    {
+        try
+        {
+            isLoading = true;
+            if (FlagDev)
+            {
+                await logOutAsync();
+
+                if (OnClickLogout.HasDelegate)
+                {
+                    await OnClickLogout.InvokeAsync(true);
+                }
+            }
+            else
+            {
+                errorMessage = "Api قيد الاصلاح ";
+                StateHasChanged();
+            }
+
+        }
+        catch(Exception ex)
+        {
+            errorMessage = "Failed to log out. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+
+
+
+     
+    }
+
+    private void CancelLogout()
+    {
+        Navigation.NavigateTo(CancelUrl??"/");
+    }
+}
+

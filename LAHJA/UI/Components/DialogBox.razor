@@ -1,0 +1,78 @@
+﻿@using LAHJA.Them
+
+
+
+    <MudDialog class="d-flex align-center justify-content-center flex-column" style="width:40% !important">
+        <DialogContent>
+            <MudText Typo="Typo.h6">@Title</MudText>
+            <MudText Typo="Typo.body1">@Message</MudText>
+        </DialogContent>
+        <DialogActions >
+            <div class="d-flex justify-content-around align-items-center">
+            <MudButton OnClick="onConfirm" Color="AppColors.BASE_COLOR_ENUM">@GetTrans("OK")</MudButton>
+            <MudButton OnClick="onCancel" Color="Color.Secondary">@GetTrans("Cancel")</MudButton>
+        </div>
+        </DialogActions>
+    </MudDialog>
+
+
+@code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Message { get; set; }
+    [Parameter] public string Lang { get; set; } = "ar";
+
+    private void onCancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+
+    }
+
+
+    private string GetTrans(string key)
+    {
+        return Trans[Lang].ContainsKey(key)?Trans[Lang][key]:"";
+    }
+
+    private void onConfirm()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private Dictionary<string, Dictionary<string, string>> Trans = new()
+        {
+            ["ar"] = new Dictionary<string, string>
+            {
+                {"OK", "موافق"},
+                {"Cancel", "إلغاء"},
+            },
+            ["en"] = new Dictionary<string, string>
+            {
+                {"OK", "OK"},
+                {"Cancel", "Cancel"},
+            },
+        };
+
+
+    // private Task showDialog(DataBuildUserSubscriptionInfo data)
+    // {
+    //     var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+    //     var parameters = new DialogParameters<SubscriptionDetails>
+    //     {
+    //         { x =>x.DataBuild,data },
+    //         { x =>x.Language,lg},
+    //         { x =>x.SubmitPause,SubmitPause},
+    //         { x =>x.SubmitResume,SubmitResume},
+    //         { x =>x.SubmitDelete,SubmitDelete},
+    //         { x =>x.SubmitCheckoutManage,SubmitCheckoutManage},
+    //     };
+
+    //     DialogService.Show<SubscriptionDetails>("", parameters, options);
+    //     Navigation.NavigateTo($"/settings/spaces/{data.Id}");
+    //     return Task.CompletedTask;
+
+    // }
+
+}

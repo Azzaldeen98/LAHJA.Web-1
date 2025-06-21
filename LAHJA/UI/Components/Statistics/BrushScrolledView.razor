@@ -1,0 +1,198 @@
+﻿@using ApexCharts
+ 
+ 
+   
+ 
+ <MudGrid >
+        <MudItem xs="12" sm="4" md="4">
+
+        <MudSelect T="int" Label="Select an Option" @bind-Value="selectedIndex">
+            <MudSelectItem Value="0" OnClick="@(()=>clickitems(0))">ALL</MudSelectItem>
+            <MudSelectItem Value="1" OnClick="@(()=>clickitems(1))">Text To Text</MudSelectItem>
+            <MudSelectItem Value="2" OnClick="@(()=>clickitems(2))">Text TO Speech</MudSelectItem>
+            <MudSelectItem Value="3" OnClick="@(()=>clickitems(3))">Chat Gnrate</MudSelectItem>
+
+        </MudSelect>
+
+             
+        </MudItem>
+        </MudGrid>
+
+
+<ApexChart TItem="TimeSeries"
+           Title="Value"
+           Options=options1
+           Height="200"
+           XAxisType="XAxisType.Datetime">
+    <ApexPointSeries TItem="TimeSeries"
+                     Items="data"
+                     Name="Value"
+                     SeriesType="SeriesType.Bar"
+                     XValue="@(e => e.Date)"
+                     YAggregate="@(e=> e.Sum(e => e.Value))"
+                     OrderBy="e=>e.X"
+                     Stroke="@(new SeriesStroke { Width = 2, Color="#1F15E5"})" />
+</ApexChart>
+
+<ApexChart TItem="TimeSeries"
+           Title="Quantity"
+           Options=options2
+           Height="150"
+           XAxisType="XAxisType.Datetime"
+           OnBrushScrolled=BrushScroll>
+    <ApexPointSeries TItem="TimeSeries"
+                     Items="data"
+                     Name="Quantity"
+                     SeriesType="SeriesType.Bar"
+                     XValue="@(e => e.Date)"
+                     YValue="@(e => e.Quantity)"
+                     OrderBy="e=>e.X"
+                     Stroke="@(new SeriesStroke { Width = 2, Color="#E51C15"})" />
+</ApexChart>
+
+ 
+
+
+ @code
+{
+
+
+
+
+
+    private int selectedIndex = 0;  
+    private string selectedOption = "Posts";
+    public class TimeSeries
+    {
+        public DateTimeOffset Date { get; set; }
+        public decimal Value { get; set; }
+        public decimal Quantity { get; set; }    
+    }
+
+
+
+
+
+    public class TimeSeriesGenerator
+    {
+        public List<TimeSeries> TimeSeries { get; private set; }
+
+        public TimeSeriesGenerator(IDictionary<string, ICollection<int>> dataAnalysis, int index = 0)
+        {
+            TimeSeries = GenerateSampleData(index);
+        }
+
+
+
+
+        private int? _selectedIndex;
+
+        public int? SelectedIndex
+        {
+            get => _selectedIndex;
+            set
+            {
+                if (_selectedIndex != value)
+                {
+                    _selectedIndex = value;
+
+                }
+            }
+        }
+
+
+
+
+        private List<TimeSeries> GenerateSampleData(int index)
+        {
+
+
+            var random = new Random();
+            var data = new List<TimeSeries>();
+            var startDate = DateTimeOffset.Now.AddDays(-100);
+
+            for (int i = 0; i < 100; i++)
+            {
+                data.Add(new TimeSeries
+                    {
+                        Date = startDate.AddDays(i),
+                        Value = random.Next(10, 100) * (index + 1),
+                        Quantity = random.Next(1, 20) * (index + 1)
+                    });
+            }
+
+            return data;
+        }
+    }
+
+
+
+
+    [Parameter] public IDictionary<string, ICollection<int>> DataAnlaysis { get; set; }
+    private List<TimeSeries> data { get; set; }
+    private ApexChartOptions<TimeSeries> options1 = new();
+    private ApexChartOptions<TimeSeries> options2 = new();
+
+    private DateTimeOffset XMin;
+    private DateTimeOffset XMax;
+
+
+
+
+
+    private void clickitems(int index)
+    {
+
+        data = new TimeSeriesGenerator(DataAnlaysis, index).TimeSeries;
+        this.InvokeAsync(() => StateHasChanged());
+    }
+
+
+
+
+
+    protected override void OnInitialized()
+    {
+        const string mainChartId = "mainChart";
+        data = new TimeSeriesGenerator(DataAnlaysis).TimeSeries;
+        clickitems(0);
+        options1.Chart.Id = mainChartId;
+        options1.Chart.Toolbar = new Toolbar { AutoSelected = AutoSelected.Pan, Show = false };
+
+        XMin = data.Min(e => e.Date).AddDays(30);
+        XMax = XMin.AddDays(40);
+
+
+        options2.Chart.Toolbar = new Toolbar { Show = false };
+        options2.Xaxis = new XAxis { TickPlacement = TickPlacement.On };
+        options2.Chart.Brush = new ApexCharts.Brush { Enabled = true, Target = mainChartId };
+        options2.Chart.Selection = new Selection
+
+            {
+                Enabled = true,
+                Xaxis = new SelectionXaxis
+                {
+                    Min = XMin.ToUnixTimeMilliseconds(),
+                    Max = XMax.ToUnixTimeMilliseconds()
+                }
+            };
+    }
+
+    private void BrushScroll(SelectionData<TimeSeries> selection)
+    {
+
+        var min = selection?.XAxis?.Min;
+        if (min != null)
+        {
+            XMin = DateTimeOffset.FromUnixTimeMilliseconds((long)min);
+        }
+
+        var max = selection?.XAxis?.Max;
+        if (max != null)
+        {
+            XMax = DateTimeOffset.FromUnixTimeMilliseconds((long)max);
+        }
+    }
+
+
+ }

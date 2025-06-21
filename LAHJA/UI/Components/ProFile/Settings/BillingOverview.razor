@@ -1,0 +1,164 @@
+﻿@using LAHJA.UI.Components.ProFile.Charts
+@using LAHJA.UI.Components.ProFile.USettings
+@using LAHJA.Them
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+
+ <MudGrid Class="mt-6">
+    <MudItem xs="12" sm="12" md="12">
+        <MudPaper Class="shadow-alternate-sm mt-4 w-full flex-col gap-4 self-start rounded-xl border border-gray-100 px-4 pt-4">
+            <MudText Typo="Typo.body1" Class="font-semibold">
+                @Translate("UsageQuota")
+            </MudText>
+            <MudText Typo="Typo.body2" Class="ml-auto text-xs leading-none text-gray-400 sm:text-sm">
+                <MudLink Href="/subscribe/pro" Class="underline hover:text-gray-500 dark:hover:text-gray-300">
+                    @Translate("SubscribeToPRO")
+                </MudLink>
+                @Translate("HigherLimits")
+            </MudText>
+
+            <MudGrid Class="lg:grid-cols-2 grid-rows-2 gap-5 sm:gap-x-8 sm:gap-y-7">
+                <MudItem>
+                    <Storage />
+                                
+                </MudItem>
+
+                <MudItem>
+                    <UsageCard Title="Zero GPU"
+                                Value="0/5 minutes"
+                                DocumentationLink="/spaces/enzostvs/zero-gpu-spaces" />
+    <MudProgressLinear Color="Color.Primary" Value="@Value" Class="my-7" />
+                 
+                </MudItem>
+
+                <MudItem>
+                    <UsageCard Title="Inference API"
+                                Value="0/1,000 requests"
+                                DocumentationLink="/playground" />
+    <MudProgressLinear Color="Color.Secondary" Value="@Value" Class="my-7" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudPaper Class="-mx-4 flex flex-col gap-2 overflow-hidden rounded-b-xl border-t border-gray-100  p-4">
+                        <MudGrid>
+                            <MudItem>
+                                <MudText Typo="Typo.body2" Class="font-medium">
+                                    @Translate("PublicRepositoriesStorage")
+                                </MudText>
+                            </MudItem>
+                            <MudItem>
+                                <MudText Typo="Typo.body2" >
+                                    0 @Translate("Bytes")
+                                </MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+        <MudText Class="px-3 py-2" Typo="Typo.body1">
+            @Translate("ConfirmEmail")
+        </MudText>
+    </MudItem>
+</MudGrid>
+
+
+
+
+@code {
+    private bool _disposed;
+
+    public int Value { get; set; }
+
+    public async Task SimulateProgressAsync()
+    {
+        Value = 0;
+        do
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            Value += 4;
+            StateHasChanged();
+            await Task.Delay(500);
+
+        } while (Value < 100);
+
+        await SimulateProgressAsync();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SimulateProgressAsync();
+         
+    }
+
+    public void Dispose() => _disposed = true;
+
+
+    private Dictionary<string, string> translations;
+    private string CurrentLanguage="ar";
+ 
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender && templateBilling!=null)
+    //     {
+    //         var res = await templateBilling.GetBillingDetails();
+    //         if (res.Succeeded)
+    //         {
+    //             billingData = res.Data;
+    //         }
+    //     }
+    // }
+
+protected override void OnInitialized()
+{
+    LoadTranslations();
+}
+private string Translate(string key)
+{
+    return translations.ContainsKey(key) ? translations[key] : key;
+}
+private void LoadTranslations()
+{
+    if (CurrentLanguage == "ar")
+    {
+        translations = new Dictionary<string, string>
+        {
+            { "Billing", "الفوترة" },
+            { "Overview", "نظرة عامة" },
+            { "PaymentInformation", "معلومات الدفع" },
+            { "PROSubscription", "الاشتراك PRO" },
+            { "UsageQuota", "حصة الاستخدام" },
+            { "SubscribeToPRO", "اشترك في PRO" },
+            { "HigherLimits", "للحصول على حدود أعلى" },
+            { "PublicRepositoriesStorage", "تخزين المستودعات العامة" },
+            { "Bytes", "بايت" },
+            { "ConfirmEmail", "أكد عنوان بريدك الإلكتروني لاستخدام خدماتنا المدفوعة" }
+        };
+    }
+    else
+    {
+        translations = new Dictionary<string, string>
+        {
+            { "Billing", "Billing" },
+            { "Overview", "Overview" },
+            { "PaymentInformation", "Payment Information" },
+            { "PROSubscription", "PRO Subscription" },
+            { "UsageQuota", "Usage Quota" },
+            { "SubscribeToPRO", "Subscribe to PRO" },
+            { "HigherLimits", "For higher limits" },
+            { "PublicRepositoriesStorage", "Public repositories storage" },
+            { "Bytes", "Bytes" },
+            { "ConfirmEmail", "Confirm your email to use our paid services" }
+        };
+    }
+}
+
+                }

@@ -1,0 +1,241 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Components.ServiceVM
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+<MudContainer MaxWidth="MaxWidth.Medium">
+
+  
+
+    <MudPaper Class="p-3 right12w120">
+        <MudGrid Style="font-size:12px!important">
+
+            <MudItem xs="12" md="7">
+
+                <MudText Typo="Typo.body1">@Param.TableOfContents.Title</MudText>
+                <MudDivider Class="mb-2" />
+
+                <MudText Typo="Typo.body2" Class="mt-3" Id="ModelSummary">@Param.ModelSummary.Title</MudText>
+                <MudText Typo="Typo.body2" Style="font-size: 0.74rem;">@Param.ModelSummary.Description</MudText>
+
+                <MudText Typo="Typo.body2" Class="mt-3" Style="font-size:15px!important">Inference Examples</MudText>
+                <MudPaper Class="p-3" Style="width:80% !important;">
+                    <MudText Typo="Typo.body2" Style="font-size: 12px !important;">@Param.InferenceExamples.Description</MudText>
+                </MudPaper>
+
+
+            </MudItem>
+
+
+
+            <MudItem xs="12" md="5">
+
+                <MudText Typo="Typo.body1" Class="mt-3">Model Tree</MudText>
+                <MudExpansionPanels>
+                    @foreach (var item in Param.ModelTree)
+
+
+
+                    {
+
+
+
+                        <MudExpansionPanel Text="@item.Title">
+                            <MudText Typo="Typo.body2">@item.Description</MudText>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+                <MudText Typo="Typo.body2" Class="mt-3">@Param.DownloadsTrend.Title</MudText>
+
+
+
+            </MudItem>
+
+
+        </MudGrid>
+
+    </MudPaper>
+
+</MudContainer>
+
+
+@code 
+{
+    [Parameter]
+    public ContentServiceInformationModelPige? Param { get; set; } = new ContentServiceInformationModelPige();
+ 
+    ContentServiceInformationModelPige obj = new ContentServiceInformationModelPige();
+    [Parameter]
+    public bool IsEnglish { get; set; } = true;
+
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+
+
+
+    }
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+            IsEnglish = true;
+            Param = LoadEnglishContent();
+        }
+        else
+        {
+            IsEnglish = false;
+            Param = LoadArabicContent();
+
+
+
+        }
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+
+
+
+
+
+
+    private ContentServiceInformationModelPige LoadEnglishContent()
+    {
+
+
+        obj = new ContentServiceInformationModelPige()
+            {
+
+
+
+
+
+                TableOfContents = new ContentItemT2T
+                {
+                    Title = "Table of Contents",
+                    Description = "A summary of the document structure."
+                },
+
+                ModelSummary = new ContentItemT2T
+                {
+                    Title = "Model Summary",
+                    Description = "ModernBERT is a modernized bidirectional encoder-only Transformer model (BERT-style) pre-trained on 2 trillion tokens of English and code data with a native context length of up to 8,192 tokens. ModernBERT leverages recent architectural improvements such as Rotary Positional Embeddings (RoPE) for long-context support."
+                },
+
+                InferenceExamples = new ContentItemT2T
+                {
+                    Description = "Fill-Mask inference and other capabilities are available. See detailed usage below."
+                },
+
+                ModelTree = new List<ContentItemT2T>
+        {
+            new ContentItemT2T { Title = "Adapters", Description = "10 models available for adapters." },
+            new ContentItemT2T { Title = "Finetunes", Description = "47 models available for fine-tuning." },
+            new ContentItemT2T { Title = "Quantizations", Description = "1 model available for quantization." }
+        },
+
+                DownloadsTrend = new ContentItemT2T
+                {
+                    Title = "Downloads Trend",
+                    Description = "Statistics on model downloads."
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            };
+        return obj;
+
+    }
+ 
+    private ContentServiceInformationModelPige LoadArabicContent()
+    {
+
+
+
+
+        obj = new ContentServiceInformationModelPige()
+            {
+
+                TableOfContents = new ContentItemT2T
+                {
+                    Title = "جدول المحتويات",
+                    Description = "ملخص هيكل المستند."
+                },
+
+                ModelSummary = new ContentItemT2T
+                {
+                    Title = "ملخص النموذج",
+                    Description = "ModernBERT هو نموذج Transformer حديث معتمد على التشفير المزدوج تم تدريبه مسبقًا على 2 تريليون من الرموز الإنجليزية وبيانات البرمجة بحد سياق أصلي يصل إلى 8,192 رمزًا. يستفيد ModernBERT من تحسينات معمارية حديثة مثل التضمينات الموضعية الدوارة (RoPE) لدعم السياقات الطويلة."
+                },
+
+                InferenceExamples = new ContentItemT2T
+                {
+                    Description = "التنبؤ بملء القناع والقدرات الأخرى متوفرة. انظر الاستخدام التفصيلي أدناه."
+                },
+
+                ModelTree = new List<ContentItemT2T>
+        {
+            new ContentItemT2T { Title = "المهايئات", Description = "10 نماذج متاحة للمهايئات." },
+            new ContentItemT2T { Title = "النماذج المعدلة", Description = "47 نموذجًا متاحًا للتعديل." },
+            new ContentItemT2T { Title = "التكميم", Description = "1 نموذج متاح للتكميم." }
+        },
+
+                DownloadsTrend = new ContentItemT2T
+                {
+                    Title = "اتجاهات التنزيل",
+                    Description = "إحصائيات عن تنزيل النموذج."
+                }
+            };
+        return obj;
+    }
+
+
+
+    
+}

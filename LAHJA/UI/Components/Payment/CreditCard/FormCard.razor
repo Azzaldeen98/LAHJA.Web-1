@@ -1,0 +1,446 @@
+﻿@using Domain.ShareData
+
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@using System.Text.RegularExpressions
+
+@inject MessageBox messageBox
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+@inherits PaymentCard<CardDetails>
+
+
+<MudPaper Class="pa-4 w-100 " >
+    <MudCard Class="p-3  m-4">
+    @if (!isReadOnly && _isUpdate)
+    {
+        <div class="w-100 m-auto p-3 d-flex justify-content-around align-items-center">
+            <MudIconButton Class="w-100" Icon="@Icons.Material.Filled.Details" Variant="Variant.Filled" OnClick="OnShowDetails" />
+        </div>
+    }
+
+    <MudText Typo="Typo.h6" Align="Align.Center">@GetTranslation("Title")</MudText>
+    <MudForm Model="@newCard" @ref="form" IsValid="true">
+
+
+        <MudGrid Class="justify-space-between">
+
+            <MudItem xs="12">
+                <MudSelect ReadOnly="@isReadOnly" T="string" @bind-Value="newCard.CardType" Label="@GetTranslation("CardType")" Required>
+                    <MudSelectItem Value=@("MasterCard")>MasterCard</MudSelectItem>
+                    <MudSelectItem Value=@("Visa")>Visa</MudSelectItem>
+                    <MudSelectItem Value=@("Amex")>Amex</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField Label="@GetTranslation("CardNumber")"
+                              @bind-Value="newCard.CardNumber"
+                              Variant="Variant.Text"
+                              InputType="InputType.Number"
+                              Immediate="true"
+                              RequiredError="@GetTranslation("CardNumberError")"
+                              Error="@isCardNumberInvalid"
+                              ErrorText="@cardNumberError"
+                              OnInternalInputChanged="ValidateCardNumber"
+                              Required
+                              ReadOnly="@isReadOnly" />
+                @if (!string.IsNullOrEmpty(cardNumberError))
+                {
+                    <div class="text-danger">@cardNumberError</div>
+                }
+            </MudItem>
+       
+            <MudItem xs="6">
+                <MudTextField Label="@GetTranslation("ExpirationDate")"
+                              @bind-Value="newCard.ExpirationDate"
+                              Variant="Variant.Text"
+                              Pattern="^(0[1-9]|1[0-2])\/?([0-9]{2})$"
+                              RequiredError="@GetTranslation("ExpirationDateError")"
+                              ErrorText="@GetTranslation("InvalidExpDatePatternError")"
+                              Immediate="true"
+                              Required
+                            ReadOnly="@isReadOnly"/>
+                    @if (!string.IsNullOrEmpty(expirationDateError))
+                    {
+                         <div class="text-danger">@expirationDateError</div>
+                    }
+               
+            </MudItem>
+
+            <MudItem xs="6">
+                <MudTextField Label="@GetTranslation("CVC")"
+                              @bind-Value="newCard.CVC"
+                              Variant="Variant.Text"
+                              InputType="InputType.Password"
+                              RequiredError="@GetTranslation("CVCError")"
+                              Pattern="^\d{3,4}$"
+                              ErrorText="@GetTranslation("InvalidCVCPatternError")"
+                              Required
+                              ReadOnly="@isReadOnly" />
+                @if (!string.IsNullOrEmpty(cVCError))
+                {
+                    <div class="text-danger">@cVCError</div>
+                }
+            </MudItem>
+
+         
+
+            <MudItem xs="12">
+                <MudTextField Label="@GetTranslation("CardHolder")"
+                              @bind-Value="newCard.HolderName"
+                              Variant="Variant.Text"
+                              InputType="InputType.Text"
+                              RequiredError="@GetTranslation("CardHolderNameError")" 
+                              Required
+                              ReadOnly="@isReadOnly" />
+                @if (!string.IsNullOrEmpty(holderNameError))
+                {
+                    <div class="text-danger">@holderNameError</div>
+                }
+            </MudItem>
+
+        
+                <MudItem xs="12" Class="mt-2">
+                @if (!isReadOnly)
+                {
+                    <MudButton Class="w-100" Color="@AppColors.BASE_COLOR_ENUM" Variant="Variant.Filled" OnClick="@(_isUpdate?OnSaveUpdate:OnSaveAdd)">
+                        @(_isUpdate ? GetTranslation("Update") : GetTranslation("AddCard"))
+                    </MudButton>
+                }
+                else
+                {
+            
+                        <div class="w-100 m-auto p-3 d-flex justify-content-around align-items-center">
+                            <MudSwitch T="bool" Value="newCard.IsSelected" ValueChanged="OnStatusChanged" Color="(Color.Success)"> @GetTranslation(newCard.IsSelected ? "Active" : "UnActive") </MudSwitch>
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" OnClick="OnEditCard" />
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" OnClick="OnDeleteCard" />
+                        </div> 
+                    
+                }
+            </MudItem>
+            
+        </MudGrid>
+    </MudForm>
+</MudCard>
+</MudPaper>
+
+@* <MudGrid Class="justify-space-between" Style="max-width: 400px;">
+    <MudItem xs="12">
+        <MudTextField Mask="@(new PatternMask("0000 0000 0000 0000"))" Label="Credit Card Number"
+                      @bind-Value="creditCard" Variant="@Variant.Text" Clearable />
+    </MudItem>
+    <MudItem xs="4">
+        <MudTextField Mask="@(new DateMask("MM/YY", 'Y', 'M'))" Label="Expires"
+                      @bind-Value="expiration" Variant="@Variant.Text" />
+    </MudItem>
+    <MudItem xs="4" />
+    <MudItem xs="4">
+        <MudTextField Mask="@(new PatternMask("000"))" Label="CVC"
+                      @bind-Value="cvc" Variant="@Variant.Text" />
+    </MudItem>
+    <MudItem xs="12">
+        Credit Card Number: <b>@creditCard</b><br />
+        Expiration Date: <b>@expiration</b><br />
+        CVC: <b>@cvc</b>
+    </MudItem>
+</MudGrid> *@
+
+@* @code {
+    private string creditCard;
+    private string expiration;
+    private string cvc;
+}
+  *@
+
+@code
+{
+    private string CurrentLanguage = "ar";
+    private string holderNameError ;
+    private string cardNumberError ;
+    private string cVCError ;
+    private string expirationDateError;
+    private bool isReadOnly=false;
+    private bool _isUpdate = false;
+
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public CardDetails BuildData { get => newCard; set => newCard = value; }
+    [Parameter] public bool IsUpdate { get => _isUpdate; set
+        {
+            _isUpdate = value;
+        }
+    }  
+    [Parameter] public EventCallback<CardDetails> SubmitActiveCreditCard { get; set; }
+
+    [Parameter]
+    public bool IsShowDetails
+    {
+        get => isReadOnly; set
+        {
+            isReadOnly = value;
+        }
+    }
+
+    [Parameter] public string? Title { get; set; } = "";
+
+    private CardDetails newCard = new CardDetails();
+    private MudForm form;
+
+
+    private bool isCardNumberInvalid = false;
+
+    protected override void OnInitialized()
+    {
+        languageService.OnLanguageChanged += ChangeLanguage;
+        ChangeLanguage(CurrentLanguage);
+
+    }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            CurrentLanguage = await _manageLanguageService.GetLanguageAsync();
+            InvokeAsync(StateHasChanged);
+        }
+
+
+    }
+
+
+    private static bool IsValidCVC(string input)
+    {
+        string pattern = @"^\d{3,4}$";
+        return Regex.IsMatch(input, pattern);
+    }   
+    private static bool IsValidMonthYear(string input)
+    {
+        string pattern = @"^(0[1-9]|1[0-2])\/\d{2}$"; // MM/YY format
+        return Regex.IsMatch(input, pattern);
+    }
+    private void ValidateCardNumber(ChangeEventArgs e)
+    {
+        string cardNumber = e.Value.ToString().Replace(" ", "");
+        if (!IsValidCardNumber(cardNumber))
+        {
+            isCardNumberInvalid = true;
+            cardNumberError = GetTranslation("InvalidCardNumberError");
+        }
+        else
+        {
+            isCardNumberInvalid = false;
+            cardNumberError = "";
+        }
+    }
+    private bool IsValidCardNumber(string number)
+    {
+        /// Mod 10 Algorithm
+        /// Luhn Algorithm For Check Credit Card Numbers
+        /// 4532015112830366
+
+        int sum = 0;
+        bool alternate = false;
+        for (int i = number.Length - 1; i >= 0; i--)
+        {
+            int n = int.Parse(number[i].ToString());
+            if (alternate)
+            {
+                n *= 2;
+                if (n > 9) n -= 9;
+            }
+            sum += n;
+            alternate = !alternate;
+        }
+        return (sum % 10 == 0);
+    }
+
+    private async Task<bool> IsValidFormAsync()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+
+            cVCError = IsValidCVC(newCard.GetCVCBasic()) ? "" : GetTranslation("InvalidCVCPatternError");
+            cardNumberError = IsValidCardNumber(newCard.CardNumber) ? "" : GetTranslation("InvalidCardNumberError");
+            expirationDateError = IsValidMonthYear(newCard.ExpirationDate) ? "" : GetTranslation("InvalidExpDatePatternError");
+
+            return (string.IsNullOrEmpty(cVCError)
+                    && string.IsNullOrEmpty(cardNumberError)
+                    && string.IsNullOrEmpty(expirationDateError));
+
+        }
+
+        return false;
+    }
+
+
+    private async Task OnStatusChanged(bool action)
+    {
+
+
+        if (await messageBox.ShowAsync(GetTranslation("Title"), GetTranslation(action ? "ActivatedCreditCardMsg" : "UnActivatedCreditCardMsg")))
+        {
+            newCard.IsSelected = action;
+            if (SubmitActiveCreditCard.HasDelegate)
+            {
+                await SubmitActiveCreditCard.InvokeAsync(newCard);
+                // refreshPage();
+            }
+        }
+    }
+    private void OnEditCard()
+    {
+
+        isReadOnly = false;
+        _isUpdate = true;
+        StateHasChanged();
+
+    }
+    private void OnShowDetails()
+    {
+
+        isReadOnly = true;
+        _isUpdate = false;
+        StateHasChanged();
+
+    }
+    private async Task OnSaveUpdate()
+    {
+        if (await IsValidFormAsync())
+        {
+
+            // newCard.IsSelected = true;
+            if (OnEdit.HasDelegate && newCard != null)
+            {
+                await OnEdit.InvokeAsync(newCard);
+
+            }
+            // MudDialog.Close();
+        }
+    }
+    private async Task OnSaveAdd()
+    {
+
+
+        if (await IsValidFormAsync())
+        {
+
+            newCard.IsSelected = true;
+            if (OnClickSave.HasDelegate && newCard != null)
+            {
+                await OnClickSave.InvokeAsync(newCard);
+
+            }
+
+            // MudDialog.Close();
+        }
+
+
+    }
+    private async Task OnDeleteCard()
+    {
+
+
+        if (await messageBox.ShowAsync(GetTranslation("Title"), 
+        GetTranslation("DeletedCreditCardMsg"), CurrentLanguage))
+        {
+            if (OnDelete.HasDelegate)
+            {
+                await OnDelete.InvokeAsync(newCard);
+                // refreshPage();
+            }
+            // MudDialog.Close();
+        }
+    }
+
+
+    private void ChangeLanguage(string language)
+    {
+
+        CurrentLanguage = language;
+        StateHasChanged();
+    }
+
+    private Dictionary<string, string> TransEn = new Dictionary<string, string>()
+    {
+        { "Title", "Card Details" },
+        { "CardNumber", "Card Number" },
+        { "ExpirationDate", "Expiration Date (MM/YY)" },
+        { "CVC", "CVC" },
+        { "CardType", "Card Type" },
+        { "CardHolder", "Card Holder" },
+        { "MasterCard", "MasterCard" },
+        { "Visa", "Visa" },
+        { "Amex", "Amex" },
+        { "AddCard", "Add Card" },
+        { "Update", "Update" },
+        { "SubmitButton", "Pay Now" },
+        { "CardNumberError", "Card Number is required" },
+        { "CardHolderNameError", "Name is required" },
+        { "ExpirationDateError", "Expiration Date is required" },
+        { "CVCError", "CVV is required" },
+        { "InvalidCardNumberError", "Invalid card number" },
+        { "InvalidExpDatePatternError", "Expiration date must be in MM/YY format" },
+        { "InvalidCVCPatternError", "CVV must be 3 or 4 digits" },
+        { "ActivatedCreditCardMsg", "Your existing credit card will be activated as a default payment card. Do you agree?" },
+        { "UnActivatedCreditCardMsg", "Your current credit card will be deactivated as a default payment card. Do you agree?" },
+        { "DeletedCreditCardMsg", "Your current credit card will be removed from your payment card list. Do you agree?" },
+    };
+
+    private Dictionary<string, string> TransAr = new Dictionary<string, string>()
+    {
+        { "Title", "تفاصيل البطاقة" },
+        { "CardNumber", "رقم البطاقة" },
+        { "ExpirationDate", "تاريخ الانتهاء (MM/YY)" },
+        { "CVC", "CVC" },
+        { "CardType", "نوع البطاقة" },
+        { "CardHolder", "حامل البطاقة" },
+        { "MasterCard", "ماستر كارد" },
+        { "Visa", "فيزا" },
+        { "Amex", "أميكس" },
+        { "AddCard", "إضافة بطاقة" },
+        { "Update", "تحديث" },
+        { "SubmitButton", "الدفع الآن" },
+        { "CardNumberError", "رقم البطاقة مطلوب" },
+        { "CardHolderNameError", "الاسم مطلوب" },
+        { "ExpirationDateError", "تاريخ الانتهاء مطلوب" },
+        { "CVCError", "رمز الأمان مطلوب" },
+        { "InvalidCardNumberError", "رقم البطاقة غير صالح" },
+        { "InvalidExpDatePatternError", "يجب إدخال تاريخ صحيح بصيغة MM/YY" },
+        { "InvalidCVCPatternError", "يجب أن يحتوي CVV على 3 أو 4 أرقام" },
+        { "ActivatedCreditCardMsg", "سيتم تفعيل بطاقة الائئتمان الحالية كبطاقة افتراضية لدفع هل توافق على ذلك؟" },
+        { "UnActivatedCreditCardMsg", "سيتم إلغاء تفعيل بطاقة الائئتمان الحالية كبطاقة افتراضية لدفع هل توافق على ذلك؟" },
+        { "DeletedCreditCardMsg", "سيتم حذف بطاقة الائئتمان الحالية من  قائمة بطائق الدفع الخاصه بك هل توافق على ذلك؟" },
+    };
+
+
+    private string GetTranslation(string key)
+    {
+        if (CurrentLanguage == "ar")
+        {
+            return TransAr.ContainsKey(key) ? TransAr[key] : key;
+        }
+        else
+        {
+            return TransEn.ContainsKey(key) ? TransEn[key] : key;
+        }
+    }
+
+
+    // private void onCancel()
+    // {
+    //     MudDialog.Close(DialogResult.Cancel());
+
+    // }
+
+
+    // private void onConfirm()
+    // {
+    //     MudDialog.Close(DialogResult.Ok(true));
+    // }
+}

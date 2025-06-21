@@ -1,0 +1,246 @@
+﻿@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.SessionTokenAuth
+@using LAHJA.Data.UI.Templates.AuthSession
+@using LAHJA.Helpers
+@using LAHJA.UI.Components.General.Skeleton
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject TemplateAuthSession templateAuthSession
+@attribute [Authorize]
+@inject SessionUserManager sessionUserManager
+
+
+
+ <CustomPageSkeleton IsDisplay="@isLoading" />
+
+
+
+@if (!string.IsNullOrEmpty(srcIframe))
+{
+    <iframe src="@srcIframe"
+    class="@CSSClass"
+    style="@styleCss"
+    onload="@OnFrameLoaded">
+    </iframe>
+}
+
+
+@code {
+
+    private bool isLoading = true;
+    private string srcIframe;
+    private string serviceId;
+    private string url_redirect;
+    private string url_cancel;
+    private string _theme;
+    private string data;
+    private string lg="lg";
+    private string backupPageUrl;
+    private string styleCss = "width:100%;height:100%;border:none";
+
+    [Parameter]
+    public bool IsLoading
+    {
+        get => isLoading; set { isLoading = value; }
+    }
+
+    [Parameter]
+    public string StyleCss
+    {
+        get => styleCss; set { styleCss = value; }
+    }
+
+    [Parameter]
+    public string UrlRedirect
+    {
+        get => url_redirect; set { url_redirect = value; }
+    }
+
+    [Parameter]
+    public string Lg
+    {
+        get => lg; set { lg = value; }
+    }
+
+    [Parameter]
+    public string UrlCancel
+    {
+        get => url_cancel; set { url_cancel = value; }
+    }    
+
+    [Parameter]
+    public string Theme
+    {
+        get => _theme; set { _theme = value; }
+    }   
+
+    [Parameter]
+    public string Data
+    {
+        get => data; set { data = value; }
+    }
+
+    [Parameter]
+    public string SrcIFrame
+    {
+        get => srcIframe; 
+        set  {
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                _ = UpdateSrcIFrameAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public string CSSClass { get; set; } = "";
+
+    [Parameter]
+    public string ServiceId
+    {
+        get => serviceId; set { serviceId = value; }
+    }   
+
+    [Parameter]
+    public string BackupPageUrl
+    {
+        get => backupPageUrl; set { backupPageUrl = value; }
+    }  
+
+    [Parameter]
+    public EventCallback OnLoadFrame{  get; set; }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (string.IsNullOrEmpty(_theme))
+            {
+                _theme = await sessionUserManager.GetThemeAsync();
+            }
+
+            if (string.IsNullOrEmpty(srcIframe))
+                await CreateSessionTokenAsync();
+        }
+    }
+    private async void  OnFrameLoaded()
+    {
+        isLoading = false;
+        StateHasChanged();
+
+        if (OnLoadFrame.HasDelegate)
+        {
+            await OnLoadFrame.InvokeAsync();
+        }
+    }
+    private async Task UpdateSrcIFrameAsync(string value)
+    {
+        srcIframe = await HandelIFrameSrcAsync(value);
+        StateHasChanged();
+    }
+    private async Task<string> HandelIFrameSrcAsync(string url)
+    {
+        if (string.IsNullOrEmpty(_theme))
+        {
+             _theme = await sessionUserManager.GetThemeAsync();
+        }
+
+        return  Helper.GetServiceSrcFrame(url,
+              lg: lg,
+              theme: _theme,
+              url_redirect: url_redirect,
+              url_cancel: url_cancel,
+              data: data);
+
+
+    }
+    private async Task CreateSessionTokenAsync()
+    {
+
+        if (!string.IsNullOrEmpty(serviceId))
+        {
+            if (templateAuthSession.BuilderComponents.GetSessionsAccessTokens != null)
+            {
+                var response = await templateAuthSession.BuilderComponents.GetSessionsAccessTokens();
+
+                if (response.Succeeded)
+                {
+                    foreach (var token in response.Data)
+                    {
+                        if (token != null && token.ServiceId == serviceId)
+                        {
+                            if (token.IsActive)
+                            {
+                                await CreateSessionAsync(serviceId);
+                            }
+                            else
+                            {
+                                Snackbar.Add("Session key is not active. Enable it or create a new one.", Severity.Error);
+                            }
+                            return;
+
+                        }
+                    }
+
+                }
+
+                await CreateSessionAsync(serviceId);
+            }
+        }
+
+    }
+    private async Task CreateSessionAsync(string serviceId)
+    {
+        if (templateAuthSession.BuilderComponents.GetSessionsAccessTokens != null)
+        {
+            var res = await templateAuthSession.BuilderComponents.SubmitCreateSessionToken(new DataBuildSessionTokenAuth { ServiceId = serviceId });
+            if (res.Succeeded)
+            {
+
+                _theme = await sessionUserManager.GetThemeAsync();
+
+                srcIframe =  Helper.GetServiceSrcFrame(
+                    urlCore: res.Data.UrlCore, 
+                    sessionToken: res.Data.SessionToken,
+                    lg: lg,
+                    theme: _theme,
+                    url_redirect:url_redirect,
+                    url_cancel:url_cancel,
+                    data:data);
+
+                StateHasChanged();
+            }
+            else
+            {
+                // if (!string.IsNullOrEmpty(backupPageUrl))
+                // {
+                //     srcIframe = await HandelIFrameSrcAsync(backupPageUrl);
+                //     StateHasChanged();
+                // }
+                // else
+                // {
+                Snackbar.Add((res.Messages.Any() && res.Messages[0].Contains("400") ? res.Messages[0]+"Your subscription is canceled or expired" : res.Messages[0] ?? "Error"), Severity.Error);
+                    if (!string.IsNullOrEmpty(url_cancel))
+                        Navigation.NavigateTo(url_cancel);
+                // }
+             
+      
+            }
+        // else if (!string.IsNullOrEmpty(backupPageUrl))
+        //     {
+        //         // Navigation.NavigateTo(backupPageUrl);
+        //         srcIframe = await HandelIFrameSrcAsync(backupPageUrl);
+    
+        //         // srcIframe = $"{backupPageUrl}?__theme={_theme}&lg={lg}"; ;
+        //         StateHasChanged();
+        //     }
+        //     else
+        //     {
+        //         Navigation.NavigateTo("/",true);
+        //     }
+        }
+    }
+}

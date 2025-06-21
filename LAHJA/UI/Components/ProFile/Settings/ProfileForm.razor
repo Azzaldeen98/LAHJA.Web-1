@@ -1,0 +1,186 @@
+﻿@using LAHJA.Them
+
+@inject NavigationManager NavigationManager
+
+<MudContainer Class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4" dir="@GetDirection()">
+    <MudContainer Class="mb-6">
+        <MudContainer Class="flex justify-between">
+            <MudText Typo="Typo.h5" Class="flex flex-row items-center text-xl font-bold">
+                @Texts["ProfileSettings"]
+            </MudText>
+        </MudContainer>
+    </MudContainer>
+    <MudForm @ref="form" OnValidSubmit="HandleValidSubmit" Class="mb-8 flex flex-col space-y-5 md:pr-36">
+        <MudTextField @bind-Value="FullName" Label="@Texts["FullName"]" Placeholder="@Texts["FullNamePlaceholder"]" Name="fullname" Pattern="^(?!\.+$).*$" MaxLength="50" Required="true" />
+        <MudContainer>
+            <MudText Typo="Typo.body2">@Texts["Avatar"] <span class="pl-2 text-gray-400">(@Texts["Optional"])</span></MudText>
+            <MudContainer Class="flex items-center gap-2">
+                <MudButton Variant="Variant.Text" Class="mt-1 flex items-center text-sm text-gray-500 hover:text-gray-800 hover:underline">@Texts["Remove"]</MudButton>
+
+            </MudContainer>
+        </MudContainer>
+        <MudTextField @bind-Value="Homepage" Label="@Texts["Homepage"]" Placeholder="@Texts["HomepagePlaceholder"]" Name="homepage" Type="url" />
+        <MudTextField @bind-Value="Interests" Label="@Texts["Interests"]" Placeholder="@Texts["InterestsPlaceholder"]" Name="details" TextArea="true" />
+        <MudTextField @bind-Value="GitHubUsername" Label="@Texts["GitHubUsername"]" Placeholder="@Texts["GitHubPlaceholder"]" Name="github" Pattern="[a-zA-Z\d\-]+" Title="@Texts["GitHubTitle"]" />
+        <MudTextField @bind-Value="TwitterUsername" Label="@Texts["TwitterUsername"]" Placeholder="@Texts["TwitterPlaceholder"]" Name="twitter" Pattern="[a-zA-Z\d_]+" Title="@Texts["TwitterTitle"]" />
+        <MudTextField @bind-Value="LinkedInProfile" Label="@Texts["LinkedInProfile"]" Placeholder="@Texts["LinkedInPlaceholder"]" Name="linkedin" Pattern="[a-zA-Z\d\-]+" Title="@Texts["LinkedInTitle"]" />
+        <MudTextField @bind-Value="BlueskyUsername" Label="@Texts["BlueskyUsername"]" Placeholder="@Texts["BlueskyPlaceholder"]" Name="bluesky" Pattern="[a-zA-Z\d\.-]+" Title="@Texts["BlueskyTitle"]" />
+        <MudButton Type="Submit" Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM">@Texts["SaveChanges"]</MudButton>
+    </MudForm>
+</MudContainer>
+
+@code {
+
+    private MudForm form;
+    private string FullName { get; set; } = "عبدالرحمن";
+    // private File file { get; set; }
+    private string Homepage { get; set; }
+    private string Interests { get; set; }
+    private string GitHubUsername { get; set; }
+    private string TwitterUsername { get; set; }
+    private string LinkedInProfile { get; set; }
+    private string BlueskyUsername { get; set; }
+
+    private void HandleValidSubmit()
+    {
+        // Handle form submission
+    }
+    private Dictionary<string, string> Texts;
+
+    private string CurrentLanguage = "ar"; 
+
+    protected override void OnInitialized()
+    {
+        LoadTexts();
+    }
+
+    private void LoadTexts()
+    {
+        if (CurrentLanguage == "ar")
+        {
+            Texts = new Dictionary<string, string>
+            {
+                {"ProfileSettings", "إعدادات الملف الشخصي"},
+                {"FullName", "الاسم الكامل"},
+                {"FullNamePlaceholder", "أدخل الاسم الكامل"},
+                {"Avatar", "الصورة الرمزية"},
+                {"Optional", "اختياري"},
+                {"Remove", "إزالة"},
+                {"Homepage", "الصفحة الرئيسية"},
+                {"HomepagePlaceholder", "أدخل رابط الصفحة الرئيسية"},
+                {"Interests", "اهتمامات الذكاء الاصطناعي"},
+                {"InterestsPlaceholder", "أدخل اهتماماتك"},
+                {"GitHubUsername", "اسم مستخدم GitHub"},
+                {"GitHubPlaceholder", "أدخل اسم المستخدم الخاص بـ GitHub"},
+                {"GitHubTitle", "اسم المستخدم من https://github.com/username"},
+                {"TwitterUsername", "اسم مستخدم Twitter"},
+                {"TwitterPlaceholder", "أدخل اسم المستخدم الخاص بـ Twitter"},
+                {"TwitterTitle", "اسم المستخدم من https://twitter.com/username"}, // أضف المفتاح الصحيح
+                {"LinkedInProfile", "ملف LinkedIn الشخصي"},
+                {"LinkedInPlaceholder", "أدخل رابط LinkedIn الخاص بك"},
+                {"LinkedInTitle", "اسم المستخدم من https://linkedin.com/in/username"},
+                {"BlueskyUsername", "اسم مستخدم Bluesky"},
+                {"BlueskyPlaceholder", "أدخل اسم المستخدم الخاص بـ Bluesky"},
+                {"BlueskyTitle", "اسم المستخدم من https://bsky.app/profile/username"},
+                {"SaveChanges", "حفظ التغييرات"}
+            };
+
+        }
+        else
+        {
+            Texts = new Dictionary<string, string>
+            {
+                {"ProfileSettings", "Profile Settings"},
+                {"FullName", "Full name"},
+                {"FullNamePlaceholder", "Enter your full name"},
+                {"Avatar", "Avatar"},
+                {"Optional", "optional"},
+                {"Remove", "Remove"},
+                {"Homepage", "Homepage"},
+                {"HomepagePlaceholder", "Enter your homepage URL"},
+                {"Interests", "AI & ML interests"},
+                {"InterestsPlaceholder", "Enter your interests"},
+                {"GitHubUsername", "GitHub username"},
+                {"GitHubPlaceholder", "Enter your GitHub username"},
+                {"GitHubTitle", "GitHub 'username' from https://github.com/username"},
+                {"TwitterUsername", "Twitter username"},
+                {"TwitterPlaceholder", "Enter your Twitter account"},
+                {"TwitterTitle", "Twitter 'username' from https://twitter.com/username"}, 
+                {"LinkedInProfile", "LinkedIn profile"},
+                {"LinkedInPlaceholder", "Enter your LinkedIn profile"},
+                {"LinkedInTitle", "LinkedIn 'username' from https://linkedin.com/in/username"},
+                {"BlueskyUsername", "Bluesky username"},
+                {"BlueskyPlaceholder", "Enter your Bluesky account"},
+                {"BlueskyTitle", "Bluesky 'username' from https://bsky.app/profile/username"},
+                {"SaveChanges", "Save changes"}
+            };
+
+        }
+    }
+
+    private string GetDirection()
+    {
+        return CurrentLanguage == "ar" ? "rtl" : "ltr";
+    }
+
+ 
+}
+
+
+@* 
+<section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+    <div class="mb-6">
+        <div class="flex justify-between">
+            <h3 class="flex flex-row items-center text-xl font-bold">
+                Profile Settings 2423
+            </h3>
+        </div>
+    </div>
+    <div class="SVELTE_HYDRATER contents" data-target="UserSettingsProfileForm" data-props="{&quot;avatar&quot;:&quot;https://cdn-uploads.huggingface.co/production/uploads/noauth/SXJTVYmE71adfaZsiGDsE.png&quot;,&quot;csrfToken&quot;:&quot;eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NTYxNDI1NzMsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiI1YjdkODg5NjRiZWNhNmNiY2VkMTc1ZWFiYmFhYTA0ZWY2NDY2YjUxNmU2YmI2OTY5ZWU0MDM4OWRiYmEzZTJjIn0=&quot;,&quot;fullname&quot;:&quot;عبدالرحمن&quot;}">
+        <form class="mb-8 flex flex-col space-y-5 md:pr-36" method="post">
+            <input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NTYxNDI1NzMsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiI1YjdkODg5NjRiZWNhNmNiY2VkMTc1ZWFiYmFhYTA0ZWY2NDY2YjUxNmU2YmI2OTY5ZWU0MDM4OWRiYmEzZTJjIn0="> <label>
+                Full name
+                <input class="form-input" placeholder="Full name" name="fullname" type="text" pattern="^(?!\.+$).*$" maxlength="50" required="">
+            </label> <div>
+                Avatar
+                <span class="pl-2 text-gray-400">(optional)</span> 
+                <div class="flex items-center gap-2">
+                    <label class="mt-1 flex items-center gap-3 ">
+                        <div class=" btn-1     ">Upload file</div> 
+                        <input accept="image/png, image/jpeg" class="sr-only" type="file"></label>
+                        <input type="hidden" name="avatar" value="">
+                        <button class="mt-1 flex items-center text-sm text-gray-500 hover:text-gray-800 hover:underline" type="button">Remove</button></div>
+            </div> <label>
+                Homepage
+                <span class="pl-2 text-gray-400">(optional)</span> 
+                <input class="form-input" placeholder="Homepage" name="homepage" type="url">
+            </label> <label>
+                AI &amp; ML interests
+                <span class="pl-2 text-gray-400">(optional)</span>
+ <textarea class="form-input" cols="3" name="details" placeholder="AI &amp; ML interests"></textarea>
+            </label> <label>
+                <svg class="inline-block text-gray-500 mr-1 -mt-1 size-4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1.03em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 256 250"><path d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46c6.397 1.185 8.746-2.777 8.746-6.158c0-3.052-.12-13.135-.174-23.83c-35.61 7.742-43.124-15.103-43.124-15.103c-5.823-14.795-14.213-18.73-14.213-18.73c-11.613-7.944.876-7.78.876-7.78c12.853.902 19.621 13.19 19.621 13.19c11.417 19.568 29.945 13.911 37.249 10.64c1.149-8.272 4.466-13.92 8.127-17.116c-28.431-3.236-58.318-14.212-58.318-63.258c0-13.975 5-25.394 13.188-34.358c-1.329-3.224-5.71-16.242 1.24-33.874c0 0 10.749-3.44 35.21 13.121c10.21-2.836 21.16-4.258 32.038-4.307c10.878.049 21.837 1.47 32.066 4.307c24.431-16.56 35.165-13.12 35.165-13.12c6.967 17.63 2.584 30.65 1.255 33.873c8.207 8.964 13.173 20.383 13.173 34.358c0 49.163-29.944 59.988-58.447 63.157c4.591 3.972 8.682 11.762 8.682 23.704c0 17.126-.148 30.91-.148 35.126c0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002C256 57.307 198.691 0 128.001 0zm-80.06 182.34c-.282.636-1.283.827-2.194.39c-.929-.417-1.45-1.284-1.15-1.922c.276-.655 1.279-.838 2.205-.399c.93.418 1.46 1.293 1.139 1.931zm6.296 5.618c-.61.566-1.804.303-2.614-.591c-.837-.892-.994-2.086-.375-2.66c.63-.566 1.787-.301 2.626.591c.838.903 1 2.088.363 2.66zm4.32 7.188c-.785.545-2.067.034-2.86-1.104c-.784-1.138-.784-2.503.017-3.05c.795-.547 2.058-.055 2.861 1.075c.782 1.157.782 2.522-.019 3.08zm7.304 8.325c-.701.774-2.196.566-3.29-.49c-1.119-1.032-1.43-2.496-.726-3.27c.71-.776 2.213-.558 3.315.49c1.11 1.03 1.45 2.505.701 3.27zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033c-1.448-.439-2.395-1.613-2.103-2.626c.301-1.01 1.747-1.484 3.207-1.028c1.446.436 2.396 1.602 2.095 2.622zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95c-1.53.034-2.769-.82-2.786-1.86c0-1.065 1.202-1.932 2.733-1.958c1.522-.03 2.768.818 2.768 1.868zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37c-1.485.271-2.861-.365-3.05-1.386c-.184-1.056.893-2.114 2.376-2.387c1.514-.263 2.868.356 3.061 1.403z" fill="currentColor"></path></svg>
+                GitHub username
+                <span class="pl-2 text-gray-400">(optional)</span> <input class="form-input" name="github" pattern="[a-zA-Z\d\-]+" placeholder="GitHub username" type="text" title="Github 'username' from https://github.com/username">
+            </label> <label>
+                <svg class="inline-block text-gray-500 mr-1 -mt-1 size-4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1.23em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 14 12"><path fill="currentColor" d="M10.455 0h2.036L8.044 5.083 13.276 12H9.179L5.97 7.805 2.3 12H.261L5.02 6.563 0 0h4.2l2.9 3.834zm-.714 10.782h1.128L3.588 1.153h-1.21z"></path></svg>
+                Twitter username
+                <span class="pl-2 text-gray-400">(optional)</span> <input class="form-input" name="twitter" pattern="[a-zA-Z\d_]+" placeholder="Twitter account" type="text" title="Twitter 'username' from ">
+            </label> <label>
+                <svg class="inline-block text-gray-500 mr-1 -mt-1 size-4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M27.88.72a3.4 3.4 0 0 1 3.4 3.4v23.76a3.4 3.4 0 0 1-3.4 3.4H4.12a3.4 3.4 0 0 1-3.4-3.4V4.12a3.4 3.4 0 0 1 3.4-3.4h23.76Zm-.85 26.31v-9a5.53 5.53 0 0 0-5.53-5.53c-1.44 0-3.12.89-3.94 2.2v-1.88h-4.73v14.21h4.73v-8.37a2.37 2.37 0 1 1 4.74 0v8.37h4.73ZM7.31 10.16a2.85 2.85 0 0 0 2.85-2.85 2.86 2.86 0 1 0-2.85 2.85Zm2.36 16.87v-14.2h-4.7v14.2h4.7Z" fill="currentColor"></path></svg>
+                LinkedIn profile
+                <span class="pl-2 text-gray-400">(optional)</span>
+                <input class="form-input" name="linkedin" pattern="[a-zA-Z\d\-]+" placeholder="LinkedIn profile" type="text" title="LinkedIn 'username' from https://www.linkedin.com/in/username">
+            </label> 
+            <label>
+                <svg class="inline-block text-gray-500 mr-1 -mt-1 size-4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1.03em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 12 12"><path d="M2.601 1.24C3.977 2.316 5.457 4.496 6 5.666v3.09c0-.065-.024.009-.077.169-.283.867-1.39 4.25-3.923 1.546-1.333-1.425-.716-2.849 1.711-3.279-1.388.246-2.95-.16-3.378-1.754C.21 4.98 0 2.156 0 1.775 0-.136 1.609.464 2.601 1.24Zm6.798 0C8.023 2.316 6.543 4.496 6 5.666v3.09c0-.065.024.009.077.169.283.867 1.39 4.25 3.923 1.546 1.333-1.425.716-2.849-1.711-3.279 1.388.246 2.95-.16 3.378-1.754.123-.458.333-3.282.333-3.663 0-1.91-1.608-1.31-2.601-.535Z" fill="currentColor"></path></svg>
+                Bluesky username
+                <span class="pl-2 text-gray-400">(optional)</span> 
+                <input class="form-input" name="bluesky" pattern="[a-zA-Z\d\.-]+" placeholder="Bluesky account" type="text" title="Bluesky 'username' from https://bsky.app/profile/username">
+            </label> <div>
+                <button class="btn-1 btn-lg" type="submit">Save changes</button>
+                </div>
+        </form>
+    </div>
+</section>
+ *@

@@ -1,0 +1,307 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using MudBlazor.Charts
+<style>
+    /* Main container for alignment and fade-in effect */
+    .col-lg-7.ms-auto.hover-opacity-fade {
+        transition: opacity 0.3s ease-in-out;
+        opacity: 1;
+    }
+
+        .col-lg-7.ms-auto.hover-opacity-fade:hover {
+            opacity: 0.8;
+        }
+
+    /* Styling for each service item */
+    .hover-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+        transition: background-color 0.3s ease;
+    }
+
+        .hover-item:hover {
+            background-color: #333; /* Background color change on hover */
+        }
+
+        /* Icon image styling */
+        .hover-item img {
+            width: 40px; /* Adjust icon size */
+            height: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .hover-item:hover img {
+            transform: scale(1.1); /* Slight zoom effect on hover */
+        }
+
+        /* Service title styling */
+        .hover-item h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        .hover-item:hover h6 {
+            color: #fff; /* Text color change to white on hover */
+        }
+
+    /* Icon link styling */
+    .icon-link {
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+        color: #333;
+        transition: color 0.3s ease;
+    }
+
+    /* Arrow styling */
+    .icon-link-hover::before {
+        content: "→";
+        display: inline-block;
+        opacity: 0;
+        transform: translateX(-10px) scale(1); /* Initial position and size */
+        font-size: 1rem; /* Initial size */
+        transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        color: #333; /* Initial color */
+    }
+
+    .hover-item:hover .icon-link-hover::before {
+        opacity: 1;
+        transform: translateX(0) scale(1.3); /* Increase size on hover */
+        color: #fff; /* Arrow color change to white on hover */
+    }
+
+    /* زر رئيسي بتأثير التمرير */
+    .btn.icon-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #6c757d; /* لون الحدود الثانوي */
+        color: #6c757d; /* لون النص */
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn.icon-link:hover {
+            background-color: #6c757d; /* تغيير الخلفية عند التمرير */
+            color: #fff; /* لون النص يصبح أبيض عند التمرير */
+            border-color: #6c757d;
+        }
+
+        /* إعداد السهم وإضافة تأثير التمرير */
+        .btn.icon-link i {
+            font-size: 1.2rem; /* حجم السهم */
+            margin-left: 0.5rem; /* مسافة بين النص والسهم */
+            transition: transform 0.3s ease, color 0.3s ease; /* تأثير التحريك */
+            color: inherit; /* يتبع لون النص */
+        }
+
+        .btn.icon-link:hover i {
+            transform: translateX(5px); /* تحريك السهم عند التمرير */
+            color: #fff; /* تغيير لون السهم إلى أبيض عند التمرير */
+        }
+
+</style>
+
+<div class="position-relative" style="position:relative;background:rgb(31, 36, 52);color: white">
+    @if (Relative != null)
+        {
+
+  <Relative  Params="Relative" />
+  
+        }
+    @if (CardTextAndIcon != null)
+        {
+    <ItemrebotIcons Params="CardTextAndIcon" />
+        }
+        <div class="container position-relative pt-5 pt-sm-8" data-bs-theme="dark">
+            <div class="row">
+                <!-- Title and content -->
+             
+               <IconrebotCardSevicis />
+                <!-- Services START -->
+            <div class="col-lg-7 ms-auto hover-opacity-fade">
+                <!-- Service item -->
+               
+            
+
+                @foreach (var cardDetail in cardDetailsList)
+                {
+                    <TextAndIconCard Params="@cardDetail" />
+                }
+
+
+             
+            </div>
+
+            </div> <!-- Row END -->
+           
+            
+            
+            <!-- Technology logos -->
+        @if (cardIconItems != null)
+        {
+            <ItemsIcons Params="cardIconItems" />
+
+        }
+
+       
+       
+        </div>
+    </div>
+
+@code{
+    CardTextAndIcon? CardTextAndIcon;
+    CardTextAndIcon? Relative;
+
+    CardIconItems? cardIconItems;
+    CardIconItems? cardIconItems1;
+    List<string>? srcs1;
+    [Parameter] public CardTextAndIcon? Params { get; set; }
+
+    // إذا كنت بحاجة إلى منطق إضافي، يمكنك إضافته هنا
+  
+    protected override void OnInitialized()
+    {
+
+        cardIconItems = new CardIconItems() {
+                Name = "AI technologies and tools we utilize",
+
+
+            CardIconServics = new List<CardIconServics>()
+           {
+            new CardIconServics(){Src="assets/09.svg"},
+            new CardIconServics(){Src="assets/02.svg"},
+            new CardIconServics(){Src="assets/03.svg"},
+            new CardIconServics(){Src="assets/04.svg"},
+            new CardIconServics(){Src="assets/05.svg"},
+            new CardIconServics(){Src="assets/08.svg"},
+
+
+        } };
+
+
+        // cardIconItems1 = new CardIconItems()
+        //     {
+        //        IsName=false,
+        //        INameFoter=false,
+
+        //         CardIconServics = new List<CardIconServics>()
+        //    {
+        //     new CardIconServics(){Src="assets/02.svg",
+        //      ClassIcon=" "
+        //     },
+
+        //     new CardIconServics(){Src="assets/02.svg",
+        //             ClassImg="card-icon-img-1"},
+
+
+        // }
+        //     };
+
+
+
+       
+
+        Relative = new CardTextAndIcon()
+            {
+
+                Icon = new CardIcon() // يجب أن يكون النوع CardIcon وليس List<CardIconServics>
+                {
+
+
+                    Src = "assets/images/Icon/1I.svg",
+                    ClassIcon = " "
+                },
+
+
+            };
+
+        CardTextAndIcon = new CardTextAndIcon()
+            {
+                Name = "AI solutions for every business",
+
+                Icon = new CardIcon() // يجب أن يكون النوع CardIcon وليس List<CardIconServics>
+                {
+
+
+                    Src = "ai-hand.png",
+                    ClassIcon = " "
+                },
+                Description = "Discover our AI services designed to optimize operations, enhance decisions, and drive growth."
+
+               
+            };
+
+
+    }
+
+}
+
+@code {
+    // قائمة تحتوي على عدة كائنات CardTextAndIcon
+    private List<CardTextAndIcon> cardDetailsList = new List<CardTextAndIcon>
+    {
+        new CardTextAndIcon
+        {
+           
+            IsName = true,
+            Icon = new CardIcon
+            {
+                Src = "assets/images/imagicon/01.svg",
+                ClassIcon = ""
+            },
+            ClassItems = ""
+        },
+         new CardTextAndIcon
+        {
+
+            IsName = true,
+            Icon = new CardIcon
+            {
+                Src = "assets/images/imagicon/02.svg",
+                ClassIcon = ""
+            },
+            ClassItems = ""
+        },
+         new CardTextAndIcon
+        {
+
+            IsName = true,
+            Icon = new CardIcon
+            {
+                Src = "assets/images/imagicon/03.svg",
+                ClassIcon = ""
+            },
+            ClassItems = ""
+        },
+        new CardTextAndIcon
+        {
+            Name = "AI Consulting and Strategy",
+            IsName = true,
+            Icon = new CardIcon
+            {
+                Src = "assets/images/imagicon/04.svg",
+                ClassIcon = ""
+            },
+            ClassItems = ""
+        },
+       new CardTextAndIcon
+        {
+
+            IsName = true,
+            Icon = new CardIcon
+            {
+                Src = "assets/images/imagicon/05.svg",
+                ClassIcon = ""
+            },
+            ClassItems = ""
+        },
+    };
+}

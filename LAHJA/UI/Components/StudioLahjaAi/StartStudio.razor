@@ -1,0 +1,178 @@
+﻿@using Domain.ShareData
+@using LAHJA.ContextServices
+@using LAHJA.Helpers.Services
+@using Microsoft.AspNetCore.Authorization
+
+@inherits ProtectedComponent 
+@attribute [Authorize]
+
+
+<MudContainer>
+
+    <MudText Typo="Typo.body1">@Title</MudText>
+    <MudGrid  Justify="Justify.Center">
+        @foreach (var item in listt)
+        {
+
+            <MudItem>
+                <MudCard Elevation="0"  Class="mb-3">
+                    <MudCardContent>
+
+                        <MudStack Direction="Row" AlignItems="AlignItems.Center" Spacing="2">
+                            <MudIcon Icon="@item.Icon" Color="Color.Primary" />
+                            <MudText Typo="Typo.h6">@item.Name</MudText>
+                            <MudAlert Severity="Severity.Normal" Class="mt-2" Variant="Variant.Outlined"> @item.Description</MudAlert>
+
+                        </MudStack>
+
+
+                    </MudCardContent>
+
+                </MudCard>
+            </MudItem>
+        }
+
+    </MudGrid>
+</MudContainer> 
+
+
+
+
+@code {
+
+    private string SidebarWidth { get; set; } = "200px"; // العرض الافتراضي
+    // private bool IsResizing { get; set; } = false;
+
+    // private void StartResizing(MouseEventArgs e)
+    // {
+    //     // التحقق إذا كان الزر الأيمن هو المستخدم
+    //     if (e.Buttons == 2)
+    //     {
+    //         IsResizing = true;
+    //         StateHasChanged();
+    //     }
+    // }
+
+    // private void StopResizing()
+    // {
+    //     IsResizing = false;
+    // }
+
+    // private void ResizeSidebar(MouseEventArgs e)
+    // {
+    //     if (IsResizing)
+    //     {
+    //         var newWidth = e.ClientX; // موقع الماوس بالنسبة للصفحة
+    //         if (newWidth > 100 && newWidth < 500) // تحديد الحدود
+    //         {
+    //             SidebarWidth = $"{newWidth}px";
+    //             StateHasChanged();
+    //         }
+    //     }
+    // }
+
+
+    [Parameter]
+    public bool Typelangauge { get; set; } = true;
+
+    List<Item> listt;
+    public string Title;
+
+
+    private List<Item> Items = new()
+    {
+        new Item("Text To Text","Icons.Material.Favorite", "This is a description for the Favorite item."),
+        new Item("Text To Speech","Icons.Material.Home", "This is a description for the Home item."),
+        new Item("Text TO Chat","Icons.Material.Settings", "Manage your application settings here.")
+
+    };
+    public string TitleAr = "ماذا ستبني؟";
+
+
+    private List<Item> ItemsAr = new()
+{
+    new Item("موديل التحويل  من نص الى نص", "Icons.Material.Favorite", "هذا وصف لعنصر المفضلة."),
+    new Item("موديل التحويل من نص الى الصوت ", "Icons.Material.Home", "هذا وصف لعنصر الصفحة الرئيسية."),
+    new Item("عام ", "Icons.Material.Settings", "قم بإدارة إعدادات التطبيق هنا.")
+};
+
+    public class Item
+    {
+        public string Name { get; set; }
+        public string Icon { get; set; }
+        public string Description { get; set; }
+
+        public Item(string name, string icon, string description)
+        {
+            Name = name;
+            Icon = icon;
+            Description = description;
+        }
+    }
+    protected override void OnInitialized()
+    {
+        changeLanguage(service.lg);
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+    protected override async void OnAfterRender(bool firstRender)
+
+    {
+        if (firstRender)
+        {
+            // var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            // changeLanguage(currentLanguage);
+
+        }
+
+
+    }
+    protected async void changeLanguage(string currentLangCode)
+    {
+       
+
+        if (currentLangCode=="en")
+        {
+            listt = Items;
+            Title = "What Will You Build?";
+        }
+        else
+        {
+            listt = ItemsAr;
+            Title = "ماذا ستفعل ";
+        }
+    
+        InvokeAsync(StateHasChanged);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code 
+{
+
+
+
+
+
+
+
+
+}

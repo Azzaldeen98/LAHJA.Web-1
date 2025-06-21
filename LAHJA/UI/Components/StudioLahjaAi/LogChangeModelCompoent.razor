@@ -1,0 +1,30 @@
+﻿@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+
+@if(changeLogs!=null)
+{
+
+
+
+    <MudTable Items="changeLogs" Hover="true" Style="height:600px;">
+        <HeaderContent>
+            <MudTh> </MudTh>
+            <MudTh>   </MudTh>
+            <MudTh> </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Date</MudTd>
+            <MudTd>@context.NameModel</MudTd>
+            <MudTd>@context.Descrption</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+}
+
+ 
+
+@code 
+{
+    [Parameter]
+    public List<ChangeLogModels> changeLogs{ get; set; }
+
+}

@@ -1,0 +1,115 @@
+﻿@using MudBlazor
+
+<style>
+
+
+    .checkmark {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        stroke-width: 2;
+        stroke: #fff;
+        margin: auto;
+        stroke-miterlimit: 10;
+        box-shadow: inset 0px 0px 0px #4ade80;
+        animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+    }
+
+    .checkmark-circle {
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        stroke-width: 2;
+        stroke: #4ade80;
+        fill: none;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark-check {
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        fill: none;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+</style>
+
+<MudPaper Class="min-h-screen d-flex align-center justify-center p-4" Style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <MudPaper Class="max-w-md w-100 rounded-xl shadow-8 p-6" Style="transition: transform 0.3s ease-in-out;">
+        <div class="text-center">
+            <!-- Animated Checkmark -->
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+            </svg>
+
+            <MudText Typo="Typo.h5" Class="mt-6 text-gray-800 font-bold">تم إرسال رابط التأكيد!</MudText>
+            <MudText Typo="Typo.body1" Class="mt-2 text-gray-600">
+                لقد أرسلنا رابط تأكيد إلى بريدك الإلكتروني
+                <span class="font-semibold text-primary">example@domain.com</span>
+                . يرجى النقر على الرابط الموجود في البريد لتأكيد حسابك.
+            </MudText>
+
+            <MudDivider Class="my-6">لم تستلم البريد؟</MudDivider>
+
+            <MudGrid Class="mb-4" GutterSize="3">
+                <MudItem xs="6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Send" Disabled="@_isSending" OnClick="ResendEmail">
+                        @_resendButtonText
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Email">تغيير البريد</MudButton>
+                </MudItem>
+            </MudGrid>
+
+            @if (_showCountdown)
+            {
+                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                    يمكنك إعادة إرسال البريد خلال <b>@_timeLeft</b> ثانية
+                </MudText>
+            }
+
+            <MudText Class="mt-6">
+                <MudLink Href="/" Class="text-primary font-medium d-flex align-center justify-center">
+                    العودة إلى الصفحة الرئيسية <MudIcon Icon="@Icons.Material.Filled.ArrowBack" Class="ml-1" />
+                </MudLink>
+            </MudText>
+        </div>
+
+        <MudDivider Class="mt-6" />
+        <MudText Typo="Typo.caption" Align="Align.Center" Class="text-gray-500 mt-2">
+            إذا واجهتك أي مشكلة، يرجى التواصل مع <MudLink Href="#">دعم العملاء</MudLink>
+        </MudText>
+    </MudPaper>
+</MudPaper>
+
+
+
+@code {
+    private bool _showCountdown = false;
+    private int _timeLeft = 60;
+    private bool _isSending = false;
+    private string _resendButtonText = "إعادة الإرسال";
+
+    private async Task ResendEmail()
+    {
+        _isSending = true;
+        _resendButtonText = "جاري الإرسال...";
+
+        await Task.Delay(1500); // simulate API call
+
+        _resendButtonText = "تم الإرسال!";
+        _showCountdown = true;
+
+        var timer = new PeriodicTimer(TimeSpan.FromSeconds(1));
+        while (_timeLeft > 0 && await timer.WaitForNextTickAsync())
+        {
+            _timeLeft--;
+            StateHasChanged();
+        }
+
+        _isSending = false;
+        _resendButtonText = "إعادة الإرسال";
+        _timeLeft = 60;
+        _showCountdown = false;
+    }
+}

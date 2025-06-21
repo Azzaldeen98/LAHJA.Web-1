@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\RequestEvent\Request\" />
+    <Folder Include="Entities\RequestEvent\Response\" />
+    <Folder Include="Entities\Roles\Request\" />
+    <Folder Include="Entities\Roles\Response\" />
+    <Folder Include="Entities\ServiceMethod\Request\" />
+    <Folder Include="Entities\ServiceMethod\Response\" />
+    <Folder Include="Entities\User\Request\" />
+    <Folder Include="Entities\User\Response\" />
+    <Folder Include="Repository\RequestEvent\" />
+    <Folder Include="Repository\Roles\" />
+    <Folder Include="Repository\ServiceMethod\" />
+    <Folder Include="ShareData\Base\Payment\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoGenerator\AutoGenerator.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+
+</Project>

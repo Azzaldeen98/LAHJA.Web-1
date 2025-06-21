@@ -1,0 +1,336 @@
+﻿@using System.Threading
+@using Domain.ShareData
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Pages.FeatureServices
+@using LAHJA.Them
+@using LAHJA.UI.Components.FeatureServices
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager Navigation;
+
+
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+<style>
+    .custom-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px auto;
+    }
+
+    .custom {
+        /*         justify-content: flex-end; /* محاذاة العناصر لليمين */
+        */ /* /*              margin-top: -6%;}
+     */ */ display: flex;
+        /*    flex-wrap: wrap; */
+        gap: 10px;
+    }
+
+    .Clearable {
+        height: 175%;
+        margin-top: -18%;
+    }
+
+    .page-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f7f7f7;
+    }
+
+    .feature-container {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 10px;
+        padding: 20px;
+/*         border: 1px solid #ddd;
+ */        border-radius: 8px;
+        max-width: 400px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-content h3 {
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    .feature-content p {
+        margin: 5px 0;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .feature-content a {
+        color: blue;
+        text-decoration: none;
+    }
+
+        .feature-content a:hover {
+            text-decoration: underline;
+        }
+
+    .feature-button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background-color: #635bff;
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .feature-button svg {
+            fill: white;
+        }
+
+        .feature-button:hover {
+            background-color: #5246e4;
+        }
+
+</style>
+
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabPanel Text="Tab One ">
+        <MudList T="string" Dense="true" Class="d-flex flex-grow-1 py-0  " Style=" background-color: rgba(66, 66, 66, 1);font-size:10px!important ;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;overflow: hidden !important;height: 6%;padding: 2%;">
+
+
+
+
+            <MudLink Href="#" Style="color:#fff!important ;padding:1%">  @(TypeLanguage ? "Home" : "الرئيسية") </MudLink>
+
+            <MudSpacer />
+
+            <Button Variant="Variant.Outlined" Disabled="true" StartIcon="@Icons.Material.Filled.ArrowForward" Style="border: 1px solid rgb(255 255 255);background-color: rgb(255 255 255) !important; color: rgb(0 0 0) !important; width:12% !important; height:50%;margin-top: 1%;">
+                @(TypeLanguage ? "Workout" : "تجريب")
+            </Button>
+                @* <MudButton Style="width:12% !important; height:50%;margin-top: 2%;"
+                       Target="_blank"
+                       Variant="Variant.Outlined"
+                       Color="Color.Tertiary">
+                @(TypeLanguage ? "Workout" : "تجريب")
+            </MudButton> *@
+
+
+        </MudList>
+        
+        @* 
+         <MudAlert Severity="Severity.Normal" Variant="Variant.Filled">
+            @localization[language]["ReactorType"]
+                         <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
+                      <MudChip T="string" Label="true" Color="Color.Primary" style="margin-left: 384%;  margin-top: -7%; background:#fff; color:#000000;" Icon="@Icons.Material.Filled.ArrowBack">@localization[language]["NewTweets"]</MudChip>
+        </MudAlert>  *@ 
+        <MudText class="custom-container ">
+            @foreach (var str in _strings)
+            {
+                <MudTextField T="string" class="Clearable" ReadOnly Text="@str" Label="@localization[language]["ClearableOutlined"]" Variant="Variant.Outlined" />
+            }
+        </MudText>
+        <div class="">
+
+            <div class="custom-container">
+                @foreach (var i in Enumerable.Range(1, 2))
+                {
+                    <MudChip T="string" OnClick="OnChipClicked" Icon="@Icons.Material.Filled.AddCircle" Color="Color.Default">@localization[language]["Clicked"]</MudChip>
+                }
+
+                <div class="d-flex">
+                    @foreach (var i in Enumerable.Range(1, 3))
+                    {
+                        <MudChip T="string" OnClick="OnChipClicked" Icon="@Icons.Material.Filled.AddCircle" Color="Color.Default">@localization[language]["Clicked"]</MudChip>
+                    }
+                </div>
+            </div>
+            @*
+            <div class="c  " style="margin-left: -42%; margin-top: -5%;">
+            @foreach (var i in Enumerable.Range(1, 3))
+            {
+            <MudButton Variant="Variant.Filled">Default</MudButton>
+
+            <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Dense="true" Class="my-2">@localization[language]["DenseSuccess"]</MudAlert>
+
+            }
+            </div> *@
+        </div>
+        <MudSimpleTable Hover="true" Dense="true" FixedHeader="@fixedheader" Style="@(fixedheader ? "height:300px;" : "")">
+            <thead>
+                <tr>
+                    @foreach (var h in headings)
+                    {
+                        <th>@h</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in rows)
+                {
+                    <tr>
+                        @foreach (var cell in row.Split())
+                        {
+                            <td>@cell</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </MudSimpleTable>
+        <MudSwitch @bind-Value="fixedheader" Color="Color.Primary">@localization[language]["FixedHeader"]</MudSwitch>
+    </MudTabPanel>
+    <MudTabPanel Text="Tab Two">
+        <MudList T="string" Dense="true" Class="d-flex flex-grow-1 py-0  " Style=" background-color: rgba(66, 66, 66, 1);font-size:10px!important ;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;overflow: hidden !important;height: 6%;padding: 2%;">
+
+
+
+
+            <MudLink Href="#" Style="color:#fff!important ;padding:1%">  @(TypeLanguage ? "Home" : "الرئيسية") </MudLink>
+
+            <MudSpacer />
+
+            <MudButton Variant="Variant.Outlined" Disabled="true" StartIcon="@Icons.Material.Filled.ArrowForward" Style="border: 1px solid rgb(255 255 255);background-color: rgb(255 255 255) !important; color: rgb(0 0 0) !important; width:12% !important; height:50%;margin-top: 1%;">
+                @(TypeLanguage ? "Workout" : "تجريب")
+            </MudButton>
+            @* <MudButton Style="width:12% !important; height:50%;margin-top: 2%;"
+            Target="_blank"
+            Variant="Variant.Outlined"
+            Color="Color.Tertiary">
+            @(TypeLanguage ? "Workout" : "تجريب")
+            </MudButton> *@
+
+
+        </MudList>
+        <MudChip T="string" Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Default">@localization[language]["Clicked"]</MudChip>
+        <MudText class="custom-container ">
+            @foreach (var i in Enumerable.Range(1, 5))
+            {
+                <MudTextField class="Clearable" @bind-Value="_string" Label="@localization[language]["ClearableOutlined"]" Variant="Variant.Outlined" Clearable="true" />
+            }
+        </MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Tab Three">
+        
+            @* 
+            <MudCard Outlined="true" Style="border: none !important;">
+                <MudCardContent>
+                    <MudText>Story of the day</MudText>
+                    <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+                </MudCardActions>
+            </MudCard> *@
+
+            <MudText class="custom-container ">
+                @foreach (var str in _strings)
+                {
+                    <MudTextField T="string" class="Clearable" ReadOnly Text="@str" Label="@localization[language]["ClearableOutlined"]" Variant="Variant.Outlined" />
+                }
+            </MudText>
+          <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <MudPaper Class="p-4 feature-container" Style="box-shadow: none !important; max-width: 400px; width: 100%;">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1.75 4.25C2.438 4.25 3 3.687 3 3c0-.688-.563-1.25-1.25-1.25C1.062 1.75.5 2.313.5 3c0 .7.563 1.25 1.25 1.25Zm0 5C2.438 9.25 3 8.687 3 8c0-.688-.563-1.25-1.25-1.25C1.062 6.75.5 7.313.5 8c0 .7.563 1.25 1.25 1.25Zm0 5C2.438 14.25 3 13.687 3 13c0-.688-.563-1.25-1.25-1.25-.688 0-1.25.563-1.25 1.25 0 .7.563 1.25 1.25 1.25Z"></path>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M4 2.875C4 2.392 4.392 2 4.875 2h9.75a.875.875 0 0 1 0 1.75h-9.75A.875.875 0 0 1 4 2.875Zm0 5.126c0-.483.392-.875.875-.875h9.75a.875.875 0 0 1 0 1.75h-9.75A.875.875 0 0 1 4 8.001Zm0 5.124c0-.483.392-.875.875-.875h9.75a.875.875 0 0 1 0 1.75h-9.75A.875.875 0 0 1 4 13.125Z"></path>
+        </svg>
+
+        <MudTypography Variant="H5">Start by adding a feature</MudTypography>
+
+        <MudText Class="feature-content">
+            Features are monetizable capabilities that can be linked to products, granting purchasing customers an entitlement to the feature through Stripe.
+            <MudLink Href="https://docs.stripe.com/billing/entitlements" Target="_blank">View docs</MudLink>
+        </MudText>
+
+        <button Class="feature-button" @onclick="CreateFeature">
+            <svg width="12" height="12" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M8 .25c.483 0 .875.392.875.875v6h6a.875.875 0 0 1 0 1.75h-6v6a.875.875 0 0 1-1.75 0v-6h-6a.875.875 0 1 1 0-1.75h6v-6c0-.483.392-.875.875-.875Z"></path>
+            </svg>
+            Create feature
+                </button>
+    </MudPaper>
+</div>
+
+        @* <MudButton  Color="Color.Primary" OnClick="CreateFeature" StartIcon="@Icons.Material.Filled.Add">
+        Create feature
+
+        </MudButton> *@
+            
+           
+            
+
+            @localization[language]["ContentThree"]
+    </MudTabPanel>
+    <MudTabPanel Text="Tab Disabled" Disabled="true">
+        <MudText>@localization[language]["ContentDisabled"]</MudText>
+    </MudTabPanel>
+</MudTabs>
+@code {
+    [Parameter] public bool TypeLanguage { get; set; } = true;
+
+    string[] _strings = { "1", "0", "2" };
+    string _string = "1";
+    bool fixedheader = true;
+    string[] headings = { "ID", "Name", "Email", "Gender", "IP Address" };
+    string[] rows = {
+        "1 Krishna kpartner0@usatoday.com Male 28.25.250.202",
+        "2 Webb wstitle1@ning.com Male 237.168.134.114",
+        "3 Nathanil nneal2@cyberchimps.com Male 92.6.0.175",
+        "4 Adara alockwood3@patch.com Female 182.174.217.152",
+        "5 Cecilius cchaplin4@shinystat.com Male 195.124.144.18",
+        "6 Cicely cemerine9@soup.io Female 138.94.191.43",
+        "7 Caleb cwebber0@usatoday.com Male 28.25.250.202",
+        "8 Grayson gcarlyle@bt.com Male 173.174.94.114",
+        "9 Lori lo@independentweek.com Female 134.16.20.191",
+        "10 Natasha nkerensky@ilclan.com Female 217.217.18.15",
+        "11 Andrew aredburn@shinystat.com Male 20.114.244.58",
+        "12 Katherine ksteiner@fedsun.io Female 122.64.153.22",
+    };
+    void CreateFeature()
+    {
+        Console.WriteLine("Feature Created!");
+    }
+    private int ClickCount { get; set; }
+    private void OnChipClicked()
+    {
+        ClickCount++;
+    }
+    void CloseChip()
+    {
+        // Code..
+    }
+    string language = "ar";
+    Dictionary<string, Dictionary<string, string>> localization = new Dictionary<string, Dictionary<string, string>>
+    {
+        { "en", new Dictionary<string, string>
+            {
+                { "ReactorType", "The reactor type is RBMK-1000" },
+                { "NewTweets", "New Tweets" },
+                { "ClearableOutlined", "Clearable Outlined" },
+                { "Clicked", "Clicked" },
+                { "DenseSuccess", "Dense Success" },
+                { "FixedHeader", "Fixed Header" },
+                { "ContentThree", "Content Three" },
+                { "ContentDisabled", "Content Disabled" }
+            }
+        },
+        { "ar", new Dictionary<string, string>
+            {
+                { "ReactorType", "نوع المفاعل هو RBMK-1000" },
+                { "NewTweets", "تغريدات جديدة" },
+                { "ClearableOutlined", "واضح بإطار" },
+                { "Clicked", "تم النقر" },
+                { "DenseSuccess", "نجاح كثيف" },
+                { "FixedHeader", "رأس ثابت" },
+                { "ContentThree", "المحتوى الثالث" },
+                { "ContentDisabled", "المحتوى معطل" }
+            }
+        }
+    };
+}

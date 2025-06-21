@@ -1,0 +1,345 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Them
+@using LAHJA.UI.Components.Base
+@using LAHJA.UI.Components.TabelCard
+@inject MessageBox MessageBox;
+@inject NavigationManager NavigationManager;
+
+@typeparam T
+
+
+<style>
+    .table-container {
+        max-width: 600px; 
+        height:700px !important;
+        margin: auto;
+        overflow-x: hidden !important;
+
+        /* background-color: blue; */
+    }
+
+
+
+    .wrap-text {
+        display: block !important; /* جعل العنصر يعمل ككتلة وليس كعنصر داخلي */
+        white-space: normal; /* السماح بلف النص */
+        word-wrap: break-word !important; /* كسر الكلمات الطويلة إذا لزم الأمر */
+        word-break: break-word; /* كسر الكلمات الطويلة */
+        max-width: 100%; /* التأكد أن النص لا يتجاوز المساحة */
+        overflow: hidden; /* منع النص من تجاوز المساحة */
+    }
+
+    .table-label {
+         width: 50%; 
+        font-weight: bold;
+        padding: 0px;
+        font-size: 16px;
+  /*       background-color: #f5f5f5; */
+    }
+
+    .table-value {
+        width: 50%;
+        padding:0px 0px;
+        text-align:left;
+        font-size:16px;
+    }
+
+    .table-row {
+        width:100% !important;
+        border-bottom: 1px solid #ddd;
+        padding:0px;
+    }
+
+     .table-row *{
+            padding: 0px !important;
+     }
+
+</style>
+
+<MudDialog>
+    <DialogContent >
+        @if (DataBuild != null)
+        {
+            <div class="d-flex  border-0 flex-column justify-content-center align-items-center">
+                <MudCardHeader Class="d-flex border-0 justify-content-around align-items-center">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Align="Align.Center" Class="m-auto my-3">
+                            @Title
+                        </MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+
+                <div class="p-2 border-0 mt-5">
+                    <MudGrid Class="p-3 border" Style="width: 100%;">
+                        @if (Labels != null && Labels.Count > 0)
+                        {
+                            @foreach (var label in Labels)
+                            {
+                                var value = GetPropertyValue(label);
+
+                                if (value != null && value.ToString() != "")
+                                {
+                                    <MudItem xs="12" Class="table-row">
+                                        <MudGrid Class="d-flex align-items-center">
+                                            <MudItem xs="6">
+                                                <MudText Class="table-label">
+                                                    @if (LabelaTrans.ContainsKey(label))
+                                                    {
+                                                        @LabelaTrans[label]
+                                                    }
+                                                    else
+                                                    {
+                                                        @label
+                                                    }
+                                                </MudText>
+                                            </MudItem>
+                                            <MudItem xs="6">
+                                                @if (label.ToLower().Contains("token"))
+                                                {
+                                                    <MudTd>
+
+                                                        <IdCard Id="@(GetPropertyValue(label).ToString())"   NumCharShow="15" />
+
+                                                    </MudTd>
+                                                }
+                                                else if (label.ToLower().Contains("date") || label.ToLower().Contains("time"))
+                                                {
+                                                    <MudTd>
+                                                        <MudDatePicker Style="font-size:12px !important" Label="" Date="DateTime.Parse(GetPropertyValue(label).ToString())" ReadOnly="true" />
+                                                    </MudTd>
+
+                                                }
+                                                else if (label.ToLower().Contains("id"))
+                                                    {
+                                                        <MudTd>
+
+                                                        <IdCard Id="@(GetPropertyValue(label).ToString())"
+                                                                    NumCharShow="6"
+                                                                    Icon=null
+                                                                    IsCopy=false
+                                                                    MColor="Color.Info" />
+
+
+                                                        </MudTd>
+                                                    }
+                                                else if (!isboolValue(dataBuild, label))
+                                                {
+                                                    <MudText Class="table-value wrap-text" Inline >@value</MudText>
+                                                }
+                                                else
+                                                {
+
+                                                    <StateCell State="@value" />
+
+                                                }
+                                        @*         <MudChip Class="py-0 px-3" T="string" Color="@((bool)GetPropertyValue(DataBuild, "Active") ? Color.Success : Color.Error)">
+                                                    @value
+                                                </MudChip> *@
+
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudItem>
+                                }
+                            }
+                        }
+                     
+                    </MudGrid>
+                </div>
+
+           
+            </div>
+        }
+    </DialogContent>
+    <DialogActions>
+        <div class="w-100 p-3 d-flex justify-content-around align-items-center">
+
+            @* <MudIconButton Icon="@Icons.Material.Filled.Pause" Variant="Variant.Outlined" Color="AppColors.BASE_COLOR_ENUM" Size="Size.Medium" /> *@
+            @if (HasSwitchButton && !string.IsNullOrEmpty(PropertySwitchName))
+            {
+                @* @foreach (var label in Labels) *@
+                {
+                    var valu = GetPropertyValue(PropertySwitchName);
+                    if (valu != null && isboolValue(dataBuild, PropertySwitchName))
+                    {
+                        isActive = (bool)valu;
+
+                        <MudSwitch T="bool" Value="@isActive" ValueChanged="OnSwitchActiveStatus" Color="(Color.Success)"> @(isActive ? "Pause" : "Resume") </MudSwitch>
+
+                        @* break; *@
+                    }
+
+                }
+            }
+
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="OnDelete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small" />
+
+        </div>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+    private string lg = "ar";
+
+    private T dataBuild;
+    private bool isActive = false;
+
+    private List<string> Labels { get; set; } = new();
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+
+    // [Parameter] public List<string> Labels { get; set; } = new();
+
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Lang { get => lg; set=>lg=value; }
+
+    [Parameter] public bool HasSwitchButton { get; set; } = false;
+    [Parameter] public string PropertySwitchName { get; set; }
+
+        
+
+    [Parameter] public EventBuildViewRowDetails<T>? Events { get; set; }
+
+    [Parameter] public Dictionary<string, string> LabelaTrans { set; get; }
+
+    [Parameter] public T DataBuild {
+        get =>dataBuild;
+        set {
+
+            if (value != null)
+            {
+                dataBuild = value;
+                StateHasChanged();
+
+            }
+        } 
+
+    }
+
+
+    private  async Task OnDelete()
+    {
+        if (Events!=null && Events.DeleteClicked.HasDelegate)
+        {
+            await Events.DeleteClicked.InvokeAsync(dataBuild);
+        }
+    }    
+    private  async Task OnSwitchActiveStatus(bool value)
+    {
+        isActive = value;
+
+        if (Events!=null && Events.SwitchedActiveStatus.HasDelegate)
+        {
+            SetPropertyValue(dataBuild, PropertySwitchName, value);
+                
+            await Events.SwitchedActiveStatus.InvokeAsync(dataBuild);
+
+        }
+
+    }
+     
+    private async Task OnActiveClicked(bool value)
+    {
+        isActive = value;
+
+        if (Events!=null && Events.ActiveClicked.HasDelegate)
+        {
+            SetPropertyValue(dataBuild, "IsActive", value);
+                
+            await Events.ActiveClicked.InvokeAsync(dataBuild);
+
+        }
+        
+    }
+    private async Task OnValidateClicked()
+    {
+  
+        if (Events!=null && Events.ValidateClicked.HasDelegate)
+        {    
+            await Events.ValidateClicked.InvokeAsync(dataBuild);
+
+        }
+        
+    }
+
+
+    protected override void OnParametersSet()
+    {
+        if (DataBuild!=null)
+        {
+            Labels = typeof(T).GetProperties().Select(p => p.Name).ToList();
+        }
+    }
+
+    private object GetPropertyValue(string propertyName)
+    {
+        if (dataBuild == null)
+        {
+            return "-";
+        }
+
+        var prop = typeof(T).GetProperty(propertyName);
+
+        return prop?.GetValue(dataBuild) ?? "-";
+    }
+
+
+    private bool isboolValue(T item, string propertyName)
+    {
+        var prop = typeof(T).GetProperty(propertyName);
+
+        return prop?.PropertyType == typeof(bool);
+    }
+
+
+    private void SetPropertyValue(T item, string propertyName, object value)
+    {
+        var prop = typeof(T).GetProperty(propertyName);
+        prop?.SetValue(item, value);
+    }
+
+
+    private void CloseDialog() => MudDialog.Close(DialogResult.Ok(true));
+
+    private static readonly Dictionary<string, Dictionary<string, string>> TransData = new() {
+            {
+                "en", new Dictionary<string, string>
+                {
+
+                    { "Pause", "Pause" },
+                    { "Resume", "Active" },
+                    { "Status", "Status" },
+                   
+                }
+            },
+            {
+               "ar", new Dictionary<string, string>
+                {
+           
+                    { "Pause", "إيقاف مؤقت" },
+                    { "Resume", "تفعيل" },
+                    { "Status", "الحالة" },
+
+                    
+
+                }
+            }
+        };
+
+    private  string GetTranslation(string key)
+    {
+        if (TransData.ContainsKey(lg) && TransData[lg].ContainsKey(key))
+        {
+            return TransData[lg][key];
+        }
+        return key;
+    }
+
+
+
+
+
+
+}

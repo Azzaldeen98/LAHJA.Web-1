@@ -1,0 +1,78 @@
+﻿@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.UI.Components.Billing.BillingInformaton
+@using LAHJA.UI.Components.Billing.BillingSummarys
+@using LAHJA.UI.Components.Billing.Shared
+@using LAHJA.UI.Components.Plan
+ @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+
+@page "/billing"
+  <MudLayout>
+@*         <MudAppBar Color="Color.Primary" Elevation="4">
+            <MudText Typo="Typo.h6" Class="ml-2">Billing Information</MudText>
+        </MudAppBar> *@
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-4">
+            <HeaderComponents   />
+
+           <MudGrid Justify="Justify.SpaceBetween">
+
+               <MudItem xs="4">
+
+                <PieChart />
+               
+
+               </MudItem>
+               <MudItem xs="8">
+
+                 <MonthlyCharges/>
+
+
+            </MudItem>
+
+           </MudGrid>
+
+       @*  <PlansCompireCompoent/> *@
+
+            <MudDivider Class="my-4" />
+            
+          
+           
+
+       <LastPayment    />   
+          
+
+          
+
+              <MudDivider Class="my-4" />
+
+           @*   <MainBilling/> *@
+
+        <BillingMethodsSection ReadOnly="true"/>
+
+        <MudDivider Class="my-4" />
+             <PaymentMethodsSection/>
+        <InvoicesSection />
+
+    </MudContainer>
+    </MudLayout>
+
+@code 
+
+{
+
+
+    [Parameter] public PlanViewModel? Param { get; set; }
+
+    [Parameter]
+    public List<PlanViewModel> Params { get; set; }
+
+
+
+    private List<PlanViewModel> PlanViewModels;
+    private PlanViewModel PlanViewModel;
+
+
+
+
+}

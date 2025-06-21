@@ -1,0 +1,128 @@
+﻿@using LAHJA.Data.UI.Components
+<style>
+    .ClassPaper {
+        border-radius: 15px !important;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;
+        margin: 20px auto;
+        overflow: hidden !important;
+        /* direction: rtl; */
+        max-width: 97% !important;
+        margin-right: -0% !important;
+        margin-top: -5%;
+    }
+
+  
+    .hover-text {
+        transition: color 0.3s ease-in-out !important;
+    }
+
+    .hover-text:hover {
+            color: rgba(11,186,131,1); 
+
+    }
+
+    .mt-2 {
+        margin-top: 0.5rem;
+    }
+
+    .space-y-2 {
+        margin-bottom: 0.5rem;
+    }
+
+    /* تصغير حجم الكارد */
+    .repo-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        transition: box-shadow 0.2s ease-in-out;
+    }
+
+        .repo-card:hover {
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+        }
+
+    /* تصغير حجم الخطوط */
+    .repo-name {
+        font-size: 13px;
+        margin: 0px !important;
+    }
+
+    .repo-details {
+        font-size: 12px;
+    }
+
+    /* تصغير حجم الصورة */
+    .mud-avatar {
+        width: 22px !important;
+        height: 22px !important;
+    }
+/* 
+    /* تصغير الأيقونات */
+    .mud-icon {
+        font-size: 15px;
+    } 
+
+    /* ضبط التباعد بين الفواصل */
+    .px-0.5 {
+        padding-left: 1px;
+        padding-right: 1px;
+    }
+
+    /* تحسين الوضع المظلم */
+    .dark .repo-name {
+        color: #fff;
+    }
+
+    .dark .repo-details {
+        color: #bdbdbd;
+    }
+
+    /* تصغير التصميم على الشاشات الصغيرة */
+
+
+
+</style>
+ 
+
+@code {
+    [Parameter] public ModelAIDisplayCard? DataBuild { get; set; }
+}
+<MudList T="ModelAIDisplayCard" Severity="Severity.Normal" Style=" margin-top: 2%;" Class="Right-layout mud-list-DataBuild-clickable repo-card mb-2 mud-paper">
+                    <MudCardActionArea  Class="mud-list-DataBuild-clickable hover-effect">
+                        <MudCardContent Style=" padding: 17px !important; " Class="repo-card-content">
+                            <!-- رأس البطاقة -->
+                <MudCardHeader Class="Right-padding">
+                                <MudAvatar Class="mr-1 w-4 h-4"  >
+                                    <MudImage Src="@DataBuild.ImageUrl"></MudImage>
+                                    </MudAvatar>
+
+                                    <MudLink Href="@DataBuild.LinkUrl" Style="margin:0px !important;" >
+                                      <MudText Style="font-size: 15px !important;" Class="hover-text">
+                                        @DataBuild.Name
+                                        </MudText>
+                                    </MudLink>
+                            </MudCardHeader>
+
+                            <!-- تفاصيل البطاقة -->
+                <MudText Style="margin:-7px 1px 0px 4px !important;" Class=" DataBuilds-center space-x-2">
+                                        <MudIcon class="repo-name" Size="Size.Small" Icon="@Icons.Material.Filled.VideoLibrary" />
+                    <span class="repo-name">@DataBuild.Category</span>
+
+                                <span class="px-1.5 text-gray-300 dark:text-gray-500">•</span>
+
+                    <MudTooltip Text="@DataBuild.UpdatedAt.ToString("ddd, dd MMM yyyy HH:mm:ss 'GMT'")">
+                        <time class="repo-name" datetime="@DataBuild.UpdatedAt.ToString("o")">@DataBuild.GetRelativeTime()</time>
+                                </MudTooltip>
+
+                                <span class="px-1.5 text-gray-300 dark:text-gray-500">•</span>
+
+                                        <MudIcon Class="repo-name" Size="Size.Small" Icon="@Icons.Material.Filled.CloudDownload" />
+                    <span class="repo-name">@DataBuild.Downloads</span>
+
+                                <span class="px-1.5 text-gray-300 dark:text-gray-500">•</span>
+
+                                        <MudIcon class="repo-name" Size="Size.Small" Icon="@Icons.Material.Filled.Favorite" />
+                    <span class="repo-name">@DataBuild.Likes</span>
+                            </MudText>
+                        </MudCardContent>
+                    </MudCardActionArea>
+                </MudList>  

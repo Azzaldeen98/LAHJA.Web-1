@@ -1,0 +1,36 @@
+﻿@if (IsDisplay)
+{
+    <MudCard Class="mx-auto" Style="width:98%;height:98%">
+        <MudCardHeader>
+
+            <CardHeaderContent>
+                <MudSkeleton Animation="Animation.False" Width="100%" />
+                <MudSkeleton Animation="Animation.Wave" Width="100%" />
+                <MudSkeleton Animation="Animation.Pulse" Width="100%" />
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudCardContent>
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="250px" Width="100%" />
+            </MudCardContent>
+            <MudCardContent>
+                <MudSkeleton Animation="Animation.Wave" Width="100%" />
+                <MudSkeleton Animation="Animation.Pulse" Width="100%" />
+            </MudCardContent>
+            <MudCardActions>
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="250px" Width="100%" />
+            </MudCardActions>
+        </MudCardContent>
+
+        <MudCardActions>
+            <MudSkeleton Animation="Animation.Wave" Width="100%" />
+            <MudSkeleton Animation="Animation.Pulse" Width="100%" />
+
+        </MudCardActions>
+    </MudCard>
+}
+@code{
+
+    [Parameter] public bool IsDisplay { get; set; }
+}
+

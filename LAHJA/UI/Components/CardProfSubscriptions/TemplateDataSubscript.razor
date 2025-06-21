@@ -1,0 +1,45 @@
+﻿@*  @using Domain.ShareData
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Data.UI.Components.Subscriptions
+@using LAHJA.UI.Components.Subscriptions
+@using static LAHJA.UI.Components.StudioLahjaAi.StartStudio
+
+<SubscriptionsTabelCard TItem="YourItemType" itemOptions="yourItemLis" displayProperty="Name" />
+<SubscriptionsTabelCard TItem="YourItemType" itemOptions="yourItemLis" displayProperty="Name" />
+<SubscriptionsTabelCard TItem="YourItemType" itemOptions="yourItemLis" displayProperty="Name" />
+ <FilterbyCard TItem="YourItemType" itemOptions="itemOption" />
+ 
+ @code
+{
+    [Parameter] public List<YourItemType> itemOptions { get; set; }
+
+    private List<YourItemType> yourItemLis = new List<YourItemType>
+    {
+        new YourItemType { Id = 1, Name = "Item 1" },
+        new YourItemType { Id = 2, Name = "Item 2" },
+        new YourItemType { Id = 3, Name = "Item 3" }
+    };
+
+    
+
+    public TemplateDataSubscript()
+    {
+    }
+    // [Parameter] public List<YourItemType> itemOption { get; set; }
+
+    // private List<YourItemType> yourItemList = new List<YourItemType>
+    // {
+    //     new YourItemType { Id = 1, Name = "Item 1", TotalNumber = "10", ButtonLabel = "Proceed" },
+    //     new YourItemType { Id = 2, Name = "Item 2", TotalNumber = "20", ButtonLabel = "Buy Now" }
+    // };
+
+    // protected override void OnInitialized()
+    // {
+    //     if (itemOption == null)
+    //     {
+    //         itemOption = yourItemList;
+    //     }
+    // }
+} 
+ *@

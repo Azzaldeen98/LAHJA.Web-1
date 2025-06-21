@@ -1,0 +1,48 @@
+﻿@using LAHJA.Data.UI.Components.ServiceCard
+
+<MudDialog>
+    <DialogContent>
+
+
+@*         <iframe src="@($"{SrcIframe}")"
+                width="100%"
+                height="600"
+                style="border: none;height:500px">
+        </iframe> *@
+
+
+        <IframeComponent Lg="@Language"
+                         StyleCss="width:100%;border: none;height:500px"
+                         IsLoading="true"
+                         SrcIFrame="@SrcIframe"
+                         BackupPageUrl="https://modelspeech.onrender.com/dashboard/" />
+
+       @*  <AddFormFilter DataBuild1="DataBuild1" DataBuildCheck="DataBuildCheck" /> *@
+                 
+    </DialogContent>
+    <DialogActions>
+
+      @*   <MudButton Variant="Variant.Text" Color="Color.Secondary" OnClick="CloseDialog">Close</MudButton> *@
+
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public List<ModelProperties> DataBuildCheck { get; set; } = null;
+    [Parameter] public string Language { get; set; } = "ar";
+    [Parameter] public string UrlRedirect { get; set; } 
+    [Parameter] public string UrlCancel  { get; set; } 
+    [Parameter] public object Data  { get; set; } 
+    [Parameter] public List<ModelProperties> DataBuild1 { get; set; } = null;
+
+    [Parameter]
+    public string SrcIframe { set; get; } = "https://modelspeech.onrender.com/t2speechmuit/?token=6776";
+
+    private void CloseDialog() => MudDialog.Close(DialogResult.Ok(true));
+
+  
+}

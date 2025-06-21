@@ -1,0 +1,13 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@if (@Params.IsActive)
+{
+     <li class="@Params.ClassContainer">
+    <MudText Typo="@Params.TypeTextCard" Class="@Params.ClassItem" >@Params.DataBuild</MudText>
+    </li>
+
+}
+
+@code{
+    [Parameter] public CardText Params { set; get; } = new CardText();
+
+}

@@ -1,0 +1,20 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.UI.Components.Icon
+@if (false)
+{
+    <MudAlert Severity="Severity.Normal" Variant="Variant.Filled">
+        @Params.Label
+        <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Size="Size.Small" />
+        <MudChip T="string" Icon="@Icons.Custom.Uncategorized.Radioactive" Label="true" Color="Color.Primary" style="background:#fff; color:#000000;" OnClose="CloseChip">@Params.Description</MudChip>
+    </MudAlert>
+}
+<CardShowExperience IsShowImage="false" />
+@code {
+    [Parameter] public TitelBarTabel Params { get; set; } = new();
+    // دالة لغلق الـ Chip
+    private void CloseChip()
+    {
+        // منطق لغلق الـ Chip
+    }
+
+}

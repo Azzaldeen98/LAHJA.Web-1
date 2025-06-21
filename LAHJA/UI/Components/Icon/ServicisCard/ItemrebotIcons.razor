@@ -1,0 +1,39 @@
+﻿@using LAHJA.Data.UI.Components.Base
+
+
+@if (Params != null)
+{
+       
+    <div class="imrebot position-relative ">
+        @* عرض صورة يدالربوت *@
+        @if (Params.Icon != null)
+        {
+            <img src="@Params.Icon.Src"  alt="Service Icon" />
+        }
+
+       
+    </div>
+   
+}
+else
+{
+    <p>No data available</p>
+}
+
+@code {
+    [Parameter] public CardTextAndIcon? Params { get; set; }
+
+  
+
+    // إذا كنت بحاجة إلى منطق إضافي، يمكنك إضافته هنا
+    protected override void OnInitialized()
+    {
+
+        if (Params != null && Params.IsUseStyleIneerItems)
+        {
+            Params.ClassItems += " " + CardTextAndIcon.INEERCLASS;
+        }
+
+
+    }
+}

@@ -1,0 +1,23 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Render
+
+
+@if(Value.GetType() ==typeof(RenderFragment))
+{
+    @((RenderFragment)Value)
+}
+else if (Value.GetType() == typeof(ICellRender))
+{
+    @(((ICellRender)Value).View())
+}
+else
+{
+    @Value
+}
+
+@code {
+    [Parameter] public object Value { set; get; }
+
+  
+
+}

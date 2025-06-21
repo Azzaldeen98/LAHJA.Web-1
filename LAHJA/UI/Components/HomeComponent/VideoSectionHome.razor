@@ -1,0 +1,111 @@
+﻿@using LAHJA.Data.UI.Components.HomeModel
+
+<style>
+    .video-section {
+        text-align: center;
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 15px;
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+        margin: 40px auto;
+        max-width: 900px;
+    }
+
+    .video-title {
+        font-family: 'Cairo', sans-serif;
+        font-size: 2rem;
+        font-weight: bold;
+        color: #1d3557;
+        margin-bottom: 20px;
+    }
+
+    .video-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+
+    .video-element {
+        width: 100%;
+        height: auto;
+    }
+
+    .video-button .mud-button {
+        padding: 10px 20px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+        border-radius: 8px;
+    }
+
+        .video-button .mud-button:hover {
+            transform: translateY(-3px);
+            background-color: #a8dadc;
+        }
+</style>
+
+
+
+@if (@DataBuid != null)
+{
+
+
+
+    <div class="video-section">
+        <h2 class="video-title">@DataBuid.Name</h2>
+
+     <div class="video-wrapper">
+        <video class="video-element" autoplay muted loop playsinline>
+                <source src="@DataBuid.UrlVideo" type="video/mp4">
+                <source src="https://www.bigbuckbunny.org/"type="video/ogg" />
+                 
+            
+        </video>
+    </div>
+    <div class="video-button">
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary">Watch Full Video</MudButton>
+    </div>
+
+
+</div>
+
+
+}
+
+
+
+@code
+ {
+
+    public EventCallback<DataBuildInforMationWebBlatFrom> OnSubmit { get; set; }
+
+    [Parameter]
+    public DataBuildInforMationWebBlatFrom DataBuid{ get; set; }
+
+    public async void Submit(DataBuildInforMationWebBlatFrom dataBuildInforMation)
+    {
+        try
+        {
+
+            if (OnSubmit.HasDelegate)
+            {
+                await OnSubmit.InvokeAsync(dataBuildInforMation);
+            }
+
+        }
+        catch(Exception ex)
+        {
+            
+        }
+
+
+    }
+
+
+
+  
+
+}
+

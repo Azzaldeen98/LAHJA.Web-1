@@ -1,0 +1,244 @@
+﻿
+
+
+<MudTabs>
+    <MudTabPanel Text="API Integration">
+        <MudTabs>
+            <MudTabPanel Text="Python (Arabic)">
+                <MudPaper Class="p-4">
+                    <MudText Typo="Typo.h6">تثبيت مكتبة HuggingFace (Python)</MudText>
+                    <MudChip T="string" Color="Color.Primary" Class="mb-3">huggingface/inference</MudChip>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => CopyToClipboard(PythonInstallCommand))">
+                        نسخ الكود
+                    </MudButton>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <MudText Typo="Typo.body1">كود التثبيت:</MudText>
+                        <pre> <code class="language-python" > @PythonInstallCommand </code></pre>
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="p-4 mt-3">
+                    <MudText Typo="Typo.h6">كود API باستخدام Python</MudText>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <pre>
+from gradio_client import Client
+
+client = Client("wasmdashai/RunTaskingCPU")
+
+# إجراء التنبؤ
+result = client.predict(
+    text="مرحبًا!!",  # النص المدخل
+    name_model="wasmdashai/vits-ar-sa-huba-v2",  # اختيار النموذج
+    speaking_rate=0.8,  # معدل النطق
+    api_name="/predict"  # نقطة النهاية
+)
+
+print(result)
+                        </pre>
+                    </MudText>
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="Python (English)">
+                <MudPaper Class="p-4">
+                    <MudText Typo="Typo.h6">Install HuggingFace Library (Python)</MudText>
+                    <MudChip T="string" Color="Color.Primary" Class="mb-3">huggingface/inference</MudChip>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => CopyToClipboard(PythonInstallCommand))">
+                        Copy Code
+                    </MudButton>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <MudText Typo="Typo.body1">Installation Command:</MudText>
+                        <pre>@PythonInstallCommand</pre>
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="p-4 mt-3">
+                    <MudText Typo="Typo.h6">API Client Code (Python)</MudText>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <pre>
+from gradio_client import Client
+
+client = Client("wasmdashai/RunTaskingCPU")
+
+# Making a prediction
+result = client.predict(
+    text="Hello!!",  # Input text
+    name_model="wasmdashai/vits-ar-sa-huba-v2",  # Choose model
+    speaking_rate=0.8,  # Speaking rate
+    api_name="/predict"  # API endpoint
+)
+
+print(result)
+                        </pre>
+                    </MudText>
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="JavaScript (Arabic)">
+                <MudPaper Class="p-4">
+                    <MudText Typo="Typo.h6">تثبيت مكتبة HuggingFace (JavaScript)</MudText>
+                    <MudChip T="string" Color="Color.Primary" Class="mb-3">huggingface/inference</MudChip>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => CopyToClipboard(JavaScriptInstallCommand))">
+                        نسخ الكود
+                    </MudButton>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <MudText Typo="Typo.body1">كود التثبيت:</MudText>
+                        <pre>@JavaScriptInstallCommand</pre>
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="p-4 mt-3">
+                    <MudText Typo="Typo.h6">كود API باستخدام JavaScript</MudText>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <pre>
+import { Client } from "gradio/client";
+
+// الاتصال بـ HuggingFace Space
+const client = await Client.connect("wasmdashai/RunTaskingCPU");
+
+// إجراء التنبؤ
+const result = await client.predict("/predict", {
+    text: "مرحبًا!!",  // النص المدخل
+    name_model: "wasmdashai/vits-ar-sa-huba-v1",  // اختيار النموذج
+    speaking_rate: 0.1,  // معدل النطق
+});
+
+console.log(result.data);  // عرض النتيجة
+                        </pre>
+                    </MudText>
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="JavaScript (English)">
+                <MudPaper Class="p-4">
+                    <MudText Typo="Typo.h6">Install HuggingFace Library (JavaScript)</MudText>
+                    <MudChip T="string" Color="Color.Primary" Class="mb-3">huggingface/inference</MudChip>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => CopyToClipboard(JavaScriptInstallCommand))">
+                        Copy Code
+                    </MudButton>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <MudText Typo="Typo.body1">Installation Command:</MudText>
+                        <pre>@JavaScriptInstallCommand</pre>
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="p-4 mt-3">
+                    <MudText Typo="Typo.h6">API Client Code (JavaScript)</MudText>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <pre>
+import { Client } from "gradio/client";
+
+// Connect to HuggingFace Space
+const client = await Client.connect("wasmdashai/RunTaskingCPU");
+
+// Making a prediction
+const result = await client.predict("/predict", {
+    text: "Hello!!",  // Input text
+    name_model: "wasmdashai/vits-ar-sa-huba-v1",  // Choose model
+    speaking_rate: 0.1,  // Speaking rate
+});
+
+console.log(result.data);  // Display the result
+                        </pre>
+                    </MudText>
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="cURL (Arabic)">
+                <MudPaper Class="p-4">
+                    <MudText Typo="Typo.h6">استخدام cURL للتفاعل مع API</MudText>
+                    <MudChip T="string" Color="Color.Primary" Class="mb-3">cURL</MudChip>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => CopyToClipboard(CurlCommand))">
+                        نسخ الكود
+                    </MudButton>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <MudText Typo="Typo.body1">أمر cURL:</MudText>
+                        <pre>@CurlCommand</pre>
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="p-4 mt-3">
+                    <MudText Typo="Typo.h6">كود cURL لاستخدام API</MudText>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <pre>
+# 1. تأكد من أنك قد قمت بتثبيت cURL
+curl --version
+
+# 2. إرسال طلب POST إلى API
+curl -X POST https://wasmdashai-runtaskingcpu.hf.space/call/predict -s -H "Content-Type: application/json" -d '{
+  "data": [
+    "مرحبًا!!",                            # النص المدخل
+    "wasmdashai/vits-ar-sa-huba-v1",       # اختيار النموذج
+    0.1                                    # معدل النطق
+]}' \
+  | awk -F'"' '{ print $4}'  \            # استخراج EVENT_ID
+  | read EVENT_ID;                       # حفظ EVENT_ID في متغير
+
+# 3. استخدام EVENT_ID للحصول على النتيجة
+curl -N https://wasmdashai-runtaskingcpu.hf.space/call/predict/$EVENT_ID   # جلب النتيجة
+                        </pre>
+                    </MudText>
+                </MudPaper>
+            </MudTabPanel>
+
+            <MudTabPanel Text="cURL (English)">
+                <MudPaper Class="p-4">
+                    <MudText Typo="Typo.h6">Use cURL to Interact with the API</MudText>
+                    <MudChip T="string" Color="Color.Primary" Class="mb-3">cURL</MudChip>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.ContentCopy" OnClick="@(() => CopyToClipboard(CurlCommand))">
+                        Copy Code
+                    </MudButton>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <MudText Typo="Typo.body1">cURL Command:</MudText>
+                        <pre>@CurlCommand</pre>
+                    </MudText>
+                </MudPaper>
+
+                <MudPaper Class="p-4 mt-3">
+                    <MudText Typo="Typo.h6">cURL API Client Code</MudText>
+                    <MudText Typo="Typo.body2" Class="mt-3">
+                        <pre>
+# 1. Confirm you have cURL installed
+curl --version
+
+# 2. Make a POST request to send data to the API
+curl -X POST https://wasmdashai-runtaskingcpu.hf.space/call/predict -s -H "Content-Type: application/json" -d '{
+  "data": [
+    "Hello!!",                          # Input text
+    "wasmdashai/vits-ar-sa-huba-v1",     # Choose model
+    0.1                                  # Speaking rate
+]}' \
+  | awk -F'"' '{ print $4}'  \            # Extract EVENT_ID
+  | read EVENT_ID;                       # Store EVENT_ID in variable
+
+# 3. Use EVENT_ID to get the result
+curl -N https://wasmdashai-runtaskingcpu.hf.space/call/predict/$EVENT_ID   # Fetch the result
+                        </pre>
+                    </MudText>
+                </MudPaper>
+            </MudTabPanel>
+        </MudTabs>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    private string PythonInstallCommand = "pip install gradio_client";
+    private string JavaScriptInstallCommand = "npm i -D @gradio/client";
+    private string CurlCommand = @"
+# 1. Confirm cURL is installed
+curl --version
+
+# 2. POST request to send data
+curl -X POST https://wasmdashai-runtaskingcpu.hf.space/call/predict -s -H 'Content-Type: application/json' -d '{
+  ""data"": [
+    ""Hello!!"",
+    ""wasmdashai/vits-ar-sa-huba-v1"",
+    0.1
+  ]
+}' | awk -F'""' '{ print $4}' | read EVENT_ID; curl -N https://wasmdashai-runtaskingcpu.hf.space/call/predict/$EVENT_ID";
+
+    private void CopyToClipboard(string text)
+    {
+        // Clipboard.SetTextAsync(text);
+    }
+}

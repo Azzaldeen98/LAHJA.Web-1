@@ -1,0 +1,37 @@
+﻿
+
+
+
+<div style="border: 1px solid #ccc; padding: 10px; margin: 10px;">
+    <iframe src="@FullUrl" width="100%" height="600" style="border: none;height:450px"></iframe>
+    @FullUrl
+</div>
+
+@code
+{
+
+    [Parameter] public string BaseUrl { get; set; }
+    [Parameter] public string ClassScss { get; set; }  
+    [Parameter] public string[] Indices { get; set; }
+    [Parameter] public Dictionary<string, string> QueryParams { get; set; }
+    private string FullUrl => GenerateUrl();
+    private string GenerateUrl()
+    {
+
+
+       
+            string queryString = QueryParams != null
+            ? string.Join("&", QueryParams.Select(kvp => $"{kvp.Key}={Uri.EscapeDataString(kvp.Value)}"))
+            : string.Empty;
+
+
+
+        if (Indices == null || Indices.Length == 0)
+            return $"{BaseUrl}/?{queryString}";
+        else
+        {
+            string combinedPath = string.Join("/", Indices);
+            return $"{BaseUrl}{combinedPath}/?{queryString}";
+        }
+    }
+}

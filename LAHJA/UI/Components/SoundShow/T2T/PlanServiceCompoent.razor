@@ -1,0 +1,87 @@
+﻿@using LAHJA.Data.UI.Components.ServiceVM
+
+
+
+<style>
+    .custom-1container {
+        display: flex !important;
+        flex-wrap: wrap !important; /* لتمكين الاستجابة */
+        justify-content: center !important; /* محاذاة البطاقات في المنتصف */
+    @* gap: 20px; /* مسافة بين البطاقات */ *@ margin: 20px auto;
+    }
+
+    .custom-card {
+    @* width: 300px; *@ box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        text-align: right;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .custom-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
+
+</style>
+
+
+    @if (DataBuild != null)
+    {
+
+    <MudGrid Class="custom-1container">
+    @foreach (var item in DataBuild)
+    {
+
+
+       
+
+
+            <MudItem xs="12" sm="4" Class="">
+
+                <MudCard Class="pa-4 custom-card ">
+                    <MudCardContent>
+
+                        <MudText Typo="Typo.body2" Style="text-align: center; font-size: 15px;" Class="mb-2">@item.Name</MudText>
+
+                        <MudText Style="text-align: center; font-size: 17px;" Typo="Typo.body2">
+                            @item.Descrption
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="text-align: center; " Color="Color.Default" Class="mt-2">$@item.Price</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+
+                        <MudButton Variant="Variant.Outlined" Color="Color.Success" FullWidth="true">
+                            @((!IsArabic ? "احصل على القسيمة" : "GET VOUCHER"))
+                        </MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+      
+    }
+    </MudGrid>
+    }
+
+
+ 
+
+
+
+
+
+
+
+   
+@code 
+
+{
+
+    [Parameter] public List<ServiceaAppModel>DataBuild { get; set; } = null;
+
+
+    [Parameter] public bool IsArabic { get; set; }= false;
+ 
+
+   
+
+   
+}

@@ -1,0 +1,55 @@
+﻿ 
+@using LAHJA.Data.UI.Components.Category
+@using LAHJA.Data.UI.Components.Category.DataModel
+ 
+@using LAHJA.UI.Components.Category
+ 
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+ 
+
+    <MainCategory DataBuild="CategoryInfos" OnSubmit="ONclickCatgory" />
+
+
+ 
+ 
+@code
+{
+
+    private List<CategoryComponent> CategoryInfos;
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            CategoryInfos = DataManagerCategory.GetAllCategoryInfos();
+
+
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+
+        }
+    }
+
+
+    private async Task ONclickCatgory(Data.UI.Components.DataBuildPlansBase category)
+    {
+        try
+        {
+
+
+           
+              StateHasChanged();
+            Snackbar.Add(category.CategoryId, Severity.Success);
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+
+    }
+
+}

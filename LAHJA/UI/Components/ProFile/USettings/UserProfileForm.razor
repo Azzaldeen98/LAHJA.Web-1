@@ -1,0 +1,324 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.ProFileModel
+@using LAHJA.Them
+@using LAHJA.UI.Components.General.Button
+@using MudBlazor
+@* @inherits CardAuth<DataBuildAuth> *@
+@inject IJSRuntime JS
+
+<MudContainer Class="my-5 h-auto">
+    <MudForm Model="@_buildData" @ref="form" >
+        <MudGrid>
+            <MudItem xs="12" Class="mt-5">
+                <MudPaper Class="pa-4 px-3 d-flex justify-between align-center">
+                    <MudText Typo="Typo.h5">@T("MyProfile")</MudText>
+                    @if (!isUpdate)
+                    {
+                        <MudButton Color="Color.Default" Variant="Variant.Filled" OnClick="OnEdit" Class="px-5 py-2">@T("EditProfile")</MudButton>
+                    }
+                    else
+                    {
+                        <MudButton Color="Color.Default" Variant="Variant.Filled" OnClick="OnCancel" Class="px-5 py-2">@T("Cancel")</MudButton>
+                    }
+                </MudPaper>
+                <MudDivider />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudCard Class="pa-4 text-center">
+                    <MudCardContent>
+                        @if (isUpdate)
+                        {
+                            <MudText Typo="Typo.h6">@T("UploadPhoto")</MudText>
+                            <MudImage Width="200" Height="200" Src="@imageSrc" />
+                        }
+                        else
+                        {
+                            <MudImage Width="100" Height="100" Src="@imageSrc" />
+                        }
+
+                    </MudCardContent>
+                    <MudCardActions Class="d-flex flex-column align-items-center justify-center">
+                        @if (isUpdate)
+                        {
+                            <MudFileUpload Accept="image/*" T="IBrowserFile" Class="mt-3" Style="width:75% !important" FilesChanged="UploadFiles">
+                                <ActivatorContent>
+                                    <MudFab Class="w-100"
+                                            Color="@AppColors.BASE_COLOR_ENUM"
+                                            StartIcon="@Icons.Material.Filled.Image"
+                                            Label="@T("Upload")" />
+                                </ActivatorContent>
+                            </MudFileUpload>
+
+                            <MudFab Class="w-75 mt-3"
+                                    Color="Color.Error"
+                                    StartIcon="@Icons.Material.Filled.Delete"
+                                    Label="@T("Remove")" OnClick="DeleteImage" />
+                        }
+
+                        @* <MudText Class="mt-2">@T("Note")</MudText> *@
+
+                        @* <MudButton Color="@AppColors.BASE_COLOR_ENUM"  ButtonType="ButtonType.Reset" Class="@($"{AppTextStyle.TEXT_TRANSFORM_NORMAL} my-2 text-start")" Href="@($"/ProfileResetPassword/{_buildData.Email}")">@T("ResetPassword")</MudButton> *@
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+            <MudItem xs="12" md="8">
+                <MudCard Class="pa-4">
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@T("UserInfo")</MudText>
+                        <MudDivider/>
+                   
+                            <MudGrid Class="m-auto p-3">
+                                <MudItem xs="12" md="6">
+                                <MudTextField T="string" 
+                                    Label="@T("FirstName")"
+                                    Class="py-1  px-3" 
+                                    Disabled="!isUpdate" ReadOnly="!isUpdate"
+                                        Value="@_buildData.FirstName"
+                                        ValueChanged="@(e => _buildData.FirstName = e)" />
+                                 </MudItem>
+
+                                <MudItem xs="12" md="6">
+                                <MudTextField T="string" 
+                                    Label="@T("LastName")" 
+                                    Class="py-1 px-3" 
+                                    Disabled="!isUpdate" 
+                                    ReadOnly="!isUpdate"
+                                              Value="@_buildData.LastName"
+                                              ValueChanged="@(e => _buildData.LastName = e)" />
+                                </MudItem>  
+                            
+                                <MudItem xs="12" md="6">
+                                <MudTextField T="string" 
+                                    Label="@T("DisplayName")" 
+                                    Class="py-1 px-3" 
+                                Disabled="!isUpdate" 
+                                ReadOnly="!isUpdate"
+                                              Value="@_buildData.DisplayName"
+                                              ValueChanged="@(e => _buildData.DisplayName = e)" />
+                                </MudItem>
+
+                                <MudItem xs="12" md="6">
+                                <MudTextField T="string" 
+                                    InputType="InputType.Telephone" 
+                                    Label="@T("PhoneNumber")" 
+                                    Class="py-1 px-3" 
+                                    Disabled="!isUpdate" ReadOnly="!isUpdate"
+                                              Value="@_buildData.PhoneNumber"
+                                              ValueChanged="@(e => _buildData.PhoneNumber = e)" />
+                                </MudItem>
+
+                            </MudGrid>
+                
+             @*            <MudCardActions Class="d-flex justify-start">
+                             @if(isUpdate){
+                                <MudButton Color="@AppColors.BASE_COLOR_ENUM" OnClick="UpdateProfileUserAsync" Variant="Variant.Filled" Class="m-3 py-3 px-5">@T("UpdateProfile")</MudButton>
+                             }
+                        </MudCardActions> *@
+
+                        @if (isUpdate)
+                        {
+                            <MudCardActions Class="d-flex flex-wrap justify-content-between align-items-center px-3 mt-4">
+
+                                 <MudButton Disabled="@isProcessing" Color="@AppColors.BASE_COLOR_ENUM" Variant="Variant.Filled"
+                                OnClick="UpdateProfileUserAsync" Class="ml-3 px-5 py-3 m-2 w30">@T("UpdateProfile")</MudButton>
+
+                                <MudButton Disabled="@isProcessing" Color="Color.Error" Variant="Variant.Outlined" Class="px-5 py-3 m-2 w30">@T("DeleteProfile")</MudButton>
+
+                                @* <CustomButton Color="Color.Error"  Text="@T("DeleteProfile")" OnClick="OnDeletedProfile" StyleClass="px-5 py-3" /> *@
+                                 @* <CustomButton Text="@T("UpdateProfile")" OnClick="UpdateProfileUserAsync" StyleClass="ml-3 px-5 py-3" /> *@
+                            </MudCardActions>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </MudForm>
+</MudContainer>
+
+
+
+@code
+{
+    private string imageSrc;
+    private string imageSrcFirst;
+    private IBrowserFile selectedImage;
+
+    private Uri imageUri;
+    private bool isUpdate =false;
+    private bool isProcessing = false;
+    private MudForm form;
+    private DataBuildUserProfile _buildData=new();
+
+    [Parameter] public DataBuildUserProfile BuildData { get => _buildData; set {
+
+            if (value != null){
+                _buildData = value;
+                imageSrc = !string.IsNullOrEmpty(_buildData.Image) ? _buildData.Image: "https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp";
+                imageSrcFirst = imageSrc;
+                StateHasChanged();
+            }
+
+        } 
+
+    }
+    [Parameter] public string Language { get; set; } = "en";
+    [Parameter] public bool IsUpdate { get => isUpdate; set => isUpdate = value; }
+    [Parameter] public EventCallback<DataBuildUserProfile> SubmitSaveUpdate { get; set; }
+    [Parameter] public EventCallback<DataBuildUserProfile> SubmitDeleteImage { get; set; }
+    [Parameter] public EventCallback SubmitEdit { get; set; }
+    [Parameter] public EventCallback SubmitCancel { get; set; }
+
+    private string T(string key) => Translations[Language][key];
+    private async Task DeleteImage()
+    {
+        if (SubmitDeleteImage.HasDelegate)
+        {
+            await SubmitDeleteImage.InvokeAsync(_buildData);
+        }
+
+    }
+    private async Task OnDeletedProfile()
+    {
+
+    }
+    private async Task OnEdit()
+    {
+        isUpdate = !isUpdate;
+        StateHasChanged();
+
+        if (SubmitEdit.HasDelegate)
+        {
+            await SubmitEdit.InvokeAsync();
+        }
+    }
+    private async Task UpdateProfileUserAsync()
+    {
+        if (form.IsValid)
+        {
+            isProcessing = true;
+            if (imageUri != null)
+            {
+                _buildData.ImageUri = imageUri;
+            }
+
+            if (SubmitSaveUpdate.HasDelegate && _buildData!=null)
+            {
+                await  SubmitSaveUpdate.InvokeAsync(_buildData);
+            }
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+    private  string ConvertBytesToBase64(byte[] imageBytes, string contentType)
+    {
+        var base64String = Convert.ToBase64String(imageBytes);
+        return $"data:{contentType};base64,{base64String}";
+    }
+    private async Task UploadFiles(IBrowserFile file)
+    {
+
+        if (file != null)
+        {
+            using var stream = file.OpenReadStream();// maxAllowedSize: 1048576); 
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            var bytes = memoryStream.ToArray();
+            imageSrcFirst = imageSrc;
+            var strBase64 = ConvertBytesToBase64(bytes, file.ContentType);
+            imageUri = new Uri(strBase64);
+            imageSrc = imageUri.ToString();
+            StateHasChanged();
+        }
+    }
+
+
+
+
+    // private async Task UploadFiles2(IBrowserFile file)
+    // {
+    //     selectedImage = file;
+    //     var fileName = file.Name;
+    //     string extension = Path.GetExtension(file.Name);
+    //     using var stream = file.OpenReadStream(10_000_000); // الحد الأقصى 10MB
+    //     using var memoryStream = new MemoryStream();
+    //     await stream.CopyToAsync(memoryStream);
+    //     byte[]  buffer = memoryStream.ToArray();
+    //     imageSrcFirst = imageSrc;
+    //     imageSrc = await JS.InvokeAsync<string>("createObjectURL", buffer);
+    //     string mimeType = $"image/{extension}";
+    //     imageUri = new Uri($"data:{mimeType};base64,{imageSrc}");
+    //     StateHasChanged();
+
+    // }
+    private async Task  OnCancel()
+    {
+        if (!string.IsNullOrEmpty(_buildData.Image))
+            imageSrc = _buildData.Image;
+        isUpdate = !isUpdate;
+        imageUri = null;
+        StateHasChanged();
+
+        if (SubmitCancel.HasDelegate)
+        {
+            await SubmitCancel.InvokeAsync();
+        }
+    }
+
+    private Dictionary<string, Dictionary<string, string>> Translations = new()
+    {
+        { "en", new Dictionary<string, string>
+            {
+                {"MyProfile", "My Profile"},
+                {"EditProfile", "Edit Profile"},
+                {"UserInfo", "User Info"},
+                {"DisplayName", "Display Name"},
+                {"FirstName", "First Name"},
+                {"LastName", "Last Name"},
+                {"PhoneNumber", "Phone Number"},
+                {"MobileNumber", "Mobile Number"},
+                {"Email", "Email"},
+                {"Skype", "Skype"},
+                {"UploadPhoto", "Upload Your Profile Photo"},
+                {"Upload", "Upload"},
+                {"Remove", "Remove"},
+                {"Note", "Note: Minimum size 300px x 300px"},
+                {"ChangePassword", "Change Password"},
+                {"OldPassword", "Old Password"},
+                {"NewPassword", "New Password"},
+                {"ConfirmPassword", "Confirm Password"},
+                {"DeleteProfile", "Delete Profile"},
+                {"UpdateProfile", "Update Profile"},
+                {"Cancel", "Cancel"},
+                {"ResetPassword", "Reset Password"}
+
+            }
+        },
+        { "ar", new Dictionary<string, string>
+            {
+                {"MyProfile", "ملفي الشخصي"},
+                {"EditProfile", "تعديل الملف الشخصي"},
+                {"UserInfo", "معلومات المستخدم"},
+                {"DisplayName", "الاسم المستعار"},
+                {"FirstName", "الاسم الأول"},
+                {"LastName", "الاسم الأخير"},
+                {"PhoneNumber", "رقم الهاتف"},
+                {"MobileNumber", "رقم الجوال"},
+                {"Email", "البريد الإلكتروني"},
+                {"Skype", "سكايب"},
+                {"UploadPhoto", "تحميل صورة الملف الشخصي"},
+                {"Upload", "تحميل"},
+                {"Remove", "إزالة"},
+                {"Note", "ملاحظة: الحد الأدنى للحجم 300 × 300 بكسل"},
+                {"ChangePassword", "تغيير كلمة المرور"},
+                {"OldPassword", "كلمة المرور القديمة"},
+                {"NewPassword", "كلمة المرور الجديدة"},
+                {"ConfirmPassword", "تأكيد كلمة المرور"},
+                {"DeleteProfile", "حذف الحساب"},
+                {"UpdateProfile", "تحديث الحساب"},
+                {"Cancel", "إلغاء"},
+                {"ResetPassword", "تهيئة كلمة السر"}
+            }
+        }
+    };
+
+}

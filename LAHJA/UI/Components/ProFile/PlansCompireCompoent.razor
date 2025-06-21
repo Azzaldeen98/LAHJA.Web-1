@@ -1,0 +1,125 @@
+﻿@inject NavigationManager Navigation
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<MudExpansionPanels   Elevation="0">
+    <MudExpansionPanel Text="Current plan">
+        <MudGrid Justify="Justify.SpaceAround" Spacing="3">
+            @foreach (var plan in subscriptionPlans)
+            {
+
+
+                <MudCard Style="width: 300px;">
+                    <MudCardHeader>
+                        <MudText Variant="Variant.H6" Align="Align.Center">@plan.PlanName</MudText>  
+                    </MudCardHeader>
+                    <MudCardContent>
+                         <MudList T="object">
+                            <MudListItem>
+                                <MudText><strong>Private Repositories:</strong> @plan.RepositoryLimit</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Support:</strong> @plan.SupportType</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>CI/CD Tools:</strong> @plan.CI_CDTools</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Team Size:</strong> @plan.MaxTeamSize</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Cost:</strong> @plan.Cost</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Additional Features:</strong> @plan.AdditionalFeatures</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Request Limit:</strong> @plan.RequestLimit</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Connected Scopes:</strong> @plan.ConnectedScopes</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Device Limit:</strong> @plan.DeviceLimit</MudText>
+                            </MudListItem>
+                            <MudListItem>
+                                <MudText><strong>Paid Subscription:</strong> @(plan.IsPaid ? "Yes" : "No")</MudText>
+                            </MudListItem>
+                            <MudListItem>
+
+
+                                <MudButton Disabled=@(plan.PlanName != "Basic" ?false:true) Color="Color.Primary"
+                                           Variant="Variant.Filled" OnClick="PaymentPage">
+                                    Subscription
+                                
+                                </MudButton>
+                            </MudListItem>
+                        </MudList>
+                    </MudCardContent>
+                </MudCard>
+            }
+        </MudGrid>
+    </MudExpansionPanel>
+    </MudExpansionPanels>
+
+
+ 
+
+
+@code
+{
+
+
+    private void PaymentPage()
+    {
+        Navigation.NavigateTo("/Payment");
+    }
+    public class SubscriptionPlan
+    {
+        public string PlanName { get; set; }  
+        public string RepositoryLimit { get; set; }  
+        public string SupportType { get; set; }  
+        public string CI_CDTools { get; set; }  
+        public string MaxTeamSize { get; set; }  
+        public string Cost { get; set; }  
+        public string AdditionalFeatures { get; set; }  
+        public string RequestLimit { get; set; }  
+        public string ConnectedScopes { get; set; }  
+        public string DeviceLimit { get; set; }  
+        public bool IsPaid { get; set; }  
+
+    }
+
+
+    private List<SubscriptionPlan> subscriptionPlans = new List<SubscriptionPlan>
+{
+    new SubscriptionPlan
+    {
+        PlanName = "Basic",
+        RepositoryLimit = "Unlimited",
+        SupportType = "Email",
+        CI_CDTools = "Jenkins",
+        MaxTeamSize = "5",
+        Cost = "Free",
+        AdditionalFeatures = "None",
+        RequestLimit = "1000 requests/day",
+        ConnectedScopes = "Limited",
+        DeviceLimit = "1",
+        IsPaid = false  
+    },
+    new SubscriptionPlan
+    {
+        PlanName = "Pro",
+        RepositoryLimit = "Unlimited",
+        SupportType = "24/7 Support",
+        CI_CDTools = "Jenkins, GitHub Actions",
+        MaxTeamSize = "50",
+        Cost = "$50/month",
+        AdditionalFeatures = "Advanced Security",
+        RequestLimit = "5000 requests/day",
+        ConnectedScopes = "Unlimited",
+        DeviceLimit = "5",
+        IsPaid = true // This is a paid plan
+    }
+};
+}

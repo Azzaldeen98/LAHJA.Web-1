@@ -1,0 +1,151 @@
+﻿@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Them
+ 
+<MudDialog>
+    <DialogContent>
+@if(@ButtonText=="Edit")
+{
+           
+
+           <MudCard  Outlined="true">
+   
+
+
+    <MudCardContent >
+        <MudGrid >
+                <MudItem >
+                <MudText Typo="Typo.subtitle2"><b>Product Name:</b>@Params.Key</MudText>
+                <MudText Typo="Typo.subtitle2"><b>Unit Price:</b>
+                    @Params.Price
+                
+                </MudText>
+                <MudText Typo="Typo.subtitle2"><b>Quantity:</b></MudText>
+                        <MudText Typo="Typo.body1" Color="Color.Primary">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="@(() =>DecrementQuantity(Params))">-</MudButton>
+                    <span style="margin: 0 10px;">@Params.Quantity</span>
+                                <MudButton Variant="Variant.Outlined" Color="@AppColors.BASE_COLOR_ENUM" OnClick="@(() => IncrementQuantity(Params))">+</MudButton>
+                        </MudText>
+                <MudText Typo="Typo.subtitle2"><b>Total Price:</b>@Params.TotalPrice</MudText>
+                </MudItem>
+        </MudGrid>
+    </MudCardContent>
+     
+</MudCard>
+            
+            
+}
+else
+{
+     <MudText >@ContentText</MudText>
+}
+        
+       
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+@code {
+
+
+
+
+
+
+    int count = 0;
+    decimal totalPrice = 2;
+
+    [CascadingParameter]
+    private MudDialogInstance ?MudDialog { get; set; }
+
+    [Parameter]
+    public string ?ContentText { get; set; }
+
+    [Parameter] public PlanFeatureViewModel? Params { get; set; }
+
+    [Parameter]
+    public string ?ButtonText { get; set; }
+
+    [Parameter]
+    public Color Color { get; set; }
+
+
+
+
+
+    private async Task IncrementQuantity(PlanFeatureViewModel obj)
+
+    {
+        try
+        {
+            if (obj.Quantity >= 0)
+            {
+                obj.Quantity = obj.Quantity + 1;
+
+
+
+
+
+
+
+                 @* obj.TotalPrice = (decimal)totalPrice * obj.Quantity; *@
+
+
+                StateHasChanged();
+
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+
+
+
+
+
+    private async Task DecrementQuantity(PlanFeatureViewModel obj)
+
+    {
+        if (obj.Quantity > 0)
+        {
+
+
+            obj.Quantity = obj.Quantity - 1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            @* obj.TotalPrice = (decimal)totalPrice * obj.Quantity; *@
+
+
+
+            StateHasChanged();
+
+
+
+
+
+        }
+    }
+    private void Submit() => MudDialog.Close(DialogResult.Ok(Params));
+
+    private void Cancel() => MudDialog.Cancel();
+}

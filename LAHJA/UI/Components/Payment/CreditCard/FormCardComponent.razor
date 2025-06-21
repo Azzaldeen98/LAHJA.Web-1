@@ -1,0 +1,80 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.Them
+
+
+@* 
+@if (ShowInDialog)
+{
+    <MudDialog>
+    <DialogContent>
+            <FormCard IsUpdate="@IsUpdate" BuildData="BuildData" OnClickSave="@OnSave" Title="Title" />
+    </DialogContent>
+    <DialogActions>
+         <MudButton OnClick="onConfirm" class="mx-5 " Color="@AppColors.BASE_COLOR_ENUM">OK</MudButton> 
+        <MudButton OnClick="onCancel" class="mx-5 " Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+    </MudDialog>
+}
+else
+{ *@
+    <FormCard IsUpdate="@IsUpdate" BuildData="BuildData" OnClickSave="@OnSave" />
+@* } *@
+
+
+@code
+{
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public CardDetails BuildData { get; set; }
+    [Parameter] public bool IsUpdate { get; set; } = false;
+    [Parameter] public bool ShowInDialog { get; set; } = false;
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public EventCallback<CardDetails> SubmitUpdate { get; set; }
+    [Parameter] public EventCallback<CardDetails> SubmitCreate { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Title = IsUpdate ? "Update Card Details" : "Create New Card";
+        StateHasChanged();
+    }
+
+    private async Task OnSave(CardDetails cardDetails)
+    {
+
+        try
+        {
+
+            if (cardDetails != null)
+            {
+                if (IsUpdate && SubmitUpdate.HasDelegate)
+                {
+                    await SubmitUpdate.InvokeAsync(cardDetails);
+                }
+                else if (SubmitCreate.HasDelegate)
+                {
+                    await SubmitCreate.InvokeAsync(cardDetails);
+                }
+
+                if (ShowInDialog)
+                {
+                    MudDialog.Close(DialogResult.Ok(cardDetails));
+                }
+            }
+           
+        }
+        catch(Exception ex)
+        {
+            
+        }
+    }
+
+    private void onCancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+
+    }
+
+
+
+}

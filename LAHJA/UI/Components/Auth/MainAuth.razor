@@ -1,0 +1,244 @@
+﻿@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using Domain.Entities
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Templates.Auth
+@using LAHJA.Them
+@using LAHJA.UI.Components.Auth
+@using LAHJA.Data.UI.Components.Base
+@using Microsoft.AspNetCore.Components.Authorization
+@using global::Shared.Constants.Router
+@using Microsoft.AspNetCore.Authorization
+
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation;
+@inject ISnackbar Snackbar
+@inject TemplateAuth AuthTemplate
+
+
+@attribute [AllowAnonymous]
+
+@if (isLoading)
+{
+    <Loading IsLoading="isLoading" />
+}else{
+
+    
+<AuthorizeView>
+@*     <Authorizing>
+        @code {
+            protected override void OnInitialized()
+            {
+                Navigation.NavigateTo(RouterPage.HOME);
+            }
+        }
+    </Authorizing> *@
+    <NotAuthorized>
+        <MudContainer class="cuntrer " style="display:flex;justify-content:center;direction:ltr !important">
+            <div style="padding:2% 2% " class="c-auth-main">
+                 
+                <div class="RCardP fsing">
+           
+                    <div id="signupModalFormSignup" data-hs-show-animation-target-group="idForm" style="display: block; opacity: 1.0175;">
+                        <!-- Heading -->
+                        <div class="text-center mb-7">
+                            <h3>   @(nameAuth[indexAuth])</h3>
+                            <p>
+                                Already have an account?
+                                <MudButton Variant="Variant.Text"
+                                           OnClick="ChangeAuth"
+                                           Color="@AppColors.BASE_COLOR_ENUM"
+                                           Style="text-transform:none">
+                                    @(nameAuth[1 - indexAuth])
+                                </MudButton>
+                            </p>
+                        </div>
+                        <!-- End Heading -->
+
+                        <MudDivider />
+                        <br />
+
+                        <div class="d-grid gap-3">
+                            @if (isshowmian)
+                            {
+                            @* @if (!_isToLogin){ *@
+                                <MudButton Variant="Variant.Outlined" OnClick="onClickGoogleAccount" Color="@AppColors.BASE_COLOR_ENUM">
+                                    <img style="width: 1rem; height: 1rem;margin-right:10px" src="css/google-icon.svg" alt="Image Description">
+
+                                    @nameAuth[indexAuth] with Google
+                                </MudButton>
+                                <MudButton Variant="Variant.Outlined" OnClick="onClickFacebookAccount"
+                                           Color="@AppColors.BASE_COLOR_ENUM">
+                                    <img style="width: 1.5rem; height: 1.5rem;margin-right:10px" src="css/fb-icon.svg" alt="Image Description">
+
+                                    @nameAuth[indexAuth] with Facebook
+                                </MudButton>
+                            @* } *@
+                             
+                                <MudButton OnClick="ClickFormEmaill"
+                                           Variant="Variant.Filled"
+                                           Color="@AppColors.BASE_COLOR_ENUM">
+                                    @nameAuth[indexAuth] with Email
+                                </MudButton>
+
+                              @* <MudButton OnClick="OnSubmitReSendConfirmEmail" Color="Color.Primary"> Resend Confirm Email</MudButton> *@
+                            }
+                            else
+                            {
+                                <TemplateAuthForm 
+                                     IsLogin=@(indexAuth==1) 
+                                     ErrorMessages="errorMessages"
+                                     OnSubmit="OnSubmitLoginOrRegister"
+                                     OnSubmitExternalLogin="OnSubmitExternalLogin"
+                                     OnSubmitedForgetPassword="OnSubmitedForgetPassword"
+                                     OnSubmitConfirmEmail="OnSubmitConfirmEmail"
+                                     OnSubmitReSendConfirmEmail="OnSubmitReSendConfirmEmail"
+                                     OnSubmitResetPassword="OnSubmitResetPassword" />
+                            }
+                            <br />
+                            <MudDivider />
+                            <br />
+                            <div class="text-center">
+                                <p class="small mb-0">By continuing you agree to our <a href="#">Terms and Conditions</a></p>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                </div>
+
+
+            </div>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+ } 
+
+
+
+@code {
+
+    private bool isLoading = false;
+    private bool isAuth = false;
+    private bool success;
+    private bool _isToLogin = false;
+    private string[] errors = { };
+    private MudTextField<string> pwField1;
+    private MudForm form;
+    private bool isshowmian = true;
+    private string[] nameAuth = { "Sign up", "Login" };
+    private int indexAuth = 0;
+    // bool toLoginMode = false;
+    List<string> errorMessages { get; set; } = new List<string>();
+    [Parameter] public EventCallback<DataBuildAuthBase> OnSubmitExternalLogin { get; set; }
+    [Parameter] public EventCallback<DataBuildAuthBase> OnSubmit { get; set; }
+    [Parameter] public EventCallback<DataBuildAuthBase> OnSubmitedForgetPassword { get; set; }
+    [Parameter] public EventCallback<DataBuildAuthBase> OnSubmitConfirmEmail { get; set; }
+    [Parameter] public EventCallback<DataBuildAuthBase> OnSubmitReSendConfirmEmail { get; set; }
+    [Parameter] public EventCallback<DataBuildAuthBase> OnSubmitResetPassword { get; set; }
+    [Parameter] public List<string> ErrorMessages{ get=>errorMessages; set
+        {
+            if(value!=null)
+            {
+                errorMessages = value;
+                if (value.Count() > 0)
+                {
+                    isshowmian = false; 
+                    isLoading = false;
+                
+                }
+            }
+        } }
+    private bool isVisible = true;
+    private DialogOptions dialogOptions = new() { CloseButton = true };
+    [Parameter]
+    public bool IsToLoginMode
+    {
+        set
+        {
+            _isToLogin = value;
+            if (_isToLogin)
+            {
+                indexAuth = 1 - indexAuth;
+                isshowmian = true;
+            }
+        }
+        get { return _isToLogin; }
+    }
+
+    
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+           
+    //         isLoading = false;
+    //         // StateHasChanged();
+    //     }
+    // }
+
+
+    void ChangeAuth()
+    {
+       
+        if (!IsToLoginMode)
+            Navigation.NavigateTo(RouterPage.LOGIN, forceLoad: true);
+        else 
+            Navigation.NavigateTo(RouterPage.REGISTER, forceLoad: true);
+    }
+
+    async void onClickFacebookAccount()
+    {
+
+        if (OnSubmitExternalLogin.HasDelegate)
+        {
+            await OnSubmitExternalLogin.InvokeAsync(new DataBuildAuthBase { Provider = "Facebook", ReturnUrl = "" });
+        }
+    }    
+    async void onClickGoogleAccount()
+    {
+        if (OnSubmitExternalLogin.HasDelegate)
+        {
+            await OnSubmitExternalLogin.InvokeAsync(new DataBuildAuthBase { Provider = "Google", ReturnUrl = "" });
+        }
+    }
+
+
+
+    void ClickFormEmaill()
+    {
+        isshowmian = false;
+        StateHasChanged();
+    }
+
+
+    private  async Task OnSubmitLoginOrRegister(DataBuildAuthBase data)
+    {
+        isLoading = true;
+      
+
+        if (OnSubmit.HasDelegate)
+        {
+            await OnSubmit.InvokeAsync(data);
+        }
+        await Task.Delay(1000);
+        isLoading = false;
+        // StateHasChanged();
+    }
+
+
+
+   
+ 
+    
+
+}
+
+
+
+

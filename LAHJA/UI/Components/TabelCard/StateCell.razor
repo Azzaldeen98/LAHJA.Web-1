@@ -1,0 +1,40 @@
+﻿<MudChip Class="py-0 px-3"  Color="@color" T="object" Size="Size.Small">@State</MudChip>
+
+
+@code{
+    [Parameter] public object? State { set {
+            if (value != null)
+            {
+                _state = value;
+                ChangeStyle(_state);
+            }
+        }
+        get => _state;
+    }
+
+
+    private Color color=Color.Default;
+    private object? _state;
+
+    protected override void OnInitialized()
+    {
+        ChangeStyle(_state);
+
+    }
+
+    string[] ACTIVES = { "نشط", "active", "true" };
+    private void ChangeStyle(object? _state)
+    {
+        var s = _state?.ToString().ToLower().Trim();
+        if (ACTIVES.Contains(s  ))
+        {
+            color = Color.Success;
+        }
+        else
+        {
+            color = Color.Error;
+
+        }
+        StateHasChanged();
+    }
+}

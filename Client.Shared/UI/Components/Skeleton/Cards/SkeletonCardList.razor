@@ -1,0 +1,36 @@
+﻿@using MudBlazor
+
+
+@code {
+
+    [Parameter]
+    public int Count { get; set; } = 4; 
+    private IEnumerable<int> Items => Enumerable.Range(1, Count);
+}
+
+
+
+
+<MudGrid >
+    
+    @foreach (var item in Items)
+    {
+        <MudItem xs="12" sm="10" md="4" lg="3" xl="3">
+            <div style="width:300px;display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 10px;">
+
+                    <MudSkeleton />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="50px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="10px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="10px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="50px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="10px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="10px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="50px" />
+                    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Width="100%" Height="20px" />
+            
+
+            </div>
+        </MudItem>
+    }
+</MudGrid>
+

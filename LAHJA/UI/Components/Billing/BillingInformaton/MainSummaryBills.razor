@@ -1,0 +1,79 @@
+﻿@using LAHJA.Them
+@using LAHJA.UI.Components.Billing.Shared
+@page "/BillingInFormation"
+
+
+
+<MudLayout Class="W-100" Style="padding:4%">
+   @*  <MudAppBar Color="@AppColors.BASE_COLOR_ENUM" Elevation="1">
+
+
+        <MudText Typo="Typo.h6" Class="ml-2">Billing Information</MudText>
+    </MudAppBar> *@
+
+    <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-4">
+       <HeaderBilling/>
+        <MudDivider Class="my-4" />
+            <MudGrid Spacing="12" Class="mt-16">
+            <MudItem xs="7">
+                <BillingMethodsSection ReadOnly="true"/>  
+            </MudItem>
+     
+        </MudGrid>
+        <MudDivider Class="my-4" />
+        <PaymentMethodsSection/> 
+
+        <MudDivider Class="my-4" />
+        <LastPayment/>
+      
+        
+     
+     
+
+          
+            <InvoicesSection />
+         
+        
+    </MudContainer>
+</MudLayout>
+@* <MudItem xs="5">
+    <MudText Typo="Typo.h5" GutterBottom="true">Cart</MudText>
+    <MudPaper Class="d-flex flex-column" Style="height:100%;" Outlined="true">
+        <MudList T="string">
+            <MudListItem Icon="@Icons.Material.Filled.ContentCut">
+                <div class="d-flex">
+                    <MudText>Scissor - Big</MudText>
+                    <MudText HtmlTag="span" Class="ml-auto">$5</MudText>
+                </div>
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.AirplanemodeActive">
+                <div class="d-flex">
+                    <MudText>Model Airplane</MudText>
+                    <MudText Class="ml-auto">$20</MudText>
+                </div>
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Create">
+                <div class="d-flex">
+                    <MudText>Plastic Glue</MudText>
+                    <MudText Class="ml-auto">$12</MudText>
+                </div>
+            </MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.ColorLens">
+                <div class="d-flex">
+                    <MudText>Color set - Modern planes</MudText>
+                    <MudText Class="ml-auto">$16</MudText>
+                </div>
+            </MudListItem>
+        </MudList>
+        <div class="mt-auto">
+            <MudDivider />
+            <div class="d-flex pa-4">
+                <MudText>Total:</MudText>
+                <MudText Class="ml-auto"><b>$53</b></MudText>
+            </div>
+        </div>
+    </MudPaper>
+</MudItem> *@
+@code {
+
+}

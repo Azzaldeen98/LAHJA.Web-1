@@ -1,0 +1,391 @@
+@using Domain.ShareData
+@using LAHAJ.Loading
+@using LAHJA.ApiClient.Models
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+@using LAHJA.Data.UI.Models
+@using LAHJA.Data.UI.Templates.Services
+@using LAHJA.Helpers
+@using LAHJA.Them
+@using LAHJA.UI.Components.Base
+@using LAHJA.UI.Components.StudioLahjaAi.Component
+@using LAHJA.UI.Templates.Services
+ @using MudBlazor
+ @using Microsoft.AspNetCore.Components
+
+
+@inherits StudioAi
+@* <iframe 
+        src="https://modelspeech.onrender.com/studio-t2speech/" 
+        width="100%" 
+        height="600" 
+        style="border: none;height:100%">
+    </iframe>
+ *@
+
+
+@if (!string.IsNullOrEmpty(_srcFrame))
+{
+    <IframeComponent Lg="@CurrentLanguage"
+                     StyleCss="width:100%;height:100%;border:none;"
+                     IsLoading="true"
+                     UrlCancel="@UrlCancel"
+                     UrlRedirect="@(Helper.GetFullPath(Navigation,$"{UrlPage}"))"
+                     SrcIFrame="@_srcFrame" />
+}
+
+@* @if (isLoading)
+{
+    <Loading IsLoading="@isLoading" />
+}
+ *@
+<div class="d-flex Cont-speech" style="display:none !important" >
+
+<MudCard Elevation="0"   Class="rounded-lg pb-4 panal-speech">
+
+   
+
+
+
+    <MudCardContent>
+        <div class="d-flex  flex-wrap  flex-column-reverse align-content-center justify-center">
+
+                <MudPaper  Class="w-chat-t2s" >
+                 @if (DataBuild.ModelReleasesFilter != null)
+                        {
+                            <di class="d-flex">                          
+                            <FilterItemSelected Filter="DataBuild.ModelReleasesFilter" CurrentLanguage="@CurrentLanguage" />
+                       
+                              <MudIconButton Icon="@Icons.Material.Filled.FilterAlt"  OnClick="@(() =>ShowOptions())"   Color="@AppColors.BASE_COLOR_ENUM" />
+
+                           </di>
+
+                        
+                        }
+
+                      <MudPaper Elevation="25" Class="d-flex flex-row w-100 " Style="padding:2%">
+                    <InputCardD ActionSendedr="onInput" />
+                    </MudPaper>
+                   
+@* 
+                 <MudTextField @ref="multilineReference" T="string" Label="Manual focus" Variant="Variant.Filled" @bind-Value="@textSpeech" Lines="5" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Send"
+                               OnAdornmentClick="@(() => multilineReference.FocusAsync())" /> *@
+
+       
+                
+
+            </MudPaper>
+
+
+            <div class="w-chat-t2s">
+                <MudCard Class="m-0 p-0  " Elevation="0">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+
+                        </CardHeaderContent>
+                        <CardHeaderActions >
+                               
+                    
+                            <MudButtonGroup Color="@AppColors.BASE_COLOR_ENUM" Style="height: 26px">
+
+                                <MudIconButton Icon="@Icons.Material.Filled.Download" OnClick="DownloadAudio" Disabled="@isAudioPlayingIsEnd" Color="@AppColors.BASE_COLOR_ENUM" aria-label="github" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Secondary" aria-label="add to favorite" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Share" Disabled="true" aria-label="share" />
+                                    <MudIconButton Icon="@Icons.Material.Filled.Code" OnClick="onViewApi" Color="@AppColors.BASE_COLOR_ENUM" />
+
+                            </MudButtonGroup>
+                           
+                           
+                              
+                        </CardHeaderActions>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <div class="activ-speech-ai">
+                            @if (isAudioPlaying)
+                            {
+                                <div id="logo-icon-animate-id" class="icon-xxl text-center shadow-primary rounded-circle flex-shrink-0 ripple-anim" style="line-height: 6.8rem;">
+
+                                    <MudIcon Size="Size.Large" style="direction:ltr !important;margin:8px !important" Color="@AppColors.BASE_COLOR_ENUM" Icon="@Icons.Material.Filled.BlurOn" Title="API" />
+
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div id="logo-icon-static-id" class="icon-xxl text-center shadow-primary rounded-circle flex-shrink-0" style="line-height: 6.8rem;">
+
+                                    <MudIcon Size="Size.Large" style="direction:ltr !important;margin:8px !important" Color="@AppColors.BASE_COLOR_ENUM" Icon="@Icons.Material.Filled.BlurOn" Title="API" />
+
+                                </div>
+                            }
+                        </div>
+
+
+                    </MudCardContent>
+                    <MudCardActions>
+                        @* @if (!string.IsNullOrEmpty(audioUrl)) *@
+                        @* { *@
+                        <audio id="audioPlayer" controls @onplay="OnPlay" @onended="OnEnded" @onpause="OnPause" style="width:100%;margin:2%;display:none"></audio>
+                        @* } *@
+
+                    </MudCardActions>
+                </MudCard>
+
+
+            </div>
+
+        </div>
+                <div class="d-flex justify-content-start align-items-start">
+
+                       
+
+                        @if (_processing)
+                        {
+                            <MudButton EndIcon="@Icons.Material.Filled.Cancel" Class="my-2" OnClick="OnCancel" FullWidth="true">Cancel</MudButton>
+                        }
+                        else
+                        {
+                            <MudButton Disabled="@_processing" Color="@AppColors.BASE_COLOR_ENUM"  Class="my-2" Variant="Variant.Outlined"  FullWidth="true"
+                                       EndIcon="@Icons.Material.Filled.Send" OnClick="Onsubmit">
+                                @if (_processing)
+                                {
+                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                    <MudText Class="ms-2">...</MudText>
+
+                                }
+                                else
+                                {
+
+                                    <MudText style="font-size:12px">Send</MudText>
+                                }
+
+                            </MudButton>
+                        }
+                    </div>
+    </MudCardContent>
+
+</MudCard>
+    <MudPaper  class="p-3 m-2  nav-option-speech  "    >
+        <div class="d-flex flex-column  " style="font-size:12px !important">
+        <FilterItemSelected Filter="DataBuild.CategoriesFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.LanguagesFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.ModelTypesFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.DialectsFilter" CurrentLanguage="@CurrentLanguage" />
+        <FilterItemSelected Filter="DataBuild.SpeakerGendersFilter" CurrentLanguage="@CurrentLanguage" />
+        <MudSlider  Value="@value" Variant="Variant.Filled">Temperature</MudSlider>
+
+          <MudSlider  Value="@value" Variant="Variant.Filled" >Speech Rate</MudSlider>
+            <MudSwitch @bind-Value="Streaming" Label="Streaming" Color="Color.Success"> </MudSwitch>
+
+        </div>
+    </MudPaper>
+</div>
+
+<MudDrawer @bind-Open="@_open_api" Width="70%" Height="100%" Anchor="@Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Build Api </MudText>
+    </MudDrawerHeader>
+    <LAHJA.UI.Components.Playground.Customlayout />
+</MudDrawer>
+
+@code {
+
+
+  
+
+    [Parameter] public EventCallback<DataBuildServiceBase> SubmitSend { get; set; }
+    private bool isAudioPlaying = false;
+    private bool isAudioPlayingIsEnd = true;
+    public bool Streaming { get; set; } = true;
+    bool _open_api = false;
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await CreateSessionTokenAsync();
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+
+    //         await CreateSessionTokenAsync();
+    //     }
+    // }
+
+
+    void onViewApi()
+    {
+        _open_api = true;
+        StateHasChanged();
+    }
+    async void onInput(string text)
+    {
+        textSpeech = text;
+
+        StateHasChanged();
+        await Onsubmit();
+        
+    }
+    double value = 50.0;
+    private async Task OnPlay()
+    {
+        isAudioPlayingIsEnd = true;
+        isAudioPlaying = true;
+        StateHasChanged();
+    }
+
+    private async Task OnPause()
+    {
+        isAudioPlaying = false;
+        _processing = false;
+        StateHasChanged();
+    }
+
+    private async Task OnEnded()
+    {
+        isAudioPlayingIsEnd = false;
+        isAudioPlaying = false;
+        _processing = false;
+        StateHasChanged();
+    }
+
+
+    void ShowOptions()
+    {
+
+        StateHasChanged();
+    }
+
+}
+
+
+
+
+@code
+{
+
+    private MudTextField<string> multilineReference;
+    private MudForm form;
+    private bool _processing = false;
+    [Parameter] public DataBuildServicePage DataBuildService { get; set; }
+    [Parameter] public TextToSpeechComponent? Param { get; set; } = null;
+    [Parameter] public EventCallback<string> PlayTextToSpeech { get; set; }
+    [Parameter] public EventCallback SaveAudio { get; set; }
+    [Parameter] public string OnTextSpeech { get; set; } = "";
+    [Parameter] public string? OnResultUrl { get; set; } = "";
+    [Parameter] public string? ModelId { get; set; } = "vits-ar-sa-A";
+    private string Textt;
+    private bool flag = false;
+
+    private string SelectedLanguage { get; set; }
+    private string textSpeech = "";
+    private string SelectedDialect = "";
+
+    // [Parameter] public EventCallback<OnDataResult> OnSubmit { get; set; }
+
+    [Parameter] public OnDataResult? OnResult { get; set; } = null;
+
+    private IEnumerable<string> TextStrength(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            yield return "Text cannot be empty.";
+
+        if (value.Length < 6)
+            yield return "Password must be at least 8 characters long.";
+        if (!value.Any(ch => "!@#$%^&*()".Contains(ch)))
+            yield return "Password must include at least one special character (!@#$%^&*()).";
+    }
+    private string audioUrl;
+    private async Task Onsubmit()
+    {
+        try
+        {
+
+            _processing = true;
+            StateHasChanged();
+
+            if (!string.IsNullOrEmpty(textSpeech) && selectedStudioFilter.SelectedModelRelease!=null)
+            {
+                isAudioPlayingIsEnd = true;
+                StateHasChanged();
+                // var request = new QueryRequest
+                //     {
+
+                //         QueryRequestTextToText = new QueryRequestTextToText { Text = textSpeech },
+                //         QueryRequestTextToSpeech = new QueryRequestTextToSpeech { TagId = "audioPlayer", Url = "https:api-inference.huggingface.co/models/wasmdashai/" + ModelId }
+                //     };
+
+                // var response = await _VoiceBotService.TextToSpeechAsync(request);
+                // if (response.Succeeded)
+                // {
+
+
+
+                // }
+                // else
+                // {
+                //     _processing = false;
+                // }
+
+                var data = new DataBuildServiceBase { Text = textSpeech, ServiceId = "3", Method = "POST", TagId = "audioPlayer", URL = "https:api-inference.huggingface.co/models/wasmdashai/", ModelAi = selectedStudioFilter.SelectedModelRelease.Identifier };
+                if (SubmitSend.HasDelegate)
+                {
+
+                    await SubmitSend.InvokeAsync(data);
+                }
+                else
+                {
+                    var response = await templateServices.VoiceBot(data);
+                    if (response.Succeeded)
+                    {
+                        // audioUrl = response.Data.Result;
+                        // StateHasChanged();
+                    }
+                    else
+                    {
+
+                        Snackbar.Add("·«ÌÊÃœ ·œÌﬂ —’Ìœ ﬂ«›Ì „‰ «·ÿ·»« ", Severity.Warning);
+
+                    }
+                }
+            }
+
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+        finally
+        {
+            _processing = false;
+            StateHasChanged();
+        }
+
+    }
+
+    private void testing()
+    {
+        Navigation.NavigateTo("/ShowInSound");
+    }
+
+    private async Task OnCancel()
+    {
+        _processing = false;
+        StateHasChanged();
+    }
+
+    private async Task DownloadAudio()
+    {
+        if (!isAudioPlayingIsEnd)
+            await JSRuntime.InvokeVoidAsync("downloadAudioFromElement", "audioPlayer", "downloaded-audio.mp3");
+    }
+
+ 
+
+
+ 
+
+}
+

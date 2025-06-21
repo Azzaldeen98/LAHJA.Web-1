@@ -1,0 +1,68 @@
+﻿
+@* @page "/settings/{*url}" *@
+@using LAHJA.Data.UI.Components.ProFileModel
+@using LAHJA.UI.Components.Auth
+@using LAHJA.Data.UI.Templates.Auth 
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.Plan
+@using LAHJA.UI.Components.ProFile
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile Template
+
+
+
+@if (Template != null && !isLoading)
+{
+    <TemplateMainProfile Language="@lg" DataBuild="buildData" />
+}
+else 
+{
+    <CustomPageSkeleton IsDisplay="isLoading" />
+}
+
+@code{
+
+    private bool isLoading = true;
+    private string lg;
+
+    private DataBuildUserProfile  buildData;
+
+    protected override Task OnInitializedAsync()
+    {
+        lg = CultureInfo.CurrentUICulture.Name;
+
+        return Task.CompletedTask;
+    }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await loadedData();
+
+        }
+
+    }
+
+    private async Task loadedData()
+    {
+        var result = await Template.GetProfileUserAsync();
+
+        if (result.Succeeded)
+        {
+            buildData = result.Data;
+
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+
+
+  } 

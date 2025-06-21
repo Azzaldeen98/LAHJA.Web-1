@@ -1,0 +1,470 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.Them
+@using LAHJA.UI.Components.TabelCard
+@using global::Shared.Constants
+@inject MessageBox MessageBox;
+@inject NavigationManager NavigationManager;
+<style>
+    .table-container {
+        max-width: 600px; 
+        height:700px !important;
+        margin: auto;
+        overflow-x: hidden !important;
+
+        /* background-color: blue; */
+    }
+
+    .table-label {
+         width: 50%; 
+        font-weight: bold;
+        padding: 0px;
+        font-size: 16px;
+  /*       background-color: #f5f5f5; */
+    }
+
+    .table-value {
+        width: 50%;
+        padding:0px 0px;
+        text-align:left;
+        font-size:16px;
+    }
+
+    .table-row {
+        width:100% !important;
+        border-bottom: 1px solid #ddd;
+        padding:0px;
+    }
+
+     .table-row *{
+            padding: 0px !important;
+     }
+
+</style>
+
+
+    @* <MudDialog> *@
+    @*     <DialogContent> *@
+
+        @if (dataBuild != null)
+        {
+
+
+
+            <MudPaper Class="d-flex flex-column justify-content-center align-items-center">
+                <MudCardHeader Class="d-flex justify-content-around align-items-center">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5" Align="Align.Center" Class="m-auto my-3">@ColumnsTranslations.GetTranslation("Subscription", lg)</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudTooltip Text="@ColumnsTranslations.GetTranslation("SubscriptionSettings",lg)">
+                            <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OnSubmitCheckoutManage" Color="Color.Default" />
+                        </MudTooltip>
+                    </CardHeaderActions>
+                </MudCardHeader>
+
+                <MudCard Class="p-2 rounded-5 mt-5">
+                    <MudGrid Class="p-3 border" Style="width: 100%; ">
+                        <MudItem xs="12" Class="table-row">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("Id", lg)</MudText></MudItem>
+                                <MudItem xs="6"><MudText Class="table-value">@dataBuild.Id</MudText></MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        @if (!string.IsNullOrEmpty(dataBuild.ProductName))
+                        {
+                            <MudItem xs="12" Class="table-row">
+                                <MudGrid Class="d-flex align-items-center">
+                                    <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("ProductName", lg)</MudText></MudItem>
+                                    <MudItem xs="6"><MudText Class="table-value">@dataBuild.ProductName</MudText></MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        }
+
+                        @if (!string.IsNullOrEmpty(dataBuild.Description))
+                        {
+                            <MudItem xs="12" Class="table-row">
+                                <MudGrid Class="d-flex align-items-center">
+                                    <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("Description", lg)</MudText></MudItem>
+                                    <MudItem xs="6"><MudText Class="table-value">@dataBuild.Description</MudText></MudItem>
+                                </MudGrid>
+                            </MudItem>
+                        }
+
+                        <MudItem xs="12" Class="table-row">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("NumberRequests", lg)</MudText></MudItem>
+                                <MudItem xs="6"><MudText Class="table-value">@dataBuild.NumberRequests</MudText></MudItem>
+                            </MudGrid>
+                        </MudItem>     
+                        
+                        
+                        <MudItem xs="12" Class="table-row">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("PlanId", lg)</MudText></MudItem>
+                                <MudItem xs="6"><MudText Class="table-value">@dataBuild.PlanId</MudText></MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="12" Class="table-row">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("Amount", lg)</MudText></MudItem>
+                                <MudItem xs="6"><MudText Class="table-value">@dataBuild.Amount</MudText></MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="12" Class="table-row">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("StartDate", lg)</MudText></MudItem>
+                                <MudItem xs="6"><MudText Class="table-value">@dataBuild.StartDate</MudText></MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="12" Class="table-row">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("CancelAtPeriodEnd", lg)</MudText></MudItem>
+                                <MudItem xs="6"><MudText Class="table-value">@dataBuild.CancelAtPeriodEnd</MudText></MudItem>
+                            </MudGrid>
+                        </MudItem>
+
+                        <MudItem xs="12" Class="p-0">
+                            <MudGrid Class="d-flex align-items-center">
+                                <MudItem xs="6"><MudText Class="table-label">@ColumnsTranslations.GetTranslation("Status", lg)</MudText></MudItem>
+                                <MudItem xs="6">
+                                    <MudChip Class="py-0 px-3" T="string" Color="@(dataBuild.Active ? Color.Success : Color.Error)">
+                                        @dataBuild.Status
+                                    </MudChip>
+                                </MudItem>
+                            </MudGrid>
+                        </MudItem>
+                    </MudGrid>
+                </MudCard>
+
+                @* <MudTable  T="DataBuildUserSubscriptionInfo" Items="new List<DataBuildUserSubscriptionInfo>{DataBuild}"
+                          Striped="true" ReadOnly="true" Class="table-container p-3" Style="width: 100% !important;">
+                      
+                    <RowTemplate >
+                        <MudTr Class="table-row">
+                            <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("Id", lg)</MudTd>
+                            <MudTd Class="table-value">@dataBuild.Id</MudTd>
+                        </MudTr>
+                        @if (!string.IsNullOrEmpty(dataBuild.ProductName))
+                        {
+                            <MudTr Class="table-row">
+                                <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("ProductName", lg)</MudTd>
+                            <MudTd Class="table-value">@dataBuild.ProductName</MudTd>
+                        </MudTr>
+                        }
+                        @if (!string.IsNullOrEmpty(dataBuild.Description))
+                        {
+                            <MudTr Class="table-row">
+                                <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("Description", lg)</MudTd>
+                                <MudTd Class="table-value">@dataBuild.Description</MudTd>
+                            </MudTr>
+                        }
+                        <MudTr Class="table-row">
+                            <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("NumberRequests", lg)</MudTd>
+                            <MudTd Class="table-value">@dataBuild.NumberRequests</MudTd>
+                        </MudTr>
+                        <MudTr Class="table-row">
+                            <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("Amount", lg)</MudTd>
+                            <MudTd Class="table-value">@dataBuild.Amount</MudTd>
+                        </MudTr>
+                        <MudTr Class="table-row">
+                            <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("StartDate", lg)</MudTd>
+                            <MudTd Class="table-value">@dataBuild.StartDate</MudTd>
+                        </MudTr>
+                        <MudTr Class="table-row">
+                            <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("CancelAtPeriodEnd", lg)</MudTd>
+                            <MudTd Class="table-value">@dataBuild.CancelAtPeriodEnd</MudTd>
+                        </MudTr>
+                        <MudTr Class="table-row">
+                            <MudTd Class="table-label">@ColumnsTranslations.GetTranslation("Status", lg)</MudTd>
+                            <MudTd  Class="table-value">
+                                <MudChip Class="py-0 px-3" T="string" Color="@(dataBuild.Active ? Color.Success : Color.Error)">
+                                    @dataBuild.Status
+                                </MudChip>
+                            </MudTd>
+                        </MudTr>
+                    </RowTemplate> *@
+
+             
+            @* </MudTable> *@
+           
+             <div class="w-100 p-3 d-flex justify-content-around align-items-center">
+
+                    @* <MudIconButton Icon="@Icons.Material.Filled.Pause" Variant="Variant.Outlined" Color="AppColors.BASE_COLOR_ENUM" Size="Size.Medium" /> *@
+
+                    <MudSwitch T="bool" Value="dataBuild.Active"  ValueChanged="OnStatusChanged" Color="(Color.Success)"> @ColumnsTranslations.GetTranslation(dataBuild.Active ? "Pause" : "Resume", lg) </MudSwitch>
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="OnDelete" Variant="Variant.Outlined" Color="Color.Error" Size="Size.Small" />
+
+                </div>
+            
+     </MudPaper>
+
+             
+           
+        }
+
+                 
+@*     </DialogContent> *@
+@*     <DialogActions> *@
+
+ 
+
+@*     </DialogActions> *@
+@* </MudDialog> *@
+
+@code {
+    private string lg = "ar";
+
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+
+    [Parameter] public string Language {  get => lg;
+        set
+        {
+            if(!string.IsNullOrEmpty(value) && value != lg)
+            {
+                lg=value;
+                StateHasChanged();
+            }
+        }  
+    }
+
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitPause { get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitResume { set; get; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitDelete { set; get; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitCheckoutManage { set; get; }
+
+    [Parameter] public DataBuildUserSubscriptionInfo DataBuild {
+        get =>dataBuild;
+        set {
+
+            if (value != null)
+            {
+                dataBuild = value;
+                // if (subscriptions.)
+                // subscriptions.Clear();
+                // subscriptions.Add(value);
+                StateHasChanged();
+
+            }
+        } 
+
+    }
+
+    private DataBuildUserSubscriptionInfo dataBuild;
+    private void CloseDialog() => MudDialog.Close(DialogResult.Ok(true));
+
+    // private DataAndEventBuildTabelCard<DataBuildUserSubscriptionInfo> dataAndEvent;
+    // private List<CardStateCount<string>>? cardStates = null;
+    // private GroupActionTabels groupAction = new GroupActionTabels();
+
+
+    private async Task OnSubmitCheckoutManage()
+    {
+
+        if (SubmitCheckoutManage.HasDelegate && dataBuild!=null)
+        {
+            await SubmitCheckoutManage.InvokeAsync(dataBuild);
+        }
+    }
+    private async Task OnStatusChanged(bool action)
+    {
+
+
+        var title = @ColumnsTranslations.GetTranslation("Subscription", lg);
+        if (action)
+        {
+            if (await MessageBox.ShowAsync(title, @ColumnsTranslations.GetTranslation("ResumeSubscriptionMsg", lg)))
+            {
+                dataBuild.Active = action;
+                if (SubmitResume.HasDelegate)
+                {
+                    await SubmitResume.InvokeAsync(dataBuild);
+               
+                }
+            }
+        }
+        else
+        {
+            if (await MessageBox.ShowAsync(title, @ColumnsTranslations.GetTranslation("PauseSubscriptionMsg", lg)))
+            {
+                dataBuild.Active = action;
+                if (SubmitPause.HasDelegate)
+                {
+                    await SubmitPause.InvokeAsync(dataBuild);
+                }
+            }
+        }
+
+
+    }
+
+    private async Task OnDelete()
+    {
+
+        if (await MessageBox.ShowAsync(@ColumnsTranslations.GetTranslation("Subscription",lg), @ColumnsTranslations.GetTranslation("RemoveSubscriptionMsg", lg)))
+        {
+            if (SubmitDelete.HasDelegate)
+            {
+                await SubmitDelete.InvokeAsync(dataBuild);
+               
+
+            }
+        }
+
+    }
+
+
+
+
+    public static class ColumnsTranslations
+    {
+        public static readonly Dictionary<string, Dictionary<string, string>> ColumnsTrans =
+            new Dictionary<string, Dictionary<string, string>>
+                {
+            {
+                "en", new Dictionary<string, string>
+                {
+                    { "Subscription", "Subscription" },
+                    { "Id", "Id" },
+                    { "ProductName", "Product Name" },
+                    { "Description", "Description" },
+                    { "NumberRequests", "Number of Requests" },
+                    { "Amount", "Amount" },
+                    { "StartDate", "Start Date" },
+                    { "CancelAtPeriodEnd", "Cancel at Period End" },
+                    { "Pause", "Pause" },
+                    { "Resume", "Resume" },
+                    { "Status", "Status" },
+                    { "SubscriptionSettings", "Subscription Settings" },
+                    { "PauseSubscriptionMsg", "The current subscription will be temporarily suspended. Do you agree?" },
+                    { "ResumeSubscriptionMsg", "The current subscription will be reactivated. Do you agree?" },
+                    { "RemoveSubscriptionMsg", "The current subscription will be deleted. Do you agree? You will not be able to use it again !!" },
+                    { "CancelSubscriptionMsg", "The current subscription will be cancelled. Do you agree? You will not be able to use it again!!" }
+                }
+            },
+            {
+               "ar", new Dictionary<string, string>
+                {   
+                    { "Subscription", "الاشــتراك" },
+                    { "Id", "المعرف" },
+                    { "ProductName", "اسم المنتج" },
+                    { "Description", "الوصف" },
+                    { "NumberRequests", "عدد الطلبات" },
+                    { "Amount", "المبلغ" },
+                    { "StartDate", "تاريخ البدء" },
+                    { "CancelAtPeriodEnd", "إلغاء في نهاية الفترة" },
+                    { "Pause", "إيقاف مؤقت" },
+                    { "Resume", "إستئناف" },
+                    { "Status", "الحالة" },
+                    { "SubscriptionSettings", "اعدادات الاشتراك" },
+                    { "PauseSubscriptionMsg", "سيتم إيقاف الاشتراك الحالي مؤقتاً هل انت موافق على ذلك ؟" },
+                    { "ResumeSubscriptionMsg", " سيتم إعادة تفعيل الاشتراك الحالي هل انت موافق على ذلك ؟" },
+                    { "RemoveSubscriptionMsg", " سيتم حذف  الاشتراك الحالي هل انت موافق على ذلك ؟ لن تتمكن من استخدامه مره اخرى." },
+                    { "CancelSubscriptionMsg"," سيتم إلغاء الاشتراك الحالي هل انت موافق على ذلك  ؟ لن تتمكن من استخدامه مره اخرى." }
+
+                }
+            }
+                };
+
+        public static string GetTranslation(string columnKey, string language = "en")
+        {
+            if (ColumnsTrans.ContainsKey(language) && ColumnsTrans[language].ContainsKey(columnKey))
+            {
+                return ColumnsTrans[language][columnKey];
+            }
+            return columnKey;
+        }
+    }
+
+
+
+
+    // private void initDataBuild()
+    // {
+    //     dataAndEvent = new()
+    //         {
+    //             DataBuild = new List<DataBuildUserSubscriptionInfo> { dataBuild },
+    //             //LabelColumns = ColumnsTrans[lg].ToList(),
+
+    //             Events = new()
+    //             // {
+    //             //     OnRowClicked = EventCallback.Factory.Create<DataBuildUserSubscriptionInfo>(this, OnRowClicked)
+    //             // }
+    //         };
+
+    //     cardStates = new()
+    //     {
+
+    //         new()
+    //         {
+    //             Value="6",
+    //             Label="Active"
+
+    //         },
+
+    //          new()
+    //         {
+    //              Value="1",
+    //             Label="UnActive"
+    //         }
+    //         ,
+    //         new()
+    //         {
+    //              Value="1",
+    //             Label="UnActive"
+    //         }
+    //         ,
+    //         new()
+    //         {
+    //              Value="1",
+    //             Label="UnActive"
+    //         }
+
+
+
+    //     };
+    //     groupAction.Actions = new()
+    //     {
+
+    //           new()
+    //         {
+    //             Icon=@Icons.Material.Filled.PauseCircle,
+    //             Tag="Pause"
+    //         }
+    //         ,
+
+    //         new()
+    //         {
+    //             Icon=@Icons.Material.Filled.Replay,
+    //             Tag="Resume"
+    //         },
+    //         new()
+    //         {
+    //             Icon=@Icons.Material.Filled.Delete,
+    //             IsMudChip=false,
+    //             Tag="delete"
+    //         }
+    //     };
+    //     groupAction.ChipClicked += OnChipClicked;
+    // }
+
+    // private Task OnChipClicked(CardActionTabel action)
+    // {
+    //     return Task.CompletedTask;
+    // }
+    // private Task OnRowClicked(DataBuildUserSubscriptionInfo data)
+    // {
+    //     return Task.CompletedTask;
+    // }
+
+
+
+}

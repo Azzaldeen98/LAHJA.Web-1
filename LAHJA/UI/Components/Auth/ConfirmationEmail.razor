@@ -1,0 +1,84 @@
+﻿
+
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.UI.Components.General.Button
+@using LAHJA.UI.Components.General.InputField
+@using MudBlazor
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inherits CardAuth<DataBuildAuthBase>
+
+
+<h4 class="d-flex align-center justify-content-center flex-column">
+    Confirmation  Email
+</h4>
+
+<MudContainer>
+
+    <MudCard Class="w60 mx-auto my-5 p-6 rounded-lg shadow-lg text-center  dark:bg-gray-900  d-flex align-center justify-content-center flex-column">
+
+            <MudForm Class="my-3" Style="width:100% !important;" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+                <div class="d-flex align-center justify-content-center flex-column" style="padding:2% 2%;margin:auto 10px;width:100% !important ">
+                   
+                    
+                    <MudTextField @bind-Value="code" Disabled="true" Label="Reset Code" Required="true" Class="mt-4" />
+
+                    <EmailField  Class="my-5" FullWidth Label="Email" Required="true"  Value="@email" />
+
+                 
+
+                    <MudCardActions Class="col-12 mt-5 row d-flex flex-wrap justify-content-around align-content-around">
+                        <div class="col-lg-4 col-md-7 col-sm-12">
+                    <CustomButton Text="Confirm Email" OnClick="onSubmitConfirmEmail" IsProcessing="isLoading"/>
+                </div>
+                        <div class="col-lg-4 col-md-7 col-sm-12">
+                            <CancelButton OnClick="onCloseDialog"/>
+                        </div>
+                        
+                    </MudCardActions>
+
+                </div>
+            </MudForm>
+    </MudCard>
+</MudContainer>
+
+   
+
+@code{
+
+
+
+    [Parameter] public string Email { get; set; }
+    [Parameter] public string Code{ get; set; }
+    protected override void OnInitialized()
+    {
+
+        if (Email != null)
+        {
+
+            if (Code!=null){
+                email = Email;
+                code = Code;
+                StateHasChanged();
+
+            }
+        }
+        base.OnInitialized();
+    }
+    async Task onSubmitConfirmEmail()
+    {
+        isLoading = true;
+        if (OnSubmitConfirmEmail.HasDelegate)
+        {
+
+            await OnSubmitConfirmEmail.InvokeAsync(new DataBuildAuthBase { Email = email, Code = code });
+        }
+
+        await Task.Delay(6000);
+        isLoading = false;
+    }
+        
+
+}
+ 

@@ -1,0 +1,26 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+	<div class="mb-6">
+		<div class="flex justify-between">
+			<h3 class="flex flex-row items-center text-xl font-bold">
+				Add a SSH key
+			</h3>
+		</div>
+	</div>
+	<div class="SVELTE_HYDRATER contents" data-target="CryptoKeyAddForm" data-props="{&quot;csrf&quot;:&quot;eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ5Nzg4MzQ3NzEsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiIzNWZiNzlmYzk3YjkyMjljZTczODA2MWQ5ZTg4NjFhZjkxN2ExNjgzNTNlYzZjZDEzOGFlNWIzYWJhMzM0ZmY4In0=&quot;,&quot;keyType&quot;:&quot;ssh&quot;,&quot;submitUrl&quot;:&quot;/settings/keys/ssh/add&quot;}">
+		<form class="mb-8 flex flex-col space-y-5" method="post" action="/settings/keys/ssh/add">
+			<input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ5Nzg4MzQ3NzEsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiIzNWZiNzlmYzk3YjkyMjljZTczODA2MWQ5ZTg4NjFhZjkxN2ExNjgzNTNlYzZjZDEzOGFlNWIzYWJhMzM0ZmY4In0="> <label class="md:pr-36">
+				Key name
+				<input type="text" class="form-input" name="keyName" placeholder="Key name" required="">
+			</label> <label class="md:pr-36">
+				SSH Public key
+				<textarea class="form-input" placeholder="Starts with 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'ssh-ed25519'. We DO NOT support 'sk-ecdsa-sha2-nistp256@openssh.com' and 'sk-ssh-ed25519@openssh.com'." name="key" rows="10" required=""></textarea>
+			</label> <div>
+				Learn how to generate a SSH key
+				<a class="underline" target="_blank" href="/docs/hub/security-git-ssh">here</a>.
+			</div> <div><button class="btn-1 btn-1-lg" type="submit">Add key</button></div>
+		</form>
+	</div>
+</section>

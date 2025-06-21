@@ -1,0 +1,143 @@
+﻿@using Domain.ShareData
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-4" 
+ Style="border-radius: 12px;">
+ @inject LanguageService languageService
+ @inject IManageLanguageService _manageLanguageService
+ 
+<MudPaper Class="pa-4" Elevation="4">
+    
+        <MudForm @ref="form">
+
+
+
+
+
+
+            <MudTextField Label="@epok" Variant="Variant.Filled" @bind-Value="paramObject.PrimaryMetric" />
+            <MudTextField Label="@data" Variant="Variant.Filled" @bind-Value="paramObject.NumberOfCrossValidations"   />
+            <MudTextField Label="@nameolddata" Variant="Variant.Filled" @bind-Value="paramObject.MaxConcurrentIterations"  />
+            <MudTextField Label="@namenewdata" Variant="Variant.Filled" @bind-Value="paramObject.MaxConcurrentIterations"  />
+            <MudButton Variant="Variant.Outlined" Color="@AppColors.BASE_COLOR_ENUM" Class="mt-2"> @submit</MudButton>
+
+
+       
+
+
+       
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code 
+{
+
+
+
+    private MudForm form;
+    private ParamObject paramObject = new ParamObject();
+    private string selectedAlgorithm;
+
+
+
+
+    [Parameter]
+
+    public bool currentLanguage { get; set; } = true;
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+
+
+
+    }
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+
+            epok =  "Epochs";
+            data ="Url Data"  ;
+            namenewdata = "Name Model"  ;
+            nameolddata =  "Save Model"  ;
+            submit ="Add Algorithm  " ;
+           
+        }
+        else
+        {
+
+
+
+            epok =   "عدد الدورات ";
+            data =    "رابط الدتا";
+            namenewdata =  "اسم الموديل ";
+            nameolddata =  "حفظ الموديل ";
+             submit ="الاظافة ";
+
+        }
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+
+ 
+
+
+
+
+
+    public class ParamObject
+    {
+
+        public string PrimaryMetric { get; set; }
+        public string  MaxNumberIterations { get; set; }
+        public string NumberOfCrossValidations { get; set; }
+        public string MaxConcurrentIterations { get; set; }
+
+
+    }
+
+    private string epok;
+    private string data;
+    private string namenewdata;
+    private string nameolddata;
+    private string submit;
+
+    [Parameter] public bool TypeLanguage { get; set; } = false;
+
+   
+
+    
+
+
+
+    
+}

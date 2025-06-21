@@ -1,0 +1,30 @@
+﻿@using LAHJA.Data.UI.Components.Base
+
+@if (Params.IsActive)
+{
+	<div class="@Params.ClassItem" style="position:relative">
+
+
+		<div class="@Params.ClassContainer">
+			<h1 class="textHeader">   @Params.DataBuild.Header <span class="testimonial-heading-style"> @Params.DataBuild.SAC </span></h1>
+			
+
+			<TextCard Params="@Params.CardText" />
+			
+				<MudButton Href="/chatai"
+				Rel="nofollow noopener"
+				Variant="Variant.Outlined"
+				EndIcon="@Icons.Custom.Brands.GitHub"
+				Color="Color.Primary">
+				@Params.DataBuild.Header
+				</MudButton>
+			
+		</div>
+
+	</div>
+}
+
+@code{
+	[Parameter] public CardTextBar Params { set; get; } = new CardTextBar();
+	
+}

@@ -1,0 +1,43 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Them
+<style>
+
+    .feature-button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+       
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+        .feature-button svg {
+            fill: white;
+        }
+
+        .feature-button:hover {
+            background-color: #5246e4;
+        }
+
+</style>
+<button Class="feature-button" style="@($"background:{AppColors.BASE_COLOR_FOUCS}")" @onclick="CreateFeature">
+    <svg width="12" height="12" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M8 .25c.483 0 .875.392.875.875v6h6a.875.875 0 0 1 0 1.75h-6v6a.875.875 0 0 1-1.75 0v-6h-6a.875.875 0 1 1 0-1.75h6v-6c0-.483.392-.875.875-.875Z"></path>
+    </svg>
+   @Label
+</button>
+
+
+@code {
+    [Parameter]
+    public string Label { set; get; } = "Create";
+    [Parameter] public  EventCallback<CardActionTabel> OnClick{ set; get; }
+    void CreateFeature()
+    {
+        OnClick.InvokeAsync(new CardActionTabel(){Tag="create"});
+    }
+}

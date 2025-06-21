@@ -1,0 +1,86 @@
+﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.IdentityModel.JsonWebTokens
+@using Microsoft.IdentityModel.Tokens
+@using System.IdentityModel.Tokens.Jwt
+@using System.Text
+
+
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime;
+@attribute [AllowAnonymous]
+
+<h3>Login</h3>
+
+<input @bind="Email" placeholder="Email" />
+<input @bind="Password" type="password" placeholder="Password" />
+<button @onclick="Login">Login</button>
+
+@code {
+    private string Email { get; set; }
+    private string Password { get; set; }
+
+    private async Task Login()
+    {
+        var client = HttpClientFactory.CreateClient("ApiClient");
+        var content = new FormUrlEncodedContent(new[]
+        {
+            new KeyValuePair<string, string>("email", Email),
+            new KeyValuePair<string, string>("password", Password)
+        });
+
+        var response = await client.PostAsync("api/login", content);
+        if (response.IsSuccessStatusCode)
+        {
+            var responseData = await response.Content.ReadFromJsonAsync<LoginResponse>();
+            var token = responseData.Token;
+            var role = responseData.Role;
+
+            // إنشاء رمز JWT جديد
+            var newToken = GenerateJwtToken(token, role);
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "AuthToken", newToken);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            // Handle login failure
+        }
+    }
+
+    private string GenerateJwtToken(string token, string role)
+    {
+        var claims = new[]
+        {
+            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub, "your_subject"),
+            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
+            new Claim("ServerToken", token),
+            new Claim(ClaimTypes.Role, role)
+        };
+
+        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key"));
+        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+        var jwtToken = new JwtSecurityToken(
+            issuer: "your_issuer",
+            audience: "your_audience",
+            claims: claims,
+            expires: DateTime.UtcNow.AddMonths(1),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(jwtToken);
+    }
+
+    public class LoginResponse
+    {
+        public string Token { get; set; }
+        public string Role { get; set; }
+    }
+
+
+}
+
+
+

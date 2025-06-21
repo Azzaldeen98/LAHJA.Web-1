@@ -1,0 +1,43 @@
+﻿@using LAHJA.UI.Components.Base
+@using LAHJA.Data.UI.Components.Base
+
+@if (DataBuild != null)
+{
+
+
+    if (cardTextAndIconBar.IsActive && cardTextAndIconBar.IsAuth)
+    {
+        <div class="position-relative" style="position:relative;background:#212529">
+            <div class="wkC position-relative" style="position:relative">
+
+                @if (cardTextAndIconBar != null)
+                {
+                    <TextAndIconBarCard Params="cardTextAndIconBar" />
+
+                }
+
+
+            </div>
+        </div>
+    }
+}
+@code {
+    CardTextAndIconBar? cardTextAndIconBar;
+    [Parameter] public DataBuildCardTextAndIconBar DataBuild { set; get; }
+    protected override void OnInitialized()
+    {
+
+
+
+        cardTextAndIconBar = CardTextAndIconBar.GetGenarelCard(DataBuild);
+        StateHasChanged();
+    }
+
+
+
+}
+
+
+
+
+

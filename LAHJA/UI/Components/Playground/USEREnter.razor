@@ -1,0 +1,21 @@
+﻿
+@page "/USEREnter"
+
+
+<div style="display: contents">
+ 
+    <div class="w-dvh grid h-dvh divide-gray-200 overflow-hidden bg-gray-100/50 max-md:grid-rows-[120px,1fr] max-md:divide-y dark:divide-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:[color-scheme:dark] md:grid-cols-[clamp(220px,20%,350px),minmax(0,1fr),clamp(270px,25%,300px)]">
+        <CustomPrompt />
+        <CustomFooter />
+        <ModelSettings />
+
+        <div class="absolute bottom-6 left-4 flex items-center gap-2 max-md:hidden">
+            <a target="_blank" href="https://huggingface.co/docs/api-inference/tasks/chat-completion" class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200">
+                <svg class="text-xs" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 32 32"><path d="M17 22v-8h-4v2h2v6h-3v2h8v-2h-3z" fill="currentColor"></path><path d="M16 8a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 8z" fill="currentColor"></path><path d="M16 30a14 14 0 1 1 14-14a14 14 0 0 1-14 14zm0-26a12 12 0 1 0 12 12A12 12 0 0 0 16 4z" fill="currentColor"></path></svg>
+                View Docs
+            </a> <span class="dark:text-gray-500" data-svelte-h="svelte-xbw167">·</span> <a target="_blank" href="https://huggingface.co/spaces/huggingface/inference-playground/discussions/1" class="flex items-center gap-1 text-sm text-gray-500 underline decoration-gray-300 hover:text-gray-800 dark:text-gray-400 dark:decoration-gray-600 dark:hover:text-gray-200" data-svelte-h="svelte-x1jsmb">Give feedback</a>
+        </div>
+        <div id="svelte-announcer" aria-live="assertive" aria-atomic="true" style="position: absolute; left: 0px; top: 0px; clip: rect(0px, 0px, 0px, 0px); clip-path: inset(50%); overflow: hidden; white-space: nowrap; width: 1px; height: 1px;"></div>
+
+</div>
+</div>

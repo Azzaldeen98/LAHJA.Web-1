@@ -1,0 +1,65 @@
+﻿@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.UI.Components.Billing.Shared
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@if (BuildData != null && BuildData?.Any()==true)
+{
+    <div class="w-75 m-5">
+        <CardsMethodsSection 
+            BuildData="@BuildData"
+            IsLoading="@IsLoading"
+            SelectedActiveCard="OnSelectedActiveCard"
+            EditCard="OnSubmitUpdateCard" 
+            CreateCard="OnSubmitCreateCard"
+            DeleteCard="OnSubmitDeleteCard" />
+    </div>
+}
+
+@code {
+    private bool isLoading = true;
+    private CardDetails card { get; set; }
+
+
+    [Parameter] public EventCallback<CardDetails> SubmitSelectedActiveCard { get; set; }
+    [Parameter] public EventCallback<CardDetails> SubmitCreateCard { get; set; }
+    [Parameter] public EventCallback<CardDetails> SubmitUpdateCard { get; set; }
+    [Parameter] public EventCallback<CardDetails> SubmitDeleteCard { get; set; }
+    [Parameter] public bool IsLoading { set => isLoading = value; get => isLoading; }
+    [Parameter] public List<CardDetails> BuildData { get; set; } = new();
+
+    
+
+    private async void OnSelectedActiveCard(CardDetails data)
+    {
+        if (SubmitSelectedActiveCard.HasDelegate)
+        {
+            card = data;
+            StateHasChanged();
+            await SubmitSelectedActiveCard.InvokeAsync(data);
+        }
+    }
+
+    private async Task OnSubmitCreateCard(CardDetails data)
+    {
+        if (SubmitCreateCard.HasDelegate)
+        {
+            await SubmitCreateCard.InvokeAsync(data);
+        }
+    }
+    private async Task OnSubmitUpdateCard(CardDetails data)
+    {
+        if (SubmitUpdateCard.HasDelegate)
+        {
+            await SubmitUpdateCard.InvokeAsync(data);
+        }
+    }
+    private async Task OnSubmitDeleteCard(CardDetails data)
+    {
+        if (SubmitDeleteCard.HasDelegate)
+        {
+            await SubmitDeleteCard.InvokeAsync(data);
+        }
+    }
+
+}

@@ -1,0 +1,330 @@
+﻿ @page "/email_confirmation"
+ @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+<ResendConfirmationemail />
+<main class="flex flex-1 flex-col">
+    <div class="flex-1">
+        <div class="container py-14 text-center sm:py-20 md:py-32">
+            <img class="mx-auto mb-4 h-24 w-24" src="/front/assets/huggingface_logo.svg" alt="">
+            <div>
+                <h1 class="mx-auto max-w-lg text-3xl font-bold text-gray-800">A confirmation email has been sent, please check your mailbox</h1>
+                <div class="text-md mx-auto mt-6 max-w-lg text-gray-500"><!-- HTML_TAG_START -->If it doesn't appear within a few minutes, check your spam folder.<!-- HTML_TAG_END --></div>
+            </div>
+        </div>
+    </div>
+</main>
+<SectionFooter />
+
+@* 
+<div style="margin-top: 3%;" class="bg-gradient-to-b py-3 text-sm md:text-base from-yellow-50 to-yellow-100 dark:from-yellow-500 dark:to-yellow-600 dark:text-gray-950 ">
+    <div class="container">
+        <form class="flex flex-col justify-between md:flex-row md:items-center" action="/email_confirmation" method="post">
+            <input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NzE1MzE0NTAsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJlYWFkMDUyZmVjMDVkZjZiMTk5NGFkZmVhMmVjZDY5YTY0YTIwZjA0OTY3ODZjOGJkMmQwOTFmYWUxMWJlM2I3In0=">
+            <div class="mb-2 md:mb-0">Please check your email address for a confirmation link</div>
+            <button class="btn-1 text-sm" type="submit">Resend confirmation email</button>
+        </form>
+    </div>
+</div> 
+ <div class="container relative flex flex-col md:grid md:space-y-0 w-full md:grid-cols-12 space-y-4 md:gap-6 py-6" style=" margin-right: 15%;">
+    <div class="md:col-span-4 lg:col-span-3">
+        <section class="pt-6 border-gray-100 from-gray-50-to-white overflow-hidden rounded-xl border border-gray-100 bg-gradient-to-l" >
+            <a class="cols-span-9 mb-2 flex items-center px-4 pb-4" href="/735408478mm">
+                <div class="relative flex-none">
+                    <img alt="" class="rounded-full mr-3 size-12 flex-none overflow-hidden bg-gray-100 dark:bg-gray-900"
+                         src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/SXJTVYmE71adfaZsiGDsE.png">
+                </div>
+
+                <div class="my-1">
+                    <h2 class="flex items-center text-lg/5 font-bold lg:text-xl/6">عبدالرحمن</h2>
+                    <div class="inline-block rounded bg-gray-200 px-1 font-mono text-xs dark:bg-gray-800">735408478mm</div>
+                </div>
+            </a>
+            <nav>
+                <ul class="divide-y divide-gray-100 border-t border-gray-100 text-base text-gray-600">
+                    @foreach (var item in NavItems)
+                    {
+                        <li>
+                            <button @onclick="() => SelectTemplate(item.Url)" class="group relative flex items-center overflow-hidden px-2 py-1.5 dark:text-gray-400">
+                                <div class="block rounded px-2 py-0.5 group-hover:bg-gray-100 dark:group-hover:bg-gray-800">@item.Label</div>
+                                @if (!string.IsNullOrEmpty(item.Badge))
+                                {
+                                    <span class="ml-auto mr-1.5 rounded px-1.5 py-0.5 text-xs font-semibold leading-tight bg-blue-500/10 text-blue-700 dark:text-blue-200">@item.Badge</span>
+                                }
+                                
+                            </button>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </section>
+
+        <div slot="footer" class="mt-3 flex items-center gap-2 text-sm text-gray-400 lg:px-4">
+            Upgrade to
+            <a class="flex items-center border-b hover:border-gray-600 hover:text-gray-600 dark:border-gray-600 dark:hover:border-gray-200 dark:hover:text-gray-200" href="/settings/billing/subscription#subscribe">
+                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 12 12"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.198 1.961a3.164 3.164 0 0 1 1.711-.616h5.455c1.163 0 1.818.946 1.454 2.073l-1.672 5.164c-.364 1.127-1.637 2.072-2.837 2.072H1.855C.69 10.654 0 9.71.364 8.582l1.745-5.164A3.164 3.164 0 0 1 3.2 1.96Zm1.807 1.705L3.387 8.364h1.315l.513-1.49h.535c.346 0 .69-.057 1.03-.173.346-.115.652-.293.918-.534a2.2 2.2 0 0 0 .606-.94c.136-.395.15-.706.039-.932-.106-.227-.295-.388-.567-.484a2.853 2.853 0 0 0-.952-.145h-1.82Zm1.022 2.226h-.474l.428-1.243h.443c.255 0 .436.043.544.13.108.087.125.236.052.448a.977.977 0 0 1-.36.492c-.162.115-.373.173-.612.173Z" fill="currentColor"></path></svg> Pro
+            </a>
+        </div>
+    </div>
+
+    <div class="md:col-span-8 lg:col-span-9">
+        @if (Url == "/settings/profile")
+        {
+            <SidebarMenu />
+        }
+        else if (Url == "/settings/Account")
+        {
+            <AccountTemplate />
+
+        }
+        else if (Url == "/settings/authentication")
+        {
+            <AuthenticationTemplate />
+        }
+        else if (Url == "/settings/organizations")
+        {
+
+            <OrganizationsTemplate />
+        }
+        else if (Url == "/settings/billing")
+        {
+           
+            <BillingSection />
+        }
+        else if (Url == "/settings/AccessTokens")
+        {
+           
+            <AccessTokensTemplate />
+        }
+        else if (Url == "/settings/keys")
+        {
+           
+            <SSHandGPGKeysTemplate />
+        }
+        else if (Url == "/settings/webhooks")
+        {
+           
+            <WebhooksTemplate />
+        }
+        else if (Url == "/settings/papers")
+        {
+           
+            <PapersTemplate />
+        }
+        else if (Url == "/settings/notifications")
+        {
+           
+            <NotificationsTemplate />
+        }
+        else if (Url == "/settings/local-apps")
+        {
+
+            <LocalAppsTemplate />
+        }
+        else if (Url == "/settings/gated-repos")
+        {
+
+            <GatedRepositoriesTemplate />
+        }
+        else if (Url == "/settings/content-preferences")
+        {
+
+            <ContentPreferencesTemplate />
+        }
+        else if (Url == "/settings/connected-applications")
+        {
+
+            <ConnectedAppsTemplate />
+        }
+        else if (Url == "/settings/theme")
+        {
+
+            <ThemeTemplate />
+        }
+        else
+        {
+            <BillingSection />
+
+        }
+    </div>
+</div>
+
+@code {
+    // تعريف قائمة العناصر
+    private List<NavItem> NavItems = new()
+    {
+        new NavItem { Label = "Profile", Url = "/settings/profile" },
+        new NavItem { Label = "Account", Url = "/settings/Account" },
+        new NavItem { Label = "Authentication", Url = "/settings/authentication" },
+        new NavItem { Label = "Organizations", Url = "/settings/organizations" },
+        new NavItem { Label = "Billing", Url = "/settings/billing" },
+        new NavItem { Label = "Access Tokens", Url = "/settings/AccessTokens" },
+        new NavItem { Label = "SSH and GPG Keys", Url = "/settings/keys" },
+        new NavItem { Label = "Webhooks", Url = "/settings/webhooks" },
+        new NavItem { Label = "Papers", Url = "/settings/papers" },
+        new NavItem { Label = "Notifications", Url = "/settings/notifications" },
+        new NavItem { Label = "Local Apps and ", Url = "/settings/local-apps", Badge = "NEW" },
+        new NavItem { Label = "Gated Repositories", Url = "/settings/gated-repos" },
+        new NavItem { Label = "Content Preferences", Url = "/settings/content-preferences" },
+        new NavItem { Label = "Connected Apps", Url = "/settings/connected-applications" },
+        new NavItem { Label = "Theme", Url = "/settings/theme" }
+    };
+
+    // القالب الحالي المعروض
+    private string Url { get; set; } = string.Empty;
+
+    // تغيير القالب بناءً على النقر
+    private void SelectTemplate(string template)
+    {
+        Url = template;
+    }
+
+    // تعريف صف العنصر
+    private class NavItem
+    {
+        public string Label { get; set; }
+        public string Url { get; set; }
+        public string Badge { get; set; }
+    }
+}
+  *@ 
+@*    @page "/settings/{*url}"
+@inherits ComponentBase
+@inject NavigationManager NavigationManager
+@using BlazorASG.Components.Profile.Settings
+ *@
+@* <div style="margin-top: 3%;" class="bg-gradient-to-b py-3 text-sm md:text-base from-yellow-50 to-yellow-100 dark:from-yellow-500 dark:to-yellow-600 dark:text-gray-950 ">
+    <div class="container">
+        <form class="flex flex-col justify-between md:flex-row md:items-center" action="/email_confirmation" method="post">
+            <input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ0NzE1MzE0NTAsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJlYWFkMDUyZmVjMDVkZjZiMTk5NGFkZmVhMmVjZDY5YTY0YTIwZjA0OTY3ODZjOGJkMmQwOTFmYWUxMWJlM2I3In0=">
+            <div class="mb-2 md:mb-0">Please check your email address for a confirmation link</div>
+            <button class="btn-1 text-sm" type="submit">Resend confirmation email</button>
+        </form>
+    </div>
+</div> 
+ <div class="container relative flex flex-col md:grid md:space-y-0 w-full md:grid-cols-12 space-y-4 md:gap-6 py-6" style=" margin-right: 15%;">
+    <div class="md:col-span-4 lg:col-span-3">
+        <section class="pt-6 border-gray-100 from-gray-50-to-white overflow-hidden rounded-xl border border-gray-100 bg-gradient-to-l" >
+            <a class="cols-span-9 mb-2 flex items-center px-4 pb-4" href="/735408478mm">
+                <div class="relative flex-none">
+                    <img alt="" class="rounded-full mr-3 size-12 flex-none overflow-hidden bg-gray-100 dark:bg-gray-900"
+                         src="https://cdn-avatars.huggingface.co/v1/production/uploads/noauth/SXJTVYmE71adfaZsiGDsE.png">
+                </div>
+
+                <div class="my-1">
+                    <h2 class="flex items-center text-lg/5 font-bold lg:text-xl/6">عبدالرحمن</h2>
+                    <div class="inline-block rounded bg-gray-200 px-1 font-mono text-xs dark:bg-gray-800">735408478mm</div>
+                </div>
+            </a>
+            <nav>
+                <ul class="divide-y divide-gray-100 border-t border-gray-100 text-base text-gray-600">
+                    @foreach (var item in NavItems)
+                    {
+                        <li>
+                            <a href="@item.url" class="group relative flex items-center overflow-hidden px-2 py-1.5 dark:text-gray-400">
+                                <div class="block rounded px-2 py-0.5 group-hover:bg-gray-100 dark:group-hover:bg-gray-800">@item.Label</div>
+                                @if (!string.IsNullOrEmpty(item.Badge))
+                                {
+                                    <span class="ml-auto mr-1.5 rounded px-1.5 py-0.5 text-xs font-semibold leading-tight bg-blue-500/10 text-blue-700 dark:text-blue-200">@item.Badge</span>
+                                }
+                                
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </section>
+
+        <div slot="footer" class="mt-3 flex items-center gap-2 text-sm text-gray-400 lg:px-4">
+            Upgrade to
+            <a class="flex items-center border-b hover:border-gray-600 hover:text-gray-600 dark:border-gray-600 dark:hover:border-gray-200 dark:hover:text-gray-200" href="/settings/billing/subscription#subscribe">
+                <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" aria-hidden="true" focusable="false" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 12 12"><path fill-rule="evenodd" clip-rule="evenodd" d="M3.198 1.961a3.164 3.164 0 0 1 1.711-.616h5.455c1.163 0 1.818.946 1.454 2.073l-1.672 5.164c-.364 1.127-1.637 2.072-2.837 2.072H1.855C.69 10.654 0 9.71.364 8.582l1.745-5.164A3.164 3.164 0 0 1 3.2 1.96Zm1.807 1.705L3.387 8.364h1.315l.513-1.49h.535c.346 0 .69-.057 1.03-.173.346-.115.652-.293.918-.534a2.2 2.2 0 0 0 .606-.94c.136-.395.15-.706.039-.932-.106-.227-.295-.388-.567-.484a2.853 2.853 0 0 0-.952-.145h-1.82Zm1.022 2.226h-.474l.428-1.243h.443c.255 0 .436.043.544.13.108.087.125.236.052.448a.977.977 0 0 1-.36.492c-.162.115-.373.173-.612.173Z" fill="currentColor"></path></svg> Pro
+            </a>
+        </div>
+    </div>
+
+     @if (!string.IsNullOrEmpty(url))
+    {
+        <RenderFragment class="md:col-span-8 lg:col-span-9">
+                
+
+            @RenderComponentBasedOnUrl
+       
+        </RenderFragment>
+    }
+</div>
+
+@code {
+    private List<NavItem> NavItems = new()
+    {
+        new NavItem { Label = "Profile", url = "settings/profile" },
+        new NavItem { Label = "Account", url = "settings/Account" },
+        new NavItem { Label = "Authentication", url = "settings/authentication" },
+        new NavItem { Label = "Organizations", url = "settings/organizations" },
+        new NavItem { Label = "Billing", url = "settings/billing" },
+        new NavItem { Label = "Access Tokens", url = "settings/AccessTokens" },
+        new NavItem { Label = "SSH and GPG Keys", url = "settings/keys" },
+        new NavItem { Label = "Webhooks", url = "settings/webhooks" },
+        new NavItem { Label = "Papers", url = "settings/papers" },
+        new NavItem { Label = "Notifications", url = "settings/notifications" },
+        new NavItem { Label = "Local Apps and ", url = "settings/local-apps", Badge = "NEW" },
+        new NavItem { Label = "Gated Repositories", url = "settings/gated-repos" },
+        new NavItem { Label = "Content Preferences", url = "settings/content-preferences" },
+        new NavItem { Label = "Connected Apps", url = "settings/applications" },
+        new NavItem { Label = "Theme", url = "settings/theme" }
+    };
+
+    [Parameter] public string url { get; set; }  // هذه الخاصية تعتمد على المسار الديناميكي
+
+    private RenderFragment RenderComponentBasedOnUrl => builder =>
+    {
+        if (builder == null)
+        {
+            throw new ArgumentNullException(nameof(builder));
+        }
+
+        // قائمة المكونات المرتبطة بكل URL
+        var componentMap = new Dictionary<string, Type>
+            {
+        { "profile", typeof(SidebarMenu) },
+        { "Account", typeof(AccountTemplate) },
+        { "authentication", typeof(AuthenticationTemplate) },
+        { "organizations", typeof(OrganizationsTemplate) },
+        { "billing", typeof(BillingSection) },
+        { "AccessTokens", typeof(AccessTokensTemplate) },
+        { "keys", typeof(SSHandGPGKeysTemplate) },
+        { "webhooks", typeof(WebhooksTemplate) },
+                { "webhooks/new", typeof(UserSettings) },
+
+        { "papers", typeof(PapersTemplate) },
+        { "notifications", typeof(NotificationsTemplate) },
+        { "local-apps", typeof(LocalAppsTemplate) },
+        { "gated-repos", typeof(GatedRepositoriesTemplate) },
+        { "content-preferences", typeof(ContentPreferencesTemplate) },
+        { "applications", typeof(ConnectedAppsTemplate) },
+                { "applications/new", typeof(NewCreateanOAuthapp) },
+
+        { "theme", typeof(ThemeTemplate) }
+            };
+
+        // تحديد المكون بناءً على `url`
+        if (componentMap.TryGetValue(url, out var componentType))
+        {
+            builder.OpenComponent(0, componentType);
+            builder.CloseComponent();
+        }
+        else
+        {
+            // مكون افتراضي إذا لم يتم العثور على `url`
+            builder.OpenComponent(0, typeof(BlazorASG.Components.Profile.UserNameSettinge));
+            builder.CloseComponent();
+        }
+    };
+
+    private class NavItem
+    {
+        public string Label { get; set; }
+        public string url { get; set; }
+        public string Badge { get; set; }
+    }
+}
+ *@

@@ -1,0 +1,36 @@
+﻿@* @using Microsoft.Extensions.Logging *@
+@* @inject ILogger<ErrorHandler> Logger *@
+@* @inject ISnackbar Snackbar *@
+@* @inject IDialogService DialogService *@
+
+@* <CascadingValue Value=this> *@
+@*     @ChildContent *@
+@* </CascadingValue> *@
+
+@* @code { *@
+@*     [Parameter] *@
+@*     public RenderFragment ChildContent { get; set; } *@
+
+@*     public void ProcessError(Exception ex, bool showSnackbar = true, bool showDialog = false) *@
+@*     { *@
+@*         Logger.LogError("Error:ProcessError - Type: {Type} Message: {Message}", *@
+@*             ex.GetType(), ex.Message); *@
+
+@*         if (showSnackbar) *@
+@*         { *@
+@*             Snackbar.Add($"❗ {ex.Message}", Severity.Error); *@
+@*         } *@
+
+@*         if (showDialog) *@
+@*         { *@
+@*             var parameters = new DialogParameters *@
+@*             { *@
+@*                 { "ContentText", ex.Message }, *@
+@*                 { "ButtonText", "حسنًا" }, *@
+@*                 { "Color", Color.Error } *@
+@*             }; *@
+
+@*             DialogService.Show<ErrorDialog>("حدث خطأ", parameters); *@
+@*         } *@
+@*     } *@
+@* } *@

@@ -1,0 +1,141 @@
+﻿@* <h3>NumberCard</h3> *@
+
+@using System.Globalization
+
+<section class="pt-0">
+    <div class="container">
+        <div class="row">
+            <!-- Skill sets item -->
+            <div class="col-md-4">
+                <div class="d-flex justify-content-between">
+                    <div class="text-center">
+                        <!-- Number -->
+                        <div class="d-flex">
+                            <h4 class="purecounter display-2 mb-0" data-purecounter-start="0" data-purecounter-end="105" data-purecounter-delay="300" data-purecounter-duration="0">@numbern</h4>
+                            <span class="display-2 text-primary mb-0">+</span>
+                        </div>
+                        <!-- Content -->
+                        <p>Total projects completed</p>
+                    </div>
+
+                    <div class="vr bg-primary-grad opacity-1 my-3"></div> <!-- Divider -->
+                </div>
+            </div>
+
+            <!-- Skill sets item -->
+            <div class="col-md-4 text-center">
+                <!-- Number -->
+                <div class="d-flex justify-content-center">
+                    <h4 class="purecounter display-2 mb-0" data-purecounter-start="0" data-purecounter-end="35" data-purecounter-delay="300" data-purecounter-duration="0"> @number</h4>
+                    <span class="display-2 text-purple mb-0">+</span>
+                </div>
+                <!-- Content -->
+                <p>Awards and accolades</p>
+            </div>
+
+            <!-- Skill sets item -->
+            <div class="col-md-4">
+                <div class="d-flex justify-content-between">
+                    <div class="vr bg-primary-grad opacity-1 my-3"></div> <!-- Divider -->
+
+                    <div class="text-center">
+                        <!-- Number -->
+                        <div class="d-flex">
+                            <span class="display-2 heading-color mb-0">&gt;</span>
+
+                            <h4 class="purecounter display-2 mb-0" data-purecounter-start="0" data-purecounter-end="10" data-purecounter-delay="300" data-purecounter-duration="0">@number  </h4>
+                            <span class="display-2 text-pink mb-0">K</span>
+                        </div>
+
+                        <!-- Content -->
+                        <p>Satisfied users</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+
+
+
+@code {
+    private double number = 10;
+    private double numbe = 35;
+    private double numbern = 105;
+
+}
+
+<style>
+    /* إعدادات القسم */
+    section.pt-0 {
+        padding-top: 0;
+        margin-top: 5%;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+        padding: 20px;
+    }
+
+    /* إعداد تنسيق لكل عنصر من المهارات */
+    .col-md-4 {
+        margin-bottom: 30px;
+    }
+
+    /* إعدادات الأرقام */
+    .display-2 {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #333;
+        line-height: 1;
+    }
+
+    /* تنسيقات خاصة لكل فئة لونية */
+    .text-primary {
+        color: #007bff; /* لون أزرق */
+    }
+
+    .text-purple {
+        color: #6f42c1; /* لون بنفسجي */
+    }
+
+    .text-pink {
+        color: #e83e8c; /* لون وردي */
+    }
+
+    .heading-color {
+        color: #333; /* لون رمادي داكن */
+    }
+
+    /* الخلفية وتنسيق النصوص */
+    p {
+        font-size: 1rem;
+        font-weight: 500;
+
+        margin-top: 10px;
+    }
+
+    /* الشريط العمودي (Divider) */
+    .vr {
+        width: 4px;
+        background-image: linear-gradient(180deg, #007bff, #e83e8c);
+        opacity: 0.5;
+    }
+
+        .vr.my-3 {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+
+    /* تأثير التكبير عند تمرير الماوس */
+    .purecounter {
+        transition: transform 0.3s ease;
+    }
+
+        .purecounter:hover {
+            transform: scale(1.1);
+        }
+</style>

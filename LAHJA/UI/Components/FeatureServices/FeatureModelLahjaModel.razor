@@ -1,0 +1,479 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+    <style >
+    .feature-card 
+    
+    {
+
+        padding: 20px;
+        border-radius: 15px;
+ 
+        box-shadow: 3px 3px 6px #d1d1d1, -3px -3px 6px #ffffff;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+
+    .feature-card:hover {
+        transform: scale(1.05);
+        box-shadow: 5px 5px 15px #b0b0b0, -5px -5px 15px #ffffff;
+    }
+
+    .icon-container {
+        text-align: center;
+    }
+
+    .feature-title {
+        font-weight: bold;
+        color: #333;
+        margin-top: 10px;
+    }
+
+    .feature-description {
+        color: #555;
+        margin-top: 5px;
+    }
+
+    .icon-container > .mud-icon {
+        font-size: 2rem;
+        border-radius: 50%;
+       
+        color: white;
+        padding: 10px;
+        margin: auto;
+    }
+</style>
+
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="my-5">
+    <MudGrid  Spacing="3" >
+        @foreach (var feature in serviceFeatures)
+        {
+
+
+
+
+            <MudItem xs="12" md="4">
+                <MudPaper Class="feature-card" Elevation="1">
+                    <MudGrid  >
+                        <MudItem xs="12" md="3" Class="icon-container">
+                            <MudIcon Icon="xxx" Size="Size.Large" Color="Color.Primary" />
+                        </MudItem>
+                        <MudItem xs="12" md="9">
+                            <MudText Typo="Typo.body2" Class="feature-title">@feature.Title</MudText>
+                            <MudText Typo="Typo.body2" Class="feature-description">@feature.Description</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        }
+    </MudGrid>
+</MudContainer>
+
+
+
+@code {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    [Parameter]
+    public List<FeatureModel>DataBulidAr{ get; set; }
+
+    [Parameter]
+
+    public List<FeatureModel> DataBulidEn { get; set; }
+
+
+
+
+
+
+    [Parameter] public bool TypeLanguage { get; set; } = false;
+
+    List<FeatureModel> serviceFeatures1 = new List<FeatureModel>
+    {
+        new FeatureModel(1, "جودة عالية", "باستخدام تقنيات التعلم العميق والتدريب المتقدم، تضمن لك هذه الخدمات نماذج صوتية تتمتع بدقة عالية وطبيعية."),
+        new FeatureModel(2, "مرونة في التخصيص", "يمكنك تخصيص الصوت، النبرة، والسرعة بما يتناسب مع احتياجاتك الخاصة."),
+        new FeatureModel(3, "دعم متعدد المنصات", "من Android إلى iOS وصولًا إلى أنظمة تشغيل أخرى، مع ضمان تجربة سلسة في الخلفية.")
+    };
+
+
+
+    List<FeatureModel> serviceFeatures2 = new List<FeatureModel>
+{
+    new FeatureModel(1, "High Quality", "Using advanced deep learning techniques and training, these services ensure highly accurate and natural voice models."),
+    new FeatureModel(2, "Flexibility in Customization", "You can customize the voice, tone, and speed to suit your specific needs."),
+    new FeatureModel(3, "Multi-Platform Support", "From Android to iOS and other operating systems, ensuring a seamless background experience.")
+};
+
+
+    List<FeatureModel> serviceFeatures = null;
+    protected override async void OnAfterRender(bool firstRender)
+
+    {
+
+
+
+        if (firstRender)
+
+        {
+
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+
+            changeLanguage(currentLanguage);
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+    private async void changeLanguage(string language)
+
+    {
+
+
+
+        if (language == "en")
+
+        {
+
+
+
+
+
+
+
+
+
+
+
+            TypeLanguage = true;
+
+
+
+
+
+
+
+
+            serviceFeatures = serviceFeatures2;
+
+
+
+           
+
+        }
+
+        else
+
+        {
+
+
+
+
+
+
+
+
+
+
+
+            TypeLanguage = false;
+
+
+
+            serviceFeatures = serviceFeatures1;
+
+
+
+
+
+
+
+
+
+
+
+        }
+
+        InvokeAsync(StateHasChanged);
+
+
+
+    }
+
+
+
+    protected override void OnInitialized()
+
+    {
+
+        try
+
+        {
+
+
+
+            languageService.OnLanguageChanged += changeLanguage;
+
+            changeLanguage("ar");
+
+
+
+        }
+
+        catch
+
+        {
+
+
+
+
+
+        }
+
+
+
+    }
+
+    
+
+    
+}
+
+
+ 

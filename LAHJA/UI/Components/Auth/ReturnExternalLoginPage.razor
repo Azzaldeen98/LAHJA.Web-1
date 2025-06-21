@@ -1,0 +1,76 @@
+﻿@page "/ReturnExternalLoginPage"
+@using Domain.Entities.Auth.Response
+@using LAHAJ.Loading
+@using LAHJA.Helpers.Enum
+@using LAHJA.Helpers.Services
+@using global::Shared.Constants
+@using global::Shared.Constants.Router
+@inject CustomAuthenticationStateProvider  AuthStateProvider
+@inject NavigationManager Navigation
+@inject TokenService tokenService  ////TODO: 8-2
+@using Microsoft.AspNetCore.Authorization
+@using global::Shared.Enums
+@attribute [AllowAnonymous]
+<Loading IsLoading="isLoading" />
+
+@code {
+
+
+    private bool isLoading = true;
+
+
+    override protected async Task OnInitializedAsync()
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+
+        if (queryParams.ContainsKey("token"))
+        {
+            var token = queryParams["token"];
+            if (!string.IsNullOrEmpty(token))
+            {
+                // await authService.SaveLoginAsync(new LoginResponse{ accessToken=token,
+                //     refreshToken=token,expiresIn="External",tokenType="Google" });
+
+                ////TODO: 8-2
+                // await tokenService.SaveTokenAsync(token);
+                // await tokenService.SaveTokenInSessionAsync(token);
+                // await tokenService.SaveLoginTypeAsync(LoginType.Google);
+                isLoading = false;
+                await AuthStateProvider.InitializeAsync();
+                Navigation.NavigateTo($"/InitAuth?{ConstantsApp.ACCESS_TOKEN}={token}&{ConstantsApp.LOGIN_TYPE}={LoginType.Google}", forceLoad: true);
+                // Navigation.NavigateTo(RouterPage.HOME,true);
+            }
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+            // var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+
+            // if (queryParams.ContainsKey("token"))
+            // {
+            //     var token = queryParams["token"];
+            //     if (!string.IsNullOrEmpty(token))
+            //     {
+            //         // await authService.SaveLoginAsync(new LoginResponse{ accessToken=token,
+            //         //     refreshToken=token,expiresIn="External",tokenType="Google" });
+
+            //         ////TODO: 8-2
+            //         await tokenService.SaveTokenAsync(token);
+            //         await tokenService.SaveTokenInSessionAsync(token);
+            //         await tokenService.SaveLoginTypeAsync(LoginType.Google);
+            //         isLoading = false;
+            //         await AuthStateProvider.InitializeAsync();
+            //         Navigation.NavigateTo($"/InitAuth?{ConstantsApp.ACCESS_TOKEN}={token}&{ConstantsApp.LOGIN_TYPE}={LoginType.Google}", forceLoad: true);
+            //         // Navigation.NavigateTo(RouterPage.HOME,true);
+            //     }
+            // }
+        }
+        
+    }
+}

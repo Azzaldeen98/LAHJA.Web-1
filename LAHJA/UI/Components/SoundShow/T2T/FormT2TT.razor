@@ -1,0 +1,408 @@
+﻿ 
+
+@inject IJSRuntime JSRuntime
+
+@using LAHJA.Data.UI.Components.ServiceCard
+@using System.Text.Json
+@using LAHJA.Data.UI.Models
+@using System.Text
+@inject LAHJA.ApiClient.Services.IT2TService T2TService;
+
+
+<gradio-app control_page_title="true" embed="false" eager="true" style="display: flex; flex-direction: column; flex-grow: 1;background-color:none!important">
+    <div class="gradio-container gradio-container-4-41-0 svelte-wpkpf6 app" data-iframe-height="" style="min-height: initial; flex-grow: 1;">
+        <div class="main svelte-wpkpf6">
+            <div class="wrap svelte-1rjryqp" style="min-height: 100%;">
+                <div class="contain svelte-1rjryqp" style="flex-grow: 1;">
+                    <div id="component-2" class="svelte-vt1mxs gap" style="min-width: min(0px, 100%);">
+                        <div id="component-6" class="svelte-sa48pu unequal-height">
+                            <div id="component-7" class="svelte-vt1mxs gap panel" style="flex-grow: 1; min-width: min(320px, 100%);">
+                                <div id="component-8" class="svelte-vt1mxs gap" style="flex-grow: 1; min-width: min(320px, 100%);">
+                                    <div class="form svelte-sfqy0y" style="flex-grow: 0; min-width: min(0px, 100%);">
+                                        <div id="component-3" class="block svelte-12cmxck padded" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);background-color:none!important">
+                                            <label class="svelte-1f354aw container">
+                                                <span data-testid="block-info" class="svelte-1gfkn6j">Textbox</span>
+
+                                                <MudTextField T="string" Class="scroll-hide svelte-1f354aw" MaxLines="7" style="overflow-y: 
+                                                     scroll; " @bind-Value="@textSpeech" />
+                                                
+                                             @*    <textarea data-testid="textbox" class="scroll-hide svelte-1f354aw" dir="ltr" placeholder="" rows="1" style="overflow-y: scroll; height: 42px;">
+                                                        </textarea> *@
+                                            </label>
+                                        </div>
+
+
+
+
+
+
+
+
+
+                                        <div id="component-0" class="block svelte-12cmxck padded" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);background-color:!important">
+                                            <div class="wrap default full svelte-au1olv hide" style="position: absolute; padding: 0px;">
+                                            </div>
+                                            <div class="svelte-1sk0pyu container">
+                                                <span data-testid="block-info" class="svelte-1gfkn6j">اختر النموذج</span>
+                                                <MudSelect T="string" @bind-Value="SelectedDialect">
+                                                
+                                                
+
+                                                @foreach (var dialect in DataBuildPage.TextToDialect.AvailableDialects)
+                                                {
+                                                    <MudSelectItem Value="@dialect">@dialect</MudSelectItem>
+                                                }
+                                                </MudSelect>
+                                                      
+                                                    <div class="reference"></div>
+                                             
+                                            </div>
+                                        </div>
+
+
+
+                                    
+                                    </div>
+                                </div>
+                                <div id="component-10" class="svelte-sa48pu stretch">
+                                    <MudButton class="lg secondary  svelte-cmf5ev" id="component-11" OnClick="Clear"> Clear</MudButton>
+                                    <MudButton class="lg primary  svelte-cmf5ev" id="component-12" OnClick="Onsubmit"> Submit</MudButton> 
+                                </div>
+                            </div>
+                             <div id="component-13" class="svelte-vt1mxs gap panel" style="flex-grow: 1; min-width: min(320px, 100%);"> 
+                                 
+                                        <div id="component-5" class="block  svelte-12cmxck" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);">
+                                        <div class="wrap default full svelte-au1olv hide" style="position: absolute; padding: 0px;"></div>
+                                        <label for="" data-testid="block-label" class="svelte-1b6s6s"><span class="svelte-1b6s6s">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music">
+                                                <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3">
+
+                                                </circle><circle cx="18" cy="16" r="3"></circle></svg></span> output 1</label> 
+                                                <div class="empty svelte-1oiin9d small" aria-label="Empty value">
+                                                    <div class="icon svelte-1oiin9d">
+                                                 
+        @if (OnResult!=null && OnResult.Sccess&& OnResult.OperationType=="TextToDialect")
+        {
+            <MudText Typo="Typo.body1" Align="Align.Center" Class="mb-3">@OnResult.Text</MudText>
+           
+        }
+
+                                                     </div></div></div>
+                                                    <div id="component-14" class="svelte-sa48pu stretch"> </div>
+                                                </div>
+                        </div>
+                    </div>
+                </div>
+
+
+               
+
+                 <SliderWasmdashai  />   
+
+            </div>
+            <div  class="toast-wrap svelte-pu0yf1">
+
+               
+            </div>
+        </div>
+    </div>
+</gradio-app>
+
+
+
+ 
+ @code
+{
+
+
+    [Parameter]
+    public DataBuildServicePage DataBuildPage { get; set; }
+    [Parameter] public OnDataResult? OnResult { get; set; } = null;
+    [Parameter] public EventCallback<OnDataResult> OnSubmit { get; set; }
+    private string textSpeech = "السلام عليكم كيف الحال هل انت بخير";
+    private string SelectedDialect = "";
+    protected override void OnInitialized()
+    {
+        try
+        {
+            if (DataBuildPage == null)
+            {
+                DataBuildPage = new DataBuildServicePage()
+                    {
+                        TextToDialect = new TextToDialectStep(),
+                        TextToSpeech = new TextToSpeechStep()
+
+                    };
+
+
+            }
+        }
+        catch(Exception ex)
+        {
+
+
+        }
+
+    }
+
+    private async  void Clear()
+    {
+        try
+        {
+            textSpeech = "";
+            SelectedDialect = "";
+            StateHasChanged();
+        }
+        catch(Exception 
+        
+        
+        ex)
+        {
+
+        }
+    } 
+
+
+
+    // public class T2T
+    // {
+    //     public async Task<string> CallT2TAsync(QueryRequestTextToText data)
+    //     {
+    //         var data = JsonSerializer.Deserialize<T2TRequest>(jsonData);
+    //         if (data == null)
+    //             throw new ArgumentException("Invalid JSON data");
+
+    //         try
+    //         {
+    //             Step 1: POST request to get EVENT_ID
+    //             using var httpClient = new HttpClient();
+    //             var postContent = new StringContent(JsonSerializer.Serialize(new { data = new object[] { data.Text, data.Key } }), Encoding.UTF8, "application/json");
+
+    //             var postResponse = await httpClient.PostAsync(data.URL, postContent);
+    //             postResponse.EnsureSuccessStatusCode();
+
+    //             var postResponseContent = await postResponse.Content.ReadAsStringAsync();
+    //             var postData = JsonSerializer.Deserialize<PostResponse>(postResponseContent);
+    //             var eventId = postData?.event_id;
+
+    //             if (string.IsNullOrEmpty(eventId))
+    //                 throw new Exception("Event ID not found in response");
+
+    //             Step 2: GET request to stream data
+    //             var getResponse = await httpClient.GetAsync($"{data.URL}/{eventId}", HttpCompletionOption.ResponseHeadersRead);
+    //             getResponse.EnsureSuccessStatusCode();
+
+    //             using var stream = await getResponse.Content.ReadAsStreamAsync();
+    //             using var reader = new StreamReader(stream, Encoding.UTF8);
+    //             var result = new StringBuilder();
+
+    //             while (!reader.EndOfStream)
+    //             {
+    //                 var line = await reader.ReadLineAsync();
+    //                 if (line != null)
+    //                     result.AppendLine(line);
+    //             }
+
+    //             Parse the result to find the desired JSON line
+    //             var resultString = result.ToString();
+    //             var dataLine = resultString.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+    //                                        .FirstOrDefault(line => line.StartsWith("data:"));
+
+    //             if (dataLine == null)
+    //                 throw new Exception("No data line found in the response");
+
+    //             var jsonString = dataLine.Replace("data: ", "").Trim();
+
+    //             return jsonString;
+    //         }
+    //         catch (Exception ex)
+    //         {
+    //             Handle exceptions (e.g., log errors)
+    //             Console.WriteLine($"Error: {ex.Message}");
+    //             return null;
+    //         }
+    //     }
+    // }
+
+    // Models for deserialization
+    // public class T2TRequest
+    // {
+    //     public string URL { get; set; }
+    //     public string Method { get; set; }
+    //     public string Text { get; set; }
+    //     public string Key { get; set; }
+    // }
+
+
+
+    // T2T T2TModel = new T2T();
+    private async Task onSubmitWithHttpAsync()
+    {
+        try
+        {
+            if (OnSubmit.HasDelegate && !string.IsNullOrWhiteSpace(textSpeech))
+            {
+
+                var response = await T2TService.T2TAsync(new QueryRequestTextToText { Text = textSpeech });
+
+                if (response.Succeeded)
+                {
+                    string decodedText = response.Data.Result;
+
+                    OnDataResult obj = new OnDataResult()
+                        {
+                            Text = decodedText,
+                            OperationType = "TextToDialect",
+                            Sccess = false,
+                            SelectLanguage = SelectedDialect,
+                            TypeSend = "Send"
+                        };
+
+                    await OnSubmit.InvokeAsync(obj);
+                }
+
+
+                StateHasChanged();
+
+            }
+
+            Clear();
+
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    private async Task onSubmitWithJSAsync()
+    {
+        try
+        {
+            if (OnSubmit.HasDelegate && !string.IsNullOrWhiteSpace(textSpeech))
+            {
+
+                var response = await T2TService.T2TClientJSAsync(new QueryRequestTextToText { Text = textSpeech });
+                if (response.Succeeded)
+                {
+                    string decodedText = response.Data.Result;
+
+                    OnDataResult obj = new OnDataResult()
+                        {
+                            Text = decodedText,
+                            OperationType = "TextToDialect",
+                            Sccess = false,
+                            SelectLanguage = SelectedDialect,
+                            TypeSend = "Send"
+                        };
+
+                        await OnSubmit.InvokeAsync(obj);
+            }
+                // string json = JsonSerializer.Serialize(new QueryRequestTextToText { Text = textSpeech });
+                // var response = await JSRuntime.InvokeAsync<string>("t2t", json);
+                // if (response != null)
+                // {
+                //     string[] decodedArray = JsonSerializer.Deserialize<string[]>(response);
+                //     string decodedText = decodedArray[0];
+
+                //     OnDataResult obj = new OnDataResult()
+                //         {
+                //             Text = decodedText,
+                //             OperationType = "TextToDialect",
+                //             Sccess = false,
+                //             SelectLanguage = SelectedDialect,
+                //             TypeSend = "Send"
+                //         };
+
+                //     await OnSubmit.InvokeAsync(obj);
+                // }
+
+                StateHasChanged();
+
+            }
+            Clear();
+
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    private async Task Onsubmit()
+    {
+
+        await onSubmitWithJSAsync();
+
+        // await onSubmitWithHttpAsync();
+        // try
+        // {
+        //     if (OnSubmit.HasDelegate && !string.IsNullOrWhiteSpace(textSpeech))
+        //     {
+
+        //         var response = await T2TService.T2TAsync(new QueryRequestTextToText { Text = textSpeech });
+        //         if (response.Succeeded)
+        //         {
+        //             var res = response.Data;
+        //             OnDataResult obj = new OnDataResult()
+        //                 {
+        //                     Text = res,
+        //                     OperationType = "TextToDialect",
+        //                     Sccess = false,
+        //                     SelectLanguage = SelectedDialect,
+        //                     TypeSend = "Send"
+        //                 };
+
+        //             await OnSubmit.InvokeAsync(obj);
+        //         }
+
+        //         string json = JsonSerializer.Serialize(new QueryRequestTextToText { Text = textSpeech });
+        //         var response = await JSRuntime.InvokeAsync<string>("t2t", json);
+        //         if (response != null)
+        //         {
+        //             string[] decodedArray = JsonSerializer.Deserialize<string[]>(response);
+        //             string decodedText = decodedArray[0];
+
+             
+        //            byte[] utf8Bytes = Encoding.UTF8.GetBytes(response);
+        //             OnDataResult obj = new OnDataResult()
+        //                 {
+        //                     Text = response,Encoding.UTF8.GetString(utf8Bytes),
+        //                     OperationType = "TextToDialect",
+        //                     Sccess = false,
+        //                     SelectLanguage = SelectedDialect,
+        //                     TypeSend = "Send"
+        //                 };
+
+        //             await OnSubmit.InvokeAsync(obj);
+        //         }
+        //         else
+        //         {
+                    
+        //         }
+
+               
+
+              
+
+
+        //         StateHasChanged();
+
+        //      }
+        //    await JSRuntime.InvokeVoidAsync("playAudioFromText",textSpeech);
+        //     Clear();
+
+
+        // }
+        // catch(Exception ex)
+        // {
+
+        // }
+    }
+
+
+ }
+
+
+ 

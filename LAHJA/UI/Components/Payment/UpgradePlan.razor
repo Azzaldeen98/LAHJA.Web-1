@@ -1,0 +1,265 @@
+﻿
+
+@using Domain.ShareData
+@using LAHJA.ContextServices
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@using LAHJA.UI.Components.Plan
+@using global::Shared.Constants
+@using global::Shared.Wrapper
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+@inject MessageBox MessageBox
+@inherits AppUtilityComponent 
+
+@* 
+<MudPaper Elevation="1" Class="p-4">
+    @if (@BuildData != null)
+
+    {
+
+        <MudText Typo="Typo.h4" Class="mb-3">Upgrade your account  Api Name Pr</MudText>
+        <MudLink Href="/BillingSummary" Target="_self">← Back to billing </MudLink>
+
+
+
+
+        <TemplatePlan IsDisplaySelectButton="false" SubmitConfirm="SubmitConfirm" SubmitUpgrade="SubmitUpgrade" SubmitCancel="SubmitCancel" IsExpanded="true" AllowUpdate="true" IsUpgrade="false" Params="@BuildData" />
+
+
+    }
+
+    <MudText Typo="Typo.h6" Class="mt-4">Payment frequency</MudText>
+    <MudButtonGroup Variant="Variant.Outlined" Class="mb-3 d-flex justify-content-around">
+        <MudButton Color="@AppColors.BASE_COLOR_ENUM" Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+" px-3")" OnClick="@(()=>Clickfrequency("y"))">Year  monthly</MudButton>
+        <MudButton Color="@AppColors.BASE_COLOR_ENUM" Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+" px-3")" OnClick="@(()=>Clickfrequency("m"))">Pay monthly</MudButton>
+    </MudButtonGroup>
+
+    <MudPaper Class="p-3" Style="background-color: #e3f2fd;">
+        <MudText Typo="Typo.body1">Payment due Dec 15, 2024</MudText>
+        <MudText Typo="Typo.h6">$@price</MudText>
+    </MudPaper> 
+
+    <MudButton Variant="Variant.Text" Class="mt-2">Edit</MudButton>
+</MudPaper> *@
+
+<MudPaper Elevation="1" Class="p-4 w-100 mt-3">
+
+    <MudText Typo="Typo.h5" Class="mb-3">
+        @LocalizedContent["UpgradeYourAccountTitle"]
+    </MudText>
+
+    <MudLink Href="/BillingSummary" Color="@AppColors.BASE_COLOR_ENUM" Class="m-3" Target="_self">@LocalizedContent["BackToBilling"]</MudLink>
+
+    <hr class="py-1 my-3" />
+
+    <div class="container_flex_wrap align-items-center mt-5">
+
+        @if (@BuildData != null)
+        {
+
+
+            <div class="w60 mt-3">
+
+
+
+                <TemplatePlan IsDisplaySelectButton="false"
+                    OnSubmit="OnConfirmPlan"
+                    SubmitUpgrade="SubmitUpgrade"
+                    SubmitCancel="SubmitCancel"
+                    IsExpanded="true"
+                    AllowUpdate="true"
+                    IsUpgrade="false"
+                    DataBuild="@BuildData" />
+            </div>
+        }
+
+
+        <MudCard class="w46 mt-3">
+
+            @if (false)
+            {
+                <MudText Typo="Typo.h6" Class="mt-4">@LocalizedContent["PaymentFrequency"]</MudText>
+
+                <MudRadioGroup T="int" Value="selectedPaymentFrequency" ValueChanged="Clickfrequency" Class="mb-3 d-flex justify-content-around border p-3">
+                    <MudRadio Value="1" Color="@AppColors.BASE_COLOR_ENUM">   @LocalizedContent["PayMonthly"]</MudRadio>
+                    <MudRadio Value="2" Color="@AppColors.BASE_COLOR_ENUM">  @LocalizedContent["PayYearly"]</MudRadio>
+                </MudRadioGroup>
+                @*     <MudButtonGroup   Variant="Variant.Filled" Class="mb-3 d-flex justify-content-around border p-3">
+                    <MudButton Variant="Variant.Filled"  Color="@AppColors.BASE_COLOR_ENUM"
+                               Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+" px-3")"
+                               OnClick="@(() => Clickfrequency("y"))">
+                        @LocalizedContent["PayYearly"]
+                    </MudButton>
+                    <MudButton  Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM"
+                               Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+" px-3")"
+                               OnClick="@(() => Clickfrequency("m"))">
+                        @LocalizedContent["PayMonthly"]
+                    </MudButton>
+                </MudButtonGroup> *@
+
+                <MudPaper Class="p-3" >
+                    <MudText Typo="Typo.body1">@string.Format(LocalizedContent["PaymentDue"], DateTimeOffset.UtcNow.LocalDateTime.ToLongDateString() + " T " + DateTimeOffset.UtcNow.LocalDateTime.ToLongTimeString())</MudText>
+                    <MudText Typo="Typo.h6">$@price</MudText>
+                </MudPaper>
+            }
+            @if (hasPreviousSubscription)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="OnDeleteSubscription"
+                Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" mt-2 w-100")">@LocalizedContent["Delete Subscription"]</MudButton>
+            }
+            else
+            {
+                <MudButton Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM" OnClick="OnSaveAndConfirm" Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" mt-2 w-100")">@LocalizedContent["Confirm"]</MudButton>
+            }
+
+        </MudCard>
+
+
+    </div>
+
+</MudPaper>
+
+@code {
+    private bool isConfirm = false;
+    private bool hasPreviousSubscription = false;
+    private int selectedPaymentFrequency = 2;
+    // private int SelectedPaymentOption { get; set; } = 2;
+
+    private Dictionary<string, string> LocalizedContent;
+
+    [Parameter] public EventCallback<PlanViewModel> SubmitUpgrade { get; set; }
+
+    [Parameter] public EventCallback<PlanViewModel> SubmitConfirm { get; set; }
+
+    [Parameter] public EventCallback<PlanViewModel> SubmitCancel { get; set; }
+    [Parameter] public EventCallback<string> SubmitCancelPreviousSubscription { get; set; }
+
+    [Parameter] public PlanViewModel? BuildData { get; set; }
+    [Parameter] public bool HasPreviousSubscription { get => hasPreviousSubscription; set => hasPreviousSubscription=value; }
+
+    private decimal price = 0;
+
+
+    private async Task OnDeleteSubscription()
+    {
+
+        var message = MapperMessages.Map(ConfirmationMessages.CONFIRMATION_DELETED_MESSAGE_AR, 
+            ConfirmationMessages.CONFIRMATION_DELETED_MESSAGE_EN, services.lg);
+
+        if (await MessageBox.ShowWithReplaceSubjectAsync("Alert", message, LocalizedContent["Subscription"], services.lg))
+        { 
+            if (SubmitCancelPreviousSubscription.HasDelegate && BuildData != null && !string.IsNullOrEmpty(BuildData.SubscriptionId))
+            {
+                await SubmitCancelPreviousSubscription.InvokeAsync(BuildData.SubscriptionId);
+            }
+        }
+        
+    }
+    private async Task OnSaveAndConfirm()
+    {
+        if (SubmitConfirm.HasDelegate &&  BuildData!=null)
+        {
+            await SubmitConfirm.InvokeAsync(BuildData);
+        }
+    }
+    private  void OnConfirmPlan(PlanViewModel paln)
+    {
+        BuildData = paln;
+        isConfirm=true;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        Clickfrequency(2);
+        // languageService.OnLanguageChanged += LoadLocalizedContent;
+
+        LoadLocalizedContent(lg);
+
+    }
+
+    public void Clickfrequency(int id)
+    {
+        if (id == 2)
+        {
+          
+            price = BuildData?.AnnualPrice??0;
+        }
+        else
+        {
+            price= BuildData?.MonthlyPrice??0;
+
+        }
+        selectedPaymentFrequency = id;
+        StateHasChanged();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+            if (firstRender)
+            {
+
+               var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+                LoadLocalizedContent(currentLanguage);
+
+            }
+
+    }
+
+    private void LoadLocalizedContent(string languageCode)
+    {
+
+        var translations = new Dictionary<string, Dictionary<string, string>>
+        {
+            { "en", new Dictionary<string, string>{
+
+                    { "UpgradeYourAccountTitle", "Upgrade your account" },
+                    { "BackToBilling", "Back to billing" },
+                    { "PaymentFrequency", "Payment frequency" },
+                    { "PayYearly", "Pay Yearly" },
+                    { "PayMonthly", "Pay Monthly" },
+                    { "PaymentDue", "Payment due {0}" },
+                    { "Confirm", "Confirm" },
+                    { "Subscription", "Subscription" },
+                    { "Delete Subscription", "Delete Subscription" }
+                }
+            },
+            { "ar", new Dictionary<string, string> {
+
+                    { "UpgradeYourAccountTitle", "ترقية حسابك" },
+                    { "BackToBilling", "العودة إلى الفوترة" },
+                    { "PaymentFrequency", "تكرار الدفع" },
+                    { "PayYearly", "ادفع سنوياً" },
+                    { "PayMonthly", "ادفع شهرياً" },
+                    { "PaymentDue", "الدفع المستحق {0}" },
+                    { "Subscription", "الاشتراك" },
+                    { "Confirm", "تأكيد" },
+                    { "Delete Subscription", "حذف الاشتراك" }
+                }
+            }
+        };
+
+
+
+        if (translations.TryGetValue(languageCode, out var localizedTexts))
+        {
+
+            LocalizedContent = localizedTexts;
+
+
+        }
+        else
+        {
+
+
+            LocalizedContent = translations["en"];
+
+        }
+
+    }
+
+}

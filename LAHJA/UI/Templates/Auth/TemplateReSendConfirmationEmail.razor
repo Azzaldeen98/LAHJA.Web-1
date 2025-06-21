@@ -1,0 +1,36 @@
+﻿ @page "/ReSendConfirmationEmail"
+ @using LAHJA.UI.Components.Auth
+ @using Microsoft.AspNetCore.Authorization
+ @inject LAHJA.Data.UI.Templates.Auth.TemplateAuth Template
+ @inject NavigationManager Navigation
+
+@attribute [AllowAnonymous]
+
+<ReSendConfirmationEmail    OnSubmitReSendConfirmEmail="Template.BuilderComponents.SubmitReSendConfirmEmail" />
+
+ @code {
+     string Email { get; set; }
+
+
+     // protected override void OnInitialized()
+     // {
+
+     //     var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+     //     var queryParams = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(uri.Query);
+
+     //     if (queryParams.ContainsKey("email"))
+     //     {
+     //         Email = queryParams["email"];
+     //     }
+
+     //     if (queryParams.ContainsKey("code"))
+     //     {
+     //         Code = queryParams["code"];
+     //     }
+     //     base.OnInitialized();
+     // }
+
+
+
+
+ }

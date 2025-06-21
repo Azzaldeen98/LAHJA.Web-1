@@ -1,0 +1,168 @@
+﻿@using MudBlazor;
+<style>
+    .custom-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px auto;
+    }
+
+</style>
+<MudMenu Label="EndIcon" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+    <MudPaper Class="pa-4">
+       
+        <!-- قسم الفلاتر -->
+        <div class="filter-section">
+            <MudText Typo="Typo.h6">Filter by Created Date</MudText>
+
+            <!-- قائمة اختيار نوع المقارنة -->
+            <MudSelect T="FilterComparison" @bind-Value="selectedComparison" Label="Comparison Type" Variant="Variant.Outlined">
+                <MudSelectItem Value="FilterComparison.InTheLast">is in the last</MudSelectItem>
+                <MudSelectItem Value="FilterComparison.Equals">is equal to</MudSelectItem>
+                <MudSelectItem Value="FilterComparison.Between">is between</MudSelectItem>
+                <MudSelectItem Value="FilterComparison.IsAfterOrOn">is on or after</MudSelectItem>
+                <MudSelectItem Value="FilterComparison.IsBeforeOrOn">is before or on</MudSelectItem>
+            </MudSelect>
+            <div class="custom-container">
+            <!-- حقل إدخال قيمة الفلتر -->
+            @if (selectedComparison == FilterComparison.Between)
+            {
+                <MudTextField Label="Start value" @bind-Value="filterStartValue" Variant="Variant.Outlined" Type="number" />
+                <MudTextField Label="End value" @bind-Value="filterEndValue" Variant="Variant.Outlined" Type="number" />
+            }
+            else
+            {
+                <MudTextField Label="Filter value" @bind-Value="filterValue" Variant="Variant.Outlined" Type="number" />
+            }
+
+            <!-- قائمة اختيار وحدة الزمن -->
+            <MudSelect T="TimeUnit" @bind-Value="selectedUnit" Label="Unit of time" Variant="Variant.Outlined">
+                <MudSelectItem Value="TimeUnit.Hours">hours</MudSelectItem>
+                <MudSelectItem Value="TimeUnit.Days">days</MudSelectItem>
+                <MudSelectItem Value="TimeUnit.Months">months</MudSelectItem>
+            </MudSelect>
+            </div>
+            <!-- اختيار المنطقة الزمنية -->
+            <MudText Typo="Typo.h6">Time Zone</MudText>
+            <MudRadioGroup @bind-Value="selectedTimeZone">
+               @*  <MudRadio ButtonLabel="GMT+3" Value="GMT+3" />
+                <MudRadio ButtonLabel="UTC" Value="UTC" /> *@
+            </MudRadioGroup>
+            <MudStack Spacing="4">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ApplyFilter" DropShadow="false">
+                    Apply Filter
+                </MudButton>
+            </MudStack>
+            <!-- زر تطبيق الفلتر -->
+@*             <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ApplyFilter">Apply Filter</MudButton>
+ *@        </div>
+    </MudPaper>
+</MudMenu>
+
+@code {
+    // تعريف قيم المقارنة
+    public enum FilterComparison
+    {
+        InTheLast,
+        Equals,
+        Between,
+        IsAfterOrOn,
+        IsBeforeOrOn
+    }
+
+    // تعريف وحدات الزمن
+    public enum TimeUnit
+    {
+        Hours,
+        Days,
+        Months
+    }
+
+    private Pizza? selectedPizza;
+    private List<Pizza> pizzaOptions = new()
+    {
+        new Pizza() { Name = "Cardinale" },
+        new Pizza() { Name = "Diavolo" },
+        new Pizza() { Name = "Margarita" },
+        new Pizza() { Name = "Spinaci" }
+    };
+
+    private FilterComparison selectedComparison = FilterComparison.InTheLast; // قيمة افتراضية
+    private int filterValue = 0; // قيمة افتراضية
+    private int filterStartValue = 0; // قيمة بداية للفلتر "between"
+    private int filterEndValue = 0; // قيمة نهاية للفلتر "between"
+    private TimeUnit selectedUnit = TimeUnit.Hours; // قيمة افتراضية
+    private string selectedTimeZone = "UTC"; // قيمة افتراضية
+
+    private void ApplyFilter()
+    {
+        string filterMessage = $"Applied filter: Comparison: {selectedComparison}, Time Zone: {selectedTimeZone}";
+
+        // إضافة منطق لمعالجة أنواع الفلاتر
+        switch (selectedComparison)
+        {
+            case FilterComparison.InTheLast:
+                filterMessage += $" for the last {filterValue} {selectedUnit}";
+                break;
+            case FilterComparison.Equals:
+                filterMessage += $" equal to {filterValue}";
+                break;
+            case FilterComparison.Between:
+                filterMessage += $" between {filterStartValue} and {filterEndValue}";
+                break;
+            case FilterComparison.IsAfterOrOn:
+                filterMessage += $" on or after {filterValue} {selectedUnit}";
+                break;
+            case FilterComparison.IsBeforeOrOn:
+                filterMessage += $" before or on {filterValue} {selectedUnit}";
+                break;
+        }
+
+        // طباعة الفلتر المطبق في الكونسول
+        Console.WriteLine(filterMessage);
+    }
+
+    public class Pizza
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+}
+
+<MudPaper Class="pa-4">
+    <!-- عرض أيقونة واحدة -->
+    <MudIconButton Icon="@Icons.Material.Filled.MoreVert" @onmouseover="ShowAdditionalIcons" @onmouseout="HideAdditionalIcons" />
+
+    @if (showAdditionalIcons )
+    {
+        <!-- عرض الأيقونات الإضافية عند مرور الماوس -->
+        <MudIconButton Icon="@Icons.Material.Filled.Edit"  OnClick="EditAction" Class="ml-2" />
+        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteAction" Class="ml-2" />
+    }
+</MudPaper>
+
+@code {
+    private bool showAdditionalIcons = false;
+
+    private void ShowAdditionalIcons()
+    {
+        showAdditionalIcons = true; // إظهار الأيقونات الإضافية
+    }
+
+    private void HideAdditionalIcons()
+    {
+        showAdditionalIcons = false; // إخفاء الأيقونات الإضافية
+    }
+
+    private void EditAction()
+    {
+        // منطق لتحرير العنصر
+        Console.WriteLine("Edit action triggered.");
+    }
+
+    private void DeleteAction()
+    {
+        // منطق لحذف العنصر
+        Console.WriteLine("Delete action triggered.");
+    }
+}

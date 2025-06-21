@@ -1,0 +1,421 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models
+@using LAHJA.Data.UI.Models.SessionTokenAuth
+@using LAHJA.UI.Components.ProFile.USettings
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@using Microsoft.AspNetCore.Authorization
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject NavigationManager Navigation
+@inject MessageBox MessageBox
+@inject IManageLanguageService _manageLanguageService
+
+
+@attribute [Authorize]
+
+<TabelDashCard 
+    T="SessionTokenAuth" 
+    DataAndEventBuildTabel="dataAndEvent"
+    StateCounts="cardStates"
+    IsLoading="isLoading"
+    ActionTabels="groupAction"
+    BarTabel="TranslationsLST" />
+
+@code {
+
+    private bool isLoading = true;
+    private bool hasClickedRow = false;
+    private List<SessionTokenAuth> _dataBuild = new();
+    private DataAndEventBuildTabelCard<SessionTokenAuth> dataAndEvent = null;
+    private string lg = "ar";
+    private IDialogReference  dialog;
+    private List<CardStateCount<string>>? cardStates = null;
+    private GroupActionTabels groupAction = new GroupActionTabels();
+
+
+    [Parameter] public bool IsLoading { set => isLoading = value; get => isLoading; }
+    [Parameter] public List<SessionTokenAuth> DataBuild { set
+        {
+
+            if (value != null)
+            {
+                _dataBuild = value;
+                initializeData(_dataBuild);
+            }
+        }
+        get => _dataBuild; }
+    [Parameter] public EventCallback<SessionTokenAuth> SubmitCreate { set; get; }
+    [Parameter] public List<DataBuildServiceInfo> Services { set; get; } = new();
+    [Parameter] public EventCallback<string> SubmitValidate { set; get; }
+    [Parameter] public EventCallback<DataBuildServiceInfo> SubmitCreateSessionToken { set; get; }
+    [Parameter] public EventCallback<DataBuildSessionTokenAuth> SubmitDelete { set; get; }
+    [Parameter] public EventCallback<DataBuildSessionTokenAuth> SubmitCancel { set; get; }
+    [Parameter] public EventCallback<DataBuildSessionTokenAuth> SubmitResume { set; get; }
+    [Parameter] public EventCallback<DataBuildSessionTokenAuth> SubmitPause { set; get; }
+    [Parameter] public EventCallback<DataBuildSessionTokenAuth> SubmitActive { set; get; }
+
+
+
+    private void initializeData(List<SessionTokenAuth> _dataBuild)
+    {
+
+        dataAndEvent = new()
+            {
+                DataBuild = _dataBuild,
+                LabelColumns = ColomnsTrans[lg].Values.ToList(),
+
+                Events = new()
+                {
+                    OnRowClicked = EventCallback.Factory.Create<SessionTokenAuth>(this, OnRowClicked)
+                }
+            };
+        if (_dataBuild != null)
+        {
+            cardStates = new()
+                {
+
+                    new()
+                    {
+                        Value=_dataBuild.Where(x=>x.IsActive).Count().ToString(),
+                        Label=TranslationsLST[lg]["Active"]
+
+                    },
+
+                     new()
+                    {
+                         Value=_dataBuild.Where(x=>x.IsActive==false).Count().ToString(),
+                       Label=TranslationsLST[lg]["UnActive"]
+                    },   
+
+
+                };
+        }
+        groupAction.Actions = new()
+        {
+            new()
+            {
+                Icon=@Icons.Material.Filled.AddCircle
+                ,
+                Tag="create"
+                ,
+                Name=TranslationsLST[lg]["Create"]
+            },
+            // new()
+            // {
+            //     Icon=@Icons.Material.Filled.Delete
+            //     ,
+            //     IsMudChip=false,
+            //     Tag="delete"
+            // }
+        };
+        groupAction.ChipClicked = OnChipClicked;
+    }
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (_dataBuild==null)
+            initializeData(_dataBuild);
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            lg = await _manageLanguageService.GetLanguageAsync();
+            StateHasChanged();
+        }
+    }
+    private Task OnChipClicked(CardActionTabel action)
+    {
+        if (action.Tag == "delete")
+        {
+            Snackbar.Add("fgffg", Severity.Error);
+
+        }
+        else if (action.Tag == "create")
+        {
+            OpenDialog();
+        }
+
+        return Task.CompletedTask;
+
+    }
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.False, FullWidth = false };
+        var parameters = new DialogParameters<FormSessionToken>
+        {
+            { x =>x.Services,Services },
+            { x =>x.SubmitSaved,EventCallback.Factory.Create<DataBuildServiceInfo>(this, OnCreateNewSessionToken) },
+        };
+        dialog=DialogService.Show<FormSessionToken>("", parameters, options);
+    }
+
+    private async Task OnCreateNewSessionToken(DataBuildServiceInfo data)
+    {
+        if (SubmitCreateSessionToken.HasDelegate)
+        {
+            await SubmitCreateSessionToken.InvokeAsync(data);
+        }
+        dialog.Close();
+        refreshPage();
+    }
+    private async Task OnRowClicked(SessionTokenAuth data)
+    {
+        if (!hasClickedRow)
+        {
+            hasClickedRow = true;
+
+
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
+
+            var parameters = new DialogParameters<ViewRowDetails<SessionTokenAuth>>
+        {
+            { x =>x.Title,"Session Token" },
+            { x =>x.Lang,lg },
+            { x =>x.DataBuild,data },
+            { x =>x.LabelaTrans,ColomnsTrans[lg]},
+            { x =>x.HasSwitchButton,true},
+            { x =>x.PropertySwitchName,"IsActive"},
+            { x =>x.Events, new EventBuildViewRowDetails<SessionTokenAuth>(){
+                    DeleteClicked=EventCallback.Factory.Create<SessionTokenAuth>(this, OnDeleteClicked),
+                    SwitchedActiveStatus=EventCallback.Factory.Create<SessionTokenAuth>(this, OnSwitchActiveStatus),
+                    ActiveClicked=EventCallback.Factory.Create<SessionTokenAuth>(this, OnActiveClicked),
+                    ValidateClicked=EventCallback.Factory.Create<SessionTokenAuth>(this, OnValidateClicked),
+                }
+            },
+
+        };
+
+            dialog = DialogService.Show<ViewRowDetails<SessionTokenAuth>>("", parameters, options);
+            try
+            {
+                ///TODO
+                var result = await dialog.Result;
+                hasClickedRow = false;
+            }
+            catch (Exception)
+            {
+                hasClickedRow = false;
+            }
+        }
+
+
+    }
+
+    private async Task OnSwitchActiveStatus(SessionTokenAuth value)
+    {
+        var title = GetTranslation("title");
+        if (value.IsActive)
+        {
+            if (await MessageBox.ShowAsync(title, GetTranslation("ResumeSessionTokenMsg")))
+            {
+
+                if (SubmitResume.HasDelegate)
+                {
+             
+
+                    await SubmitResume.InvokeAsync(new DataBuildSessionTokenAuth{Id=value.Id});
+                    dialog?.Close();
+                    await SwitchTokenStatus(value);
+
+                }
+            }
+        }
+        else
+        {
+            if (await MessageBox.ShowAsync(title, GetTranslation("PauseSessionTokenMsg")))
+            {
+
+                if (SubmitPause.HasDelegate)
+                {
+
+
+                    await SubmitPause.InvokeAsync(new DataBuildSessionTokenAuth { Id = value.Id });              
+                    dialog?.Close();
+                    await SwitchTokenStatus(value);
+
+
+                }
+            }
+        }
+    } 
+    private async Task SwitchTokenStatus(SessionTokenAuth value)
+    {
+
+        var tokenIndex = _dataBuild.FindIndex(x => x.Id == value.Id);
+        if (tokenIndex != -1)
+        {
+            _dataBuild[tokenIndex].IsActive = value.IsActive;
+            _dataBuild[tokenIndex].Status = value.IsActive;
+        }
+        initializeData(_dataBuild);
+        StateHasChanged();
+
+      
+    }
+    private async Task OnDeleteClicked(SessionTokenAuth value)
+    {
+        if (await MessageBox.ShowAsync(GetTranslation("title"), GetTranslation("RemoveSessionTokenMsg"),lg))
+        {
+            if (SubmitDelete.HasDelegate)
+            {
+                await SubmitDelete.InvokeAsync(new DataBuildSessionTokenAuth { Id = value.Id });
+               dialog?.Close();
+                _dataBuild.Remove(value);
+                initializeData(_dataBuild);
+                StateHasChanged();
+
+                // refreshPage();
+
+            }
+        }
+    }
+    private async Task OnActiveClicked(SessionTokenAuth value)
+    {
+        if (await MessageBox.ShowAsync(GetTranslation("title"), GetTranslation("ActiveSessionTokenMsg"), lg))
+        {
+            if (SubmitActive.HasDelegate)
+            {
+                await SubmitActive.InvokeAsync(new DataBuildSessionTokenAuth { Id = value.Id });
+                var tokenIndex = DataBuild.FindIndex(x => x.Id == value.Id);
+                if (tokenIndex != -1)
+                {
+                    DataBuild[tokenIndex].IsActive = value.IsActive;
+                    DataBuild[tokenIndex].Status = value.Status;
+                }
+
+                StateHasChanged();
+                dialog?.Close();
+                // refreshPage();
+
+            }
+        }
+    }
+
+    private async Task OnValidateClicked(SessionTokenAuth dataBuild)
+    {
+
+        if (SubmitValidate.HasDelegate)
+        {
+            await SubmitValidate.InvokeAsync(dataBuild.SessionToken);
+        }
+
+        dialog?.Close();
+    }
+    private void refreshPage()
+    {
+        
+         Navigation.NavigateTo(Navigation.Uri, true);
+    }
+
+     public string GetTranslation(string Key)
+    {
+        if (TranslationData.ContainsKey(lg) && TranslationData[lg].ContainsKey(Key))
+        {
+            return TranslationData[lg][Key];
+        }
+        return Key;
+    }
+
+
+    private static readonly Dictionary<string, Dictionary<string, string>> ColomnsTrans = new()
+        {
+            ["en"] = new()
+            {
+                 { "Id", "Id" },
+                // { "SpaceId", "SpaceId" },
+                { "Subscription", "Subscription" },
+                { "SessionToken", "SessionToken" },
+                { "ApiEndPoint", "ApiEndPoint" },
+                { "Status", "Status" },
+                { "AuthorizationType", "AuthorizationType" },
+                { "StartTime", "StartTime" },
+                { "EndTime", "EndTime" },
+                { "CreationDate", "CreationDate" },
+                { "IsActive", "IsActive" },
+                { "IpAddress", "IpAddress" },
+                { "DeviceInfo", "DeviceInfo" },
+                { "ServiceId", "ServiceId" },
+                { "ModelGatewayId", "ModelGatewayId" },
+                { "Spaces", "Spaces" }
+            },
+            ["ar"] = new Dictionary<string, string>(){
+
+                { "Id", "المعرّف" },
+                // { "SpaceId", "معرف الـ Space" },
+                { "Subscription", "نوع الاشتراك" },
+                { "SessionToken", "رمز الوصول" },
+                { "ApiEndPoint", "بوابة API" },
+                { "Status", "الحالة" },
+                { "AuthorizationType", "نوع المصادقة" },
+                { "StartTime", "وقت البدء" },
+                { "EndTime", "وقت الانتهاء" },
+                { "CreationDate", "تاريخ الإنشاء" },
+                { "IsActive", "نشط" },
+                { "IpAddress", "عنوان IP" },
+                { "DeviceInfo", "معلومات الجهاز" },
+                { "ServiceId", "معرف الخدمة" },
+                { "ModelGatewayId", "معرف بوابة النموذج" },
+                { "Spaces", "المساحات" }
+            }
+        };
+
+
+    private static readonly Dictionary<string, Dictionary<string, string>> TranslationsLST = new()
+        {
+            ["en"] = new()
+            {
+                ["Text1"] = "create your Tokens",
+                ["Text2"] = "AI لهجة",
+                ["Description"] = "LAHJA platform provides a smart way to communicate with AI in your own dialect.",
+                ["ButtonLink"] = "Create Token",
+                ["Active"] = "Tokens Active",
+                ["UnActive"] = "Tokens UnActive",
+                ["Create"] = "Create"
+
+
+
+            },
+            ["ar"] = new()
+            {
+                ["Text1"] = "انشى رموز الوصول  ",
+                ["Text2"] = "لهجة AI",
+                ["Description"] = "توفر  منصة لهجة  طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.",
+                ["ButtonLink"] = "انشاء رمز الوصول ",
+                ["Active"] = "رموز الوصول النشطة",
+                ["UnActive"] = "رموز الوصول غير النشطة",
+                ["Create"] = "انشاء"
+            }
+        };
+
+    public static readonly Dictionary<string, Dictionary<string, string>> TranslationData =new(){
+            {
+                "en", new Dictionary<string, string>
+                {
+             
+                    { "title", "Subscription Settings" },
+                    { "PauseSessionTokenMsg", "The current SessionToken will be temporarily suspended. Do you agree?" },
+                    { "ResumeSessionTokenMsg", "The current SessionToken will be reactivated. Do you agree?" },
+                    { "RemoveSessionTokenMsg", "The current SessionToken will be deleted. Do you agree? You will not be able to use it again !!" },
+                    
+                }
+            },
+            {
+               "ar", new Dictionary<string, string>
+                {
+
+                    { "title", "اعدادات الاشتراك" },
+                    { "PauseSessionTokenMsg", "سيتم إيقاف رمز الجلسة الحالي مؤقتاً هل انت موافق على ذلك ؟" },
+                    { "ResumeSessionTokenMsg", " سيتم إعادة تفعيل رمز الجلسة الحالي هل انت موافق على ذلك ؟" },
+                    { "RemoveSessionTokenMsg", " سيتم حذف  رمز الجلسة الحالي هل انت موافق على ذلك ؟ لن تتمكن من استخدامه مره اخرى." },
+                  
+                }
+            }
+     };
+
+  
+}

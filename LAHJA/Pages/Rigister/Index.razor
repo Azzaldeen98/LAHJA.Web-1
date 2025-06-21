@@ -1,0 +1,66 @@
+﻿@page "/Rigist"
+
+@using LAHAJ.Loading
+@using LAHJA.UI.Templates.Auth
+@using LAHJA.UI.Components
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+
+@inherits BaseInitializationComponent
+
+
+<div style="" class="auth-them">
+
+
+    @if (!_isLoaded)
+    {
+
+        if (isAuth)
+        {
+            <Loading IsLoading="true" />
+        }
+        else
+        {
+            <TemplateAuth IsToLoginMode="false" />
+        }
+
+
+    }
+    else
+    {
+        <Loading IsLoading="true" />
+      
+
+    }
+
+
+  
+
+</div>
+
+@code{
+    // <LAHJA.Components.T.Rigister />
+
+    private bool _isLoaded = true;
+    private bool isAuth = false;
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isAuth = await getAuthAsync();
+            StateHasChanged();
+            if (isAuth)
+            {
+                Navigation.NavigateTo("/");
+            }
+            _isLoaded = false;
+            StateHasChanged();
+
+        }
+        
+        
+   
+
+    }
+}

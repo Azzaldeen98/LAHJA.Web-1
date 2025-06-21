@@ -1,0 +1,33 @@
+<MudDialog>
+
+    <TitleContent>
+        Play Sound
+    </TitleContent>
+    <DialogContent>
+
+
+        <audio controls>
+            <source src="@Url" type="audio/ogg">
+            <source src="@Url" type="audio/mpeg">
+
+
+        </audio>
+    </DialogContent>
+    <DialogActions>
+
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+
+</MudDialog>
+@code
+{
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Url { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Cancel() => MudDialog.Cancel();
+}

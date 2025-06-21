@@ -1,0 +1,98 @@
+﻿@page "/email-confirmation"
+
+
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Templates.Auth
+@using LAHJA.Helpers.Enum
+@using MudBlazor
+@using Microsoft.AspNetCore.Authorization
+
+@inject NavigationManager Navigation
+@inject TemplateAuth TemplateAuth
+@attribute [AllowAnonymous]
+
+
+<MudCard Class="w60 mx-auto my-5 p-6 rounded-lg shadow-lg text-center  dark:bg-gray-900">
+    <MudCardContent>
+        <MudIcon Icon="@Icons.Material.Filled.MarkEmailRead" Color="Color.Primary"  Class="mb-4" />
+        <MudText Typo="Typo.h5" Class="font-bold">@Title</MudText>
+        <MudText Typo="Typo.body1" Class="text-gray-600  dark:text-gray-300 mt-4">@Message</MudText>
+
+        <MudButton Variant="Variant.Text" Color="Color.Primary" Class="mt-6" OnClick="ResendEmail" Disabled="@isResending">
+            @if (isResending)
+            {
+                <MudProgressCircular  Class="mr-2" />
+            }
+            إعادة إرسال الرابط
+        </MudButton>
+    </MudCardContent>
+</MudCard>
+
+@code {
+
+    [Parameter] public string Email { get; set; }
+    [Parameter] public string Url { get; set; }
+    [Parameter] public string Method { get; set; }
+
+
+    [Parameter] public string Title { get; set; } = "تم إرسال رابط التحقق";
+    [Parameter] public string Message { get; set; } = "لقد أرسلنا رابط التحقق إلى بريدك الإلكتروني. يرجى التحقق من صندوق البريد الخاص بك. إذا لم تستلم البريد، يمكنك إعادة إرساله.";
+    [Parameter] public EventCallback OnResend { get; set; }
+
+    private bool isResending = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        var uri = new Uri(Navigation.Uri);
+        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        if (!string.IsNullOrEmpty(queryParams["Email"]))
+        {
+            Email = queryParams["Email"];
+        }
+        if (!string.IsNullOrEmpty(queryParams["Url"]))
+        {
+            Url = queryParams["Url"];
+        }
+
+        if (!string.IsNullOrEmpty(queryParams["Method"]))
+        {
+            Method = queryParams["Method"];
+        }
+
+        isResending = true;
+        await Task.Delay(10000);
+        isResending = false;
+    }
+
+    private async Task ResendEmail()
+    {
+        isResending = true;
+        
+
+        if (OnResend.HasDelegate)
+        {
+            await OnResend.InvokeAsync();
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(Method))
+            {
+                var data = new DataBuildAuthBase { Email = Email };
+
+                if (Method == AuthMethods.ConfirmEmail.ToString())
+                {
+                    await TemplateAuth.ReSendConfirmationEmail(data);
+                }
+                else if (Method == AuthMethods.ForgetPassword.ToString())
+                {
+                    await TemplateAuth.ReForgetPassword(data);
+                }
+            }
+        }
+
+        await Task.Delay(10000);
+        isResending = false;
+
+    }
+}

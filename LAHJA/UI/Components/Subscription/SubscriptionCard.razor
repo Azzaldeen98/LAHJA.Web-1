@@ -1,0 +1,18 @@
+﻿@using Domain.Entities.Subscriptions.Response
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.UI.Components.ProFile.USettings
+@*  *@
+
+    @if (DataBuild != null)
+    {
+  
+        <SubscriptionDetails DataBuild="DataBuild" />
+    }
+
+
+@code {
+
+
+    [Parameter] public DataBuildUserSubscriptionInfo DataBuild { get; set; }
+}

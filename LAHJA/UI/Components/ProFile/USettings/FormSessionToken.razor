@@ -1,0 +1,251 @@
+﻿@using Domain.Entities.AuthorizationSession
+@using Domain.ShareData
+
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.Data.UI.Models
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@using System.Text.RegularExpressions
+
+@inject MessageBox messageBox
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+<MudDialog Class="w40 p-3" Style="max-width: 90%;" >
+
+   <DialogContent>
+
+    <MudCard Class="p-3 m-3">
+
+                <MudCardHeader Class="d-flex justify-content-around align-items-center">
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6" Align="Align.Center">@GetTranslation("Title")</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                  @*       <MudTooltip Text="@ColumnsTranslations.GetTranslation("SubscriptionSettings",lg)">
+                            <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="OnSubmitCheckoutManage" Color="Color.Default" />
+                        </MudTooltip> *@
+                    </CardHeaderActions>
+                </MudCardHeader>
+      
+        <MudForm Class="mt-5 py-3" Model="@selectedService" @ref="form" IsValid="true">
+
+
+            <MudGrid Class="justify-space-between">
+
+                <MudItem xs="12">
+                    <MudSelect ReadOnly="@isReadOnly" T="DataBuildServiceInfo" @bind-Value="selectedService" Label="@GetTranslation("ChoseService")" Required>
+                        @foreach (var item in services)
+                        {
+                            <MudSelectItem Value="@item">@item.Name</MudSelectItem>
+                        }
+                   
+                
+                    </MudSelect>
+                </MudItem>
+
+
+
+
+                    <MudItem xs="12" Class="mt-5 d-flex justify-content-center">
+
+                        <MudButton Class="w60 m-auto" Color="@AppColors.BASE_COLOR_ENUM" Variant="Variant.Filled" OnClick="@OnSaveAdd">
+                            @GetTranslation("Save")
+                        </MudButton>
+                 
+                </MudItem>
+
+            </MudGrid>
+        </MudForm>
+    </MudCard>
+
+</DialogContent>
+<DialogActions>
+ 
+</DialogActions>
+</MudDialog>
+
+
+
+
+@code
+{
+    private string lg = "ar";
+    private string serviceId;
+
+    private bool isReadOnly = false;
+    private bool _isUpdate = false;
+    private  List<DataBuildServiceInfo> services=new();
+    private AuthorizationWebRequest model = new();
+    private DataBuildServiceInfo selectedService ;
+
+
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public List<DataBuildServiceInfo> Services { get => services; set => services = value; }
+
+    [Parameter]
+    public bool IsUpdate
+    {
+        get => _isUpdate; set
+        {
+            _isUpdate = value;
+        }
+    }
+    [Parameter] public EventCallback<DataBuildServiceInfo> SubmitSaved { get; set; }
+    [Parameter] public EventCallback<DataBuildServiceInfo> SubmitDeleted { get; set; }
+
+    [Parameter]
+    public bool IsShowDetails
+    {
+        get => isReadOnly; set
+        {
+            isReadOnly = value;
+        }
+    }
+
+
+
+
+    private MudForm form;
+
+
+
+ 
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            lg = await _manageLanguageService.GetLanguageAsync();
+           await InvokeAsync(StateHasChanged);
+        }
+
+
+    }
+
+
+
+    private void OnEditCard()
+    {
+
+        isReadOnly = false;
+        _isUpdate = true;
+        StateHasChanged();
+
+    }
+    private void OnShowDetails()
+    {
+
+        isReadOnly = true;
+        _isUpdate = false;
+        StateHasChanged();
+
+    }
+
+
+    private async Task OnSaveUpdate()
+    {
+
+        // await form.Validate();
+
+        // if (form.IsValid)
+        // {
+
+      
+        //     if (OnEdit.HasDelegate && model != null)
+        //     {
+        //         await OnEdit.InvokeAsync(newCard);
+
+        //     }
+        //     // MudDialog.Close();
+        // }
+    }
+    private async Task OnSaveAdd()
+    {
+
+
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            if (SubmitSaved.HasDelegate && selectedService != null)
+            {
+                await SubmitSaved.InvokeAsync(selectedService);
+
+            }
+
+           
+        }
+
+
+    }
+    // private async Task OnDeleteCard()
+    // {
+
+
+    //     if (await messageBox.ShowAsync(GetTranslation("Title"),
+    //     GetTranslation("DeletedCreditCardMsg"), lg))
+    //     {
+    //         if (SubmitDeleted.HasDelegate)
+    //         {
+    //             await SubmitDeleted.InvokeAsync(newCard);
+    //             refreshPage();
+    //         }
+    //         MudDialog.Close();
+    //     }
+    // }
+
+
+    private void ChangeLanguage(string language)
+    {
+
+        lg = language;
+        StateHasChanged();
+    }
+
+    private Dictionary<string, string> TransEn = new Dictionary<string, string>()
+    {
+        { "Title", "Create New Session Token" },
+        { "Save", "Create" },
+        { "ChoseService", "Chose the service" },
+    };
+
+    private Dictionary<string, string> TransAr = new Dictionary<string, string>()
+    {
+        { "Title", " إنشاء رمز جلسة جديد" },
+        { "Save", "إنشاء" },
+        { "ChoseService", "اختر خدمة معينه" },
+
+    };
+
+
+    private string GetTranslation(string key)
+    {
+        if (lg == "ar")
+        {
+            return TransAr.ContainsKey(key) ? TransAr[key] : key;
+        }
+        else
+        {
+            return TransEn.ContainsKey(key) ? TransEn[key] : key;
+        }
+    }
+
+
+    // private void onCancel()
+    // {
+    //     MudDialog.Close(DialogResult.Cancel());
+
+    // }
+
+
+    // private void onConfirm()
+    // {
+    //     MudDialog.Close(DialogResult.Ok(true));
+    // }
+}

@@ -1,0 +1,33 @@
+﻿@using MudBlazor
+@inject IDialogService DialogService
+
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@ContentText</MudText>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="@OnConfirmClick">@ButtonTrueText</MudButton>
+        <MudButton Color="Color.Default" Variant="Variant.Text" OnClick="@OnCancelClick">@ButtonFalseText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string ContentText { get; set; } = "هل أنت متأكد؟";
+    [Parameter] public string ButtonTrueText { get; set; } = "نعم";
+    [Parameter] public string ButtonFalseText { get; set; } = "لا";
+    [Parameter] public Color Color { get; set; } = Color.Warning;
+
+    private void OnConfirmClick()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void OnCancelClick()
+    {
+        MudDialog.Cancel();
+    }
+}

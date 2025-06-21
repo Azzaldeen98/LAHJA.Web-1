@@ -1,0 +1,46 @@
+﻿@using System.Text
+@inject IJSRuntime JS
+
+@if (Id != null)
+{
+    <MudButton Color="@MColor" Class="text-gray text-mono" Style="margin-top: -1px;transform: translateY(1.1px);font-size: 11px; margin-left: 4px;" OnClick="HandleCopy">
+       
+
+            @getsubId(Id,NumCharShow)
+       
+       
+
+       @if(Icon!=null){
+     <MudIcon style="font-size: 16px; margin-left: 10px;" Icon="@Icon" class="mr-3"></MudIcon>
+       }
+ </MudButton>
+}
+
+@code{
+    [Parameter] public string? Id{ set; get; }
+    [Parameter] public Color MColor { set; get; } = AppColors.BASE_COLOR_ENUM;
+    [Parameter] public string? Icon { set; get; } = Icons.Material.Outlined.ContentCopy;
+    [Parameter] public int NumCharShow { set; get; } =6;
+
+    [Parameter] public bool IsCopy { set; get; } = true;
+
+
+    private async void HandleCopy()
+    {
+        if (IsCopy)
+        {
+            await JS.InvokeVoidAsync("copyToClipboard", Id);
+
+        }
+    }
+
+    string  getsubId(string id,int num)
+    {
+
+        if (id.Length > num)
+        {
+            return id.Substring(0, num)+"***";
+        }
+        return id;
+    }
+}

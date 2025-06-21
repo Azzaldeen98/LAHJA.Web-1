@@ -1,0 +1,45 @@
+﻿
+@using Microsoft.AspNetCore.Components
+
+
+    <div class="lg:col-span-2">
+        <div class="mb-2.5 flex items-baseline max-sm:text-sm sm:mb-3">
+            <span class="flex items-center gap-1.5 whitespace-nowrap leading-none text-gray-700 sm:gap-2.5">
+                Private Repositories Storage
+                <a href="/docs/hub/storage-limits" target="_blank"
+                   class="rounded-full bg-gray-100 px-1.5 text-xs text-gray-600 hover:bg-gray-200/70 hover:text-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700/60 dark:hover:text-gray-200 sm:px-2 sm:py-0.5">
+                    View doc
+                </a>
+            </span>
+            <span class="ml-auto text-xs text-gray-400">
+                @($"{UsedStorage} Bytes/{TotalStorage} GB")
+                <div class="relative inline-block transform translate-y-0.5">
+                    <svg class="text-xs ml-0.5" xmlns="http://www.w3.org/2000/svg"
+                         xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false"
+                         role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet"
+                         viewBox="0 0 32 32">
+                        <path d="M17 22v-8h-4v2h2v6h-3v2h8v-2h-3z" fill="currentColor"></path>
+                        <path d="M16 8a1.5 1.5 0 1 0 1.5 1.5A1.5 1.5 0 0 0 16 8z" fill="currentColor"></path>
+                        <path d="M16 30a14 14 0 1 1 14-14a14 14 0 0 1-14 14zm0-26a12 12 0 1 0 12 12A12 12 0 0 0 16 4z" fill="currentColor"></path>
+                    </svg>
+                </div>
+            </span>
+        </div>
+    <MudProgressLinear Color="Color.Success" Value="50" Class="my-7" />
+        @* <div class="relative flex h-[8px] items-center rounded-full bg-gray-200/80 ring-1 ring-gray-200/40 dark:bg-gray-800 dark:ring-gray-800">
+            <div class="rounded-x-full group h-[8px] transition-all duration-100 ease-in" style="width: @(UsedStoragePercentage)%">
+                <div class="absolute z-10 transform rounded border bg-black p-2 font-normal leading-tight text-white shadow transition-opacity dark:bg-gray-800 top-full translate-y-2 border-b-0 left-1/2 -translate-x-1/2 text-xs w-44 hidden group-hover:block">
+                    <div class="absolute h-0 w-0 transform border-4 border-black border-x-transparent dark:border-y-gray-800 bottom-full border-t-0 left-1/2 -translate-x-1/2"></div>
+                    Used storage: @($"{UsedStorage} Bytes")
+                </div>
+            </div>
+        </div> *@
+    </div>
+
+
+@code {
+    // البيانات الخاصة بالمخزن
+    private long UsedStorage { get; set; } = 0; // استخدم قيمة أولية حسب الحاجة
+    private long TotalStorage { get; set; } = 10L * 14L * 14L * 124L;
+    private double UsedStoragePercentage => (double)UsedStorage / TotalStorage * 100;
+}

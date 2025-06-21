@@ -1,0 +1,58 @@
+﻿@using LAHJA.Data.UI.Billing
+@if (DataBuild != null)
+{
+
+
+    <MudCard>
+        <MudCardContent>
+
+
+
+            <MudText Typo="Typo.body2" Class="mb-4">@DataBuild.Name</MudText>
+            <MudText Typo="Typo.body2" Class="mb-4">@DataBuild.Descrption</MudText>
+
+
+        </MudCardContent>
+    </MudCard>
+
+    
+}
+
+else
+{
+   
+}
+
+
+           
+
+   
+
+
+ 
+
+
+
+@code {
+    [Parameter]
+
+    public LastPaymentt DataBuild { get; set; } = null;
+
+    LastPaymentt data = null;
+
+    protected override async void OnInitialized()
+
+    {
+
+        data = new LastPaymentt()
+            {
+                Name = "LastPayment", Descrption = "Not Found Plan Card"
+                
+                
+            };
+
+        DataBuild = data;
+
+    }
+
+}

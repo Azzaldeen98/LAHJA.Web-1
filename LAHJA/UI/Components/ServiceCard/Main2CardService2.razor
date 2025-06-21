@@ -1,0 +1,772 @@
+@using System.Threading
+@using Domain.ShareData
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Pages.FeatureServices
+@using LAHJA.Them
+@using LAHJA.UI.Components.FeatureServices
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject NavigationManager Navigation;
+ 
+@page "/ModelServiceVitsd2"
+@page "/ModelServiceVitsd2/{TypeMode}"
+
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+
+<style>
+
+.mud-nav-group
+{
+    margin-bottom: 10px; 
+}
+
+    .small-font {
+        font-size: 12px!important;
+    }
+
+    .custom-stack
+    {
+    gap: 8px;
+   
+         
+    }
+
+ 
+
+.mud-nav-group .mud-checkbox {
+    margin: 2px 0;  
+}
+
+.mud-button {
+    font-size: 12px !important;
+}
+
+.mud-select-item {
+    font-size: 12px;
+}
+
+    .border_1{
+    border-radius: 12px !important;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;
+    margin: 20px auto;
+    overflow: hidden !important;
+    direction: rtl;
+         max-width: 29% !important;
+     margin-right: -1% !important; 
+    }
+/* 
+         .border_1:hover {
+         transform: scale(1.05) !important;
+         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2) !important;
+ */    }
+</style>
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge"  Style="padding:4%" >
+
+
+ 
+
+    <MudGrid Justify="Justify.SpaceBetween"  >
+ 
+
+
+        <MudItem xs="12" md="4" Style=" padding:2% " Class="filterServiceDesktop border_1 ">
+
+            <MudStack Spacing="2" Class="custom-stack" >
+                <MudTextField @bind-Value="searchString1" Placeholder="Search" Variant="Variant.Text" AdornmentIcon="@Icons.Material.Filled.Search" Adornment="Adornment.Start" Class="mt-0" IconSize="Size.Small"></MudTextField>
+
+
+                <MudSelect @bind-Value="@selectedType" Variant="Variant.Outlined" Label="@(TypeLanguage ? "Type" : "«·‰Ê⁄ ")" Dense="true" Style="width:100px; font-size:10px;">
+                    @foreach (var property in propertyValues["Type"])
+                    {
+                        <MudSelectItem Value="@property" Style="font-size:10px;"> @property</MudSelectItem>
+                       
+                    }
+                       
+                    
+                </MudSelect>
+
+
+                <MudSelect @bind-Value="@selectedLanguage" Variant="Variant.Outlined" Label="@(TypeLanguage ? "Language" : "«··€… ")" Dense="true" Style="width:100px; font-size:10px;">
+                    @foreach (var property in propertyValues["Language"])
+                    {
+                        <MudSelectItem Value="@property" Style="font-size:12px;"> @property</MudSelectItem>
+                       
+                    }
+                </MudSelect>
+
+                <MudSelect @bind-Value="@selectedDialect" Variant="Variant.Outlined" Label="@(TypeLanguage ? "Dialect" : "«··ÂÃ… ")" Dense="true" Style="width:100px; font-size:10px;">
+                    @foreach (var property in propertyValues["Dialect"])
+                    {
+                        <MudSelectItem Value="@property" Style="font-size:12px;"> @property</MudSelectItem>
+                       
+                    }
+                </MudSelect>
+
+                
+                </MudStack>
+            <MudDivider Class="my-6" />
+                <MudStack Spacing="2" Class="custom-stack" Style="padding-top:5px!important" >
+
+
+             
+               
+                <MudNavGroup Title="@(TypeLanguage ? "Voice" : "«·’Ê  ")" @bind-Value="@selectedVoice" Class="mud-nav-group small-font" Expanded="true">
+                    @foreach (var property in propertyValues["Voice"])
+                    {
+                        <MudCheckBox T="string"
+                                     Color="@AppColors.BASE_COLOR_ENUM" Value="@property">
+                            @property
+                        </MudCheckBox>
+                    }
+                </MudNavGroup>
+
+                <MudNavGroup Title="@(TypeLanguage ? "Quality" : "«·ÃÊœ… ")" @bind-Value="@selectedQuality" Class="mud-nav-group small-font" Expanded="true">
+                    @foreach (var property in propertyValues["Quality"])
+                    {
+                        <MudCheckBox T="string" Value="@property"
+                                     Color="@AppColors.BASE_COLOR_ENUM">
+                            @property
+                        </MudCheckBox>
+                    }
+                </MudNavGroup>
+
+              
+                <MudNavGroup Title="@(TypeLanguage ? "Speed" : "«·”—⁄… ")" @bind-Value="@selectedSpeed" Class="mud-nav-group small-font" Expanded="true">
+                    @foreach (var property in propertyValues["Speed"])
+                    {
+                        <MudCheckBox T="string"
+                                     Color="@AppColors.BASE_COLOR_ENUM" Value="@property">
+                            @property
+                        </MudCheckBox>
+                    }
+                </MudNavGroup>
+
+                 
+                <MudButton OnClick="ApplyFilter"
+                           Variant="Variant.Outlined"
+                           Color="@AppColors.BASE_COLOR_ENUM"
+                           Style="font-size:12px;" Dense="true" FullWidth="true">
+                    @(TypeLanguage ? "Apply Filter" : " ÿ»Ìﬁ")
+                </MudButton>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="12" md="8" Style=" padding:2%">
+
+
+
+            <MudList T="string" Dense="true" Class="d-flex flex-grow-1 py-0  " Style="font-size:10px!important ;box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1) !important;overflow: hidden !important;height: 6%;padding: 2%;">
+@* 
+                        <MudIconButton class="text-light" Icon="@Icons.Material.Filled.Menu" Size="Size.Medium" OnClick="ToggleDrawer"
+                                       Color="@AppColors.BASE_COLOR_ENUM" />
+                        <MudButton OnClick="OpenDialog" Variant="Variant.Text" Color="@AppColors.BASE_COLOR_ENUM" Size="Size.Small">
+                            @(TypeLanguage ? "Workout" : " Ã—Ì»")
+                        </MudButton> *@
+
+
+                
+
+
+                <MudLink Href="#" Style="color:black!important ;padding:1%">  @(TypeLanguage ? "Home" : "«·—∆Ì”Ì…") </MudLink>
+               
+                        <MudSpacer />
+              @*   <MudButton OnClick="OpenDialog" Variant="Variant.Text" Color="@AppColors.BASE_COLOR_ENUM" Size="Size.Small">
+                    @(TypeLanguage ? "Workout" : " Ã—Ì»")
+                </MudButton> *@
+               
+                <MudButton Style="width:12% !important; height:50%;margin-top: 2%;"
+                           Target="_blank"
+                           Variant="Variant.Outlined"
+                           Color="Color.Tertiary"
+                           OnClick="OpenDialog">
+                    @(TypeLanguage ? "Workout" : " Ã—Ì»")
+                </MudButton>
+              @*   <MudButton OnClick="OpenDialog" Variant="Variant.Filled" Size="Size.Small" Color="Color.Primary">
+                    @(TypeLanguage ? "Workout" : " Ã—Ì»")
+                </MudButton> *@
+
+                    </MudList>
+            <MudDivider Class="my-8" />
+
+            <MudTable Items="@DataBuild" @bind-SelectedItems="selectedItems" Dense="true" Hover=" true" Bordered="false" Striped="true" Filter="new Func<ModelProperties,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1" RowsPerPage="3"
+                      Style="font-size:10px!important;text-align:right">
+             
+                <RowTemplate>
+                    <MudCard>
+
+                        <MudCardHeader>
+
+
+
+
+                            <CardHeaderAvatar>
+
+
+
+
+
+
+
+
+                                <MudAvatar Size="Size.Small">
+                                    <MudImage Src="@context.ModelImageUrl" Alt="An image of the best dog ever!"></MudImage>
+                                </MudAvatar>
+                            </CardHeaderAvatar>
+
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.body2" Style="color:#000000;">@context.Author</MudText>
+                                <MudText Typo="Typo.body2" Style="font-size: 12px !important;"  >@context.Description</MudText>
+                                
+                            </CardHeaderContent>
+
+                            <CardHeaderActions>
+                                @*       <MudIconButton Color="Color.Default">
+                                <MudText Typo="Typo.body2">
+                                <MudIcon Icon="@Icons.Material.Filled.InstallMobile"
+                                Size="Size.Small"></MudIcon>
+
+
+                                4
+                                </MudText>
+                                </MudIconButton> *@
+
+
+                                <MudIconButton Color="Color.Default">
+                                    <MudCheckBox @bind-Value="@context.IsSelected" Color="@AppColors.BASE_COLOR_ENUM"></MudCheckBox>
+
+                                </MudIconButton>
+
+
+                                <MudIconButton>
+                                    <MudButton Style="font-size:8px!important" Color="@AppColors.BASE_COLOR_ENUM" Variant="Variant.Outlined" OnClick="OnclickCard">„ «»⁄Â </MudButton>
+
+                                </MudIconButton>
+                            </CardHeaderActions>
+                        </MudCardHeader>
+                        <MudCardContent>
+
+
+
+
+                        </MudCardContent>
+
+                    </MudCard>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+             
+                <MudButton Color="@AppColors.BASE_COLOR_ENUM" Class="filterServicesMobile"
+                Variant="Variant.Filled"
+                OnClick="OpenFiterDialog"
+                Style="width: 100%; font-size:14px;">
+                    @(TypeLanguage ? "Apply Filter" : " ÿ»Ìﬁ")
+                   
+
+
+                </MudButton>
+           
+          <MudDivider Class="my-4" />
+           
+             
+              @*   <FeatureModelLahjaModel TypeLanguage="@TypeLanguage" /> *@
+             @*    <ProductLahjaModel TypeLanguage="@TypeLanguage" />
+               *@
+                <StartStepLahjaModel TypeLanguage="@TypeLanguage" />
+           
+
+
+           </MudItem>
+
+
+
+    </MudGrid>
+
+    
+   
+  </MudContainer>
+
+@code
+{
+    private string _iconfill = "#fff";
+    private bool _wheel;
+    private bool _showHour = true;
+    private bool _showMinute = true;
+    private bool _showSecond = true;
+    private bool _showMillisecond = false;
+    private string _delimiter = ":";
+    private Typo _typo = Typo.h6;
+    private Color _color;
+    private TimeSpan _value = new TimeSpan(0, 0, 0);
+    private bool isMobile = false;
+    private string selectedType;
+    private string selectedFramework;
+    private string selectedVoice;
+    private string selectedLanguage;
+    private string selectedDialect;
+    private string selectedQuality;
+    private string selectedAccuracy;
+    private string selectedSpeed;
+    private int _currentPage = 1;
+    private int _itemsPerPage = 3;
+    private int _totalPages = 0;
+    private string Title;
+    private string searchQuery = string.Empty;
+    private bool _open = false;
+    private Dictionary<string, List<string>> propertyValues = null;
+    private string selectedStore;
+    private string selectedLibrary;
+    private string selectedCommunity;
+    private Color SelectedColor { get; set; } = Color.Default;
+    private List<ModelProperties> _pagedData = new();
+    private string value1;
+    private List<ModelProperties> DataBuild1 = null;
+
+
+    [Parameter] public string TypeMode { get; set; } = " ";
+
+    [Parameter] public bool TypeLanguage { get; set; } = true;
+
+    [Parameter] public List<ModelProperties> DataBuild { get; set; } = null;
+
+
+
+    private void OpenDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+        var x = DataBuild.Where((x => x.IsSelected == true)).ToList();
+        var parameters = new DialogParameters<DialogContent>
+        {
+
+            { x =>x.DataBuild1,DataBuild1 },
+
+            {x => x.DataBuildCheck,x},
+            {x=>x.SrcIframe,"https://modelspeech.onrender.com/t2speechmuit/?token=6776"}
+        };
+        DialogService.Show<DialogContent>("",parameters, options);
+    }
+    private async Task OpenFiterDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraExtraLarge, FullWidth = true };
+        var parameters = new DialogParameters<DialogFilterMobile1>
+        {
+
+            { x =>x.propertyValues,propertyValues },
+            { x =>x.DataBuild,DataBuild1 },
+            { x => x.TypeLanguage,TypeLanguage}
+        };  
+        var dialog = await  DialogService.ShowAsync<DialogFilterMobile1>("", parameters, options);
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            DataBuild = (List<ModelProperties>)result.Data;
+
+                StateHasChanged();
+            
+
+
+
+        }
+    }
+    private void LoadPageData(int page)
+    {
+        int skip = (page - 1) * _itemsPerPage;
+        _pagedData = DataBuild.Skip(skip).Take(_itemsPerPage).ToList();
+
+    }
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+    public  void OnclickCard()
+    {
+
+        try
+        {
+            string myString = "HelloWorld";
+            Navigation.NavigateTo($"/model?NameService={myString}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+        }
+    }
+    private async void changeLanguage(string language)
+    {
+        if (language == "en")
+        {
+
+            TypeLanguage = true;
+            DataBuild = PropertyGenerator.GenerateModelPropertiesList(9, 0);
+            propertyValues = PropertyGenerator.propertyValues;
+            Title = "Services";
+        }
+        else
+        {
+
+            TypeLanguage = false;
+            DataBuild = PropertyGenerator.GenerateModelPropertiesList(9, 1);
+            propertyValues = PropertyGenerator.propertyValuesInArabic;
+            Title = "«·Œœ„« ";
+        }
+
+
+        DataBuild1 = DataBuild;
+        _totalPages = (int)Math.Ceiling((double)DataBuild.Count / _itemsPerPage);
+        LoadPageData(_currentPage);
+      await  InvokeAsync(StateHasChanged);
+
+    }
+
+    
+
+    protected override void OnInitialized()
+
+
+
+    {
+
+
+
+        try
+
+
+
+        {
+
+
+
+            languageService.OnLanguageChanged += changeLanguage;
+
+
+
+            changeLanguage("ar");
+
+            
+
+
+
+        }
+
+
+
+        catch
+
+
+
+        {
+
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+    private void clear()
+
+    {
+
+        selectedType = "";
+
+        selectedFramework = "";
+
+        selectedVoice = "";
+
+        selectedLanguage = "";
+
+        selectedDialect = "";
+
+        selectedQuality = "";
+
+        selectedAccuracy = "";
+
+        selectedSpeed = "";
+
+    }
+
+
+
+    private async Task Submit()
+    {
+
+
+
+        try
+
+
+
+        {
+
+
+
+
+
+
+
+            Navigation.NavigateTo("/TextToText");
+
+
+
+
+
+        }
+
+
+
+        catch (Exception ex)
+
+
+
+        {
+
+
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+
+
+        }
+
+
+
+    }
+    public void OnColorSelected(Color value)
+    {
+
+        SelectedColor = value;
+
+    }
+    private void ApplyFilter()
+    {
+
+
+        try
+        {
+
+            DataBuild = DataBuild1;
+
+            if (!string.IsNullOrWhiteSpace(selectedType))
+
+            {
+
+
+
+
+
+                DataBuild = DataBuild.Where((x => x.Type == selectedType)).ToList();
+
+
+
+
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedFramework))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Framework == selectedFramework)).ToList();
+
+
+
+            }
+
+
+
+            if (!string.IsNullOrWhiteSpace(selectedVoice))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Voice == selectedVoice)).ToList();
+
+
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedLanguage))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Language == selectedLanguage)).ToList();
+
+
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedDialect))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Dialect == selectedDialect)).ToList();
+
+
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedQuality))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Quality == selectedQuality)).ToList();
+
+
+
+            }
+
+
+
+            if (!string.IsNullOrWhiteSpace(selectedAccuracy))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Accuracy == selectedAccuracy)).ToList();
+
+
+
+            }
+
+            if (!string.IsNullOrWhiteSpace(selectedSpeed))
+
+            {
+
+                // Snackbar.Add(selectedType, Severity.Error);
+
+                DataBuild = DataBuild.Where((x => x.Speed == selectedSpeed)).ToList();
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+            _totalPages = (int)Math.Ceiling((double)DataBuild.Count / _itemsPerPage);
+
+            ToggleDrawer();
+
+
+
+
+
+
+
+
+
+
+
+
+
+            LoadPageData(_currentPage);
+
+
+
+            clear();
+
+            StateHasChanged();
+
+
+
+
+
+        }
+
+        catch (Exception ex)
+
+
+
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+        }
+
+
+
+    }
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = false;
+    private bool bordered = false;
+    private string searchString1 = "";
+    private ModelProperties selectedItem1 = null;
+    private HashSet<ModelProperties> selectedItems = new HashSet<ModelProperties>();
+    private IEnumerable<ModelProperties> Elements = new List<ModelProperties>();
+    private bool _selectOnRowClick = true;
+    private bool _selectionChangeable = true;
+    protected override async Task OnInitializedAsync()
+    {
+
+       // Elements = await httpClient.GetFromJsonAsync<List<Element>>("webapi/periodictable");
+
+    }
+
+    private bool FilterFunc1(ModelProperties element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(ModelProperties element, string searchString)
+    {
+
+        if (string.IsNullOrWhiteSpace(searchString))
+
+            return true;
+
+        if (element.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+
+            return true;
+
+        if (element.Author.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+
+            return true;
+
+        if ($"{element.Dialect} {element.Language} {element.Framework}".Contains(searchString))
+
+            return true;
+
+        return false;
+
+    }
+
+
+}

@@ -1,0 +1,44 @@
+﻿@using LAHJA.UI.Components.Auth
+@using LAHJA.Data.UI.Templates.Auth
+@using Microsoft.AspNetCore.Authorization
+@inject LAHJA.Data.UI.Templates.Auth.TemplateAuth Template
+
+
+@attribute [AllowAnonymous]
+
+@if(Template!=null){
+    <MainAuth IsToLoginMode="IsToLoginMode"
+              OnSubmitExternalLogin="Template.BuilderComponents.SubmitExternalLogin"
+              ErrorMessages="@Template.Errors"
+              OnSubmitedForgetPassword="@Template.BuilderComponents.SubmitedForgetPassword"
+              OnSubmit="@Template.BuilderComponents.Submit" />
+
+}
+@code{
+
+    [Parameter] public bool IsToLoginMode { set; get; }
+
+    // private bool _isLoaded = true;
+    // private bool isAuth = false;
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         isAuth = await getAuthAsync();
+
+    //         if (isAuth)
+    //         {
+    //             Navigation.NavigateTo("/");
+    //         }
+
+    //         await Task.Delay(1000);
+    //         _isLoaded = false;
+    //         StateHasChanged();
+
+    //     }
+
+    // }
+
+
+}

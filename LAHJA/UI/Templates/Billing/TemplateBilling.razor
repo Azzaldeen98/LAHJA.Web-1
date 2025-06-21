@@ -1,0 +1,52 @@
+﻿@* @page "/billing" *@
+@using LAHJA.Data.UI.Components.ProFileModel
+@using LAHJA.UI.Components.Auth
+@using LAHJA.Data.UI.Templates.Auth
+@using LAHJA.UI.Components.Plan
+@using LAHJA.UI.Components.ProFile
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile Template
+
+
+
+@if(Template!=null){
+    <SettingshomProfile DataBuild="buildData" />
+}
+
+@code{
+
+
+
+    private DataBuildUserProfile  buildData;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+
+        if (firstRender)
+        {
+            var result = await Template.GetProfileAsync();
+
+            if (result.Succeeded)
+            {
+                buildData = result.Data;
+
+            }
+            else
+            {
+
+            }
+        }
+
+        StateHasChanged();
+
+    }
+
+    
+
+
+
+  } 

@@ -1,0 +1,269 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.UI.Components.Base
+@using System.Linq.Expressions
+<style>
+
+    .header-tabel-th{
+
+        font-weight:bold !important
+    }
+</style>
+@typeparam T
+
+@inherits MudDataGrid<T>
+<MudDataGrid T="@T" 
+             Items="@Items"
+             Tag="@Tag"
+             Style="@Style"
+             Class="@Class"
+             ApplyDropClassesOnDragStarted="@ApplyDropClassesOnDragStarted"
+             Filterable="@Filterable"
+             Bordered="@Bordered"
+             Breakpoint="@Breakpoint"
+             CanCancelEdit="@CanCancelEdit"
+             ChildRowContent="@ChildRowContent"
+             CloneStrategy="@CloneStrategy"
+             ColGroup="@ColGroup"
+             ColumnResizeMode="@ColumnResizeMode"
+             ColumnsPanelReordering="@ColumnsPanelReordering"
+         
+             Culture="@Culture"
+             CurrentPage="@CurrentPage"
+             Dense="@Dense"
+             DragDropColumnReordering="@DragDropColumnReordering"
+             DragIndicatorIcon="@DragIndicatorIcon"
+             DragIndicatorSize="@DragIndicatorSize"
+             DropAllowedClass="@DropAllowedClass"
+             DropNotAllowedClass="@DropNotAllowedClass"
+             EditDialogOptions="@EditDialogOptions"
+             EditMode="@EditMode"
+             EditTrigger="@EditTrigger"
+             Elevation="@Elevation"
+             FilterCaseSensitivity="@FilterCaseSensitivity"
+             FilterDefinitions="@FilterDefinitions"
+             FilterMode="@FilterMode"
+             FilterTemplate="@FilterTemplate"
+             FixedFooter="@FixedFooter"
+             FixedHeader="@FixedHeader"
+             FooterClass="@FooterClass"
+             Groupable="@Groupable"
+             GroupClass="@GroupClass"
+             GroupClassFunc="@GroupClassFunc"
+             GroupExpanded="@GroupExpanded"
+             GroupStyle="@GroupStyle"
+             GroupStyleFunc="@GroupStyleFunc"
+             Header="@Header"
+             HeaderClass="@HeaderClass"
+             Height="@Height"
+             Hideable="@Hideable"
+             HorizontalScrollbar="@HorizontalScrollbar"
+             Hover="@Hover"
+             ItemSize="@ItemSize"
+             Loading="@Loading"
+             LoadingContent="@LoadingContent"
+             LoadingProgressColor="@LoadingProgressColor"
+             MultiSelection="@MultiSelection"
+             NoRecordsContent="@NoRecordsContent"
+             Outlined="@Outlined"
+             OverscanCount="@OverscanCount"
+           
+             QuickFilter="@QuickFilter"
+             ReadOnly="@ReadOnly"
+             RowClass="@RowClass"
+             RowClassFunc="@RowClassFunc"
+             RowLoadingContent="@RowLoadingContent"
+             RowsPerPage="@RowsPerPage"
+             RowStyle="@RowStyle"
+             RowStyleFunc="@RowStyleFunc"
+             SelectedItem="@SelectedItem"
+             SelectedItems="@SelectedItems"
+             SelectOnRowClick="@SelectOnRowClick"
+             ServerData="@ServerData"
+             ShowColumnOptions="@ShowColumnOptions"
+             ShowFilterIcons="@ShowFilterIcons"
+             ShowMenuIcon="@ShowMenuIcon"
+             SortDefinitions="@SortDefinitions"
+             SortMode="@SortMode"
+             Square="@Square"
+             Striped="@Striped"
+             ToolBarContent="@ToolBarContent"
+             Validator="@Validator"
+             Virtualize="@Virtualize"
+             VirtualizeServerData="@VirtualizeServerData"
+             CurrentPageChanged="CurrentPageChanged"
+             RowsPerPageChanged="RowsPerPageChanged"
+             RowClick="RowClick"
+             RowContextMenuClick="RowContextMenuClick"
+             SelectedItemChanged="SelectedItemChanged"
+             SelectedItemsChanged="SelectedItemsChanged"
+             CommittedItemChanges="CommittedItemChanges"
+             CanceledEditingItem="CanceledEditingItem"
+             StartedEditingItem="StartedEditingItem"
+             FormFieldChanged="FormFieldChanged" 
+             >
+
+    <Columns>
+       
+        <SelectColumn T="T"   >
+            
+      
+        
+        </SelectColumn>
+     
+
+        @foreach (var column in Columns)
+        {
+
+
+
+            <TemplateColumn Title="@column.Title"  Filterable="true" Editable="true" Sortable="true" Resizable="true">
+                <CellTemplate >
+
+
+                    @if (column.Name.ToLower().Contains("date") || column.Name.ToLower().Contains("time"))
+                    {
+                   
+                            <MudDatePicker Style="font-size:12px !important"  Label=""  Date="DateTime.Parse(GetPropertyValue(context.Item, column.Name).ToString())" ReadOnly="true" />
+                   
+
+                    }
+                    else if (column.Name.ToLower().Contains("id"))
+                    {
+               
+
+                            <IdCard Id="@(GetPropertyValue(context.Item, column.Name).ToString())"
+                                NumCharShow="6"
+                                Icon=null
+                                IsCopy=false
+                                MColor="Color.Info" />
+
+
+                
+                    }
+                    else if (column.Name.ToLower().Contains("token"))
+                    {
+              
+
+                            <IdCard Id="@(GetPropertyValue(context.Item, column.Name).ToString())"
+                                NumCharShow="15" />
+
+
+                
+                    }
+                    else if (column.Name.ToLower() != "status")
+                    {
+             
+                            <CellCard Value="@GetPropertyValue(context.Item, column.Name)" />
+            
+                    }
+                    else
+                    {
+
+                        <StateCell State="@GetPropertyValue(context.Item, column.Name)" />
+
+                    }
+
+                    
+                </CellTemplate>
+            </TemplateColumn>
+
+        }
+
+        @if (ISShowColumnsEdit){
+        <TemplateColumn StickyRight="IsStickyRight" StickyLeft="IsStickyLeft" >
+            <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="@Size.Small" OnClick="@(()=>HandleRowClick(context.Item))" />
+            </CellTemplate>
+        </TemplateColumn>
+        }
+        </Columns>
+    <PagerContent>
+        <MudDataGridPager T="T" />
+    </PagerContent>
+    </MudDataGrid>
+
+@code {
+
+
+
+    private List<ColumnDefinition<T, object>> Columns = new List<ColumnDefinition<T, object>>();
+
+    [Parameter] public Dictionary<string, string> LabelColumns { get; set; } = new();
+
+    [Parameter] public bool ISShowColumnsEdit { set; get; } = true;
+    [Parameter] public bool IsStickyRight { set; get; } = false;
+    [Parameter] public bool IsStickyLeft { set; get; } = false;
+    [Parameter] public EventCallback<T> EditClicked { get; set; }
+
+    private string SearchText { get; set; } = "";
+
+    protected override void OnParametersSet()
+    {
+      
+        Columns = GenerateColumnsForType();
+    
+    }
+    public class ColumnDefinition<T, TProperty>
+    {
+        public Expression<Func<T, TProperty>>? Property { get; set; }
+        public string? Title { get; set; }
+
+        public string? Name{ get; set; }
+    }
+
+    private List<ColumnDefinition<T, object>> GenerateColumnsForType()
+    {
+        var properties = typeof(T).GetProperties();
+
+        var columns = properties.Select(prop =>
+        {
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var propertyAccess = Expression.Property(parameter, prop);
+            var convertedProperty = Expression.Convert(propertyAccess, typeof(object));
+
+            var lambdaExpression = Expression.Lambda<Func<T, object>>(convertedProperty, parameter);
+
+            return new ColumnDefinition<T, object>
+            {
+                Property = lambdaExpression,
+                Title = getLabel(prop.Name),
+                Name = prop.Name
+            };
+        }).ToList();
+
+        return columns;
+    }
+
+    string  getLabel(string key)
+    {
+        if (LabelColumns!=null&&LabelColumns.ContainsKey(key))
+            return LabelColumns[key];
+
+        return key;
+    }
+    private object GetPropertyValue(T item, string propertyName)
+    {
+        if (item == null)
+        {
+            return "-"; 
+        }
+
+        var prop = typeof(T).GetProperty(propertyName);
+
+        return prop?.GetValue(item) ?? "-";
+    }
+
+
+    private bool isboolValue(T item, string propertyName)
+    {
+        var prop = typeof(T).GetProperty(propertyName);
+
+        return prop?.PropertyType == typeof(bool);
+    }
+
+    private void HandleRowClick(T Item)
+    {
+        EditClicked.InvokeAsync(Item);
+    }
+
+}

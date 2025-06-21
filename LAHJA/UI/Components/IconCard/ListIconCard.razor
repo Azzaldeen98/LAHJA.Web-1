@@ -1,0 +1,51 @@
+﻿@*@if (Params!=null){
+<div class="@Params.ClassContainer">
+    @if (Params.IsName){
+    <h4>@Params.Name</h4>
+    }
+
+    <ul class="@Params.ClassItems">
+
+
+        @if (Params.CardIconServics != null)
+        {
+
+            @foreach (var ob in Params.CardIconServics)
+                    {
+                       
+
+                <IconCardSevicis Params="@ob" />
+                    }
+
+                  }
+
+                  </ul>
+
+    @if (Params.INameFoter){
+                   
+    <a class="btn btn-outline-secondary icon-link " href="#">@Params.NameFoter<i class="bi bi-arrow-right"></i> </a>
+    }
+
+</div>
+}
+
+@code{
+
+    [Parameter] public CardIconItems? Params { set; get; }
+
+
+
+    protected override void OnInitialized()
+    {
+
+        if (Params!=null&&Params.IsUseStyleIneerItems)
+        {
+            Params.ClassItems += " " + CardIconItems.INEERCLASS;
+        }
+
+
+    }
+
+
+}
+*@

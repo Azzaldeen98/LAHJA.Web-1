@@ -1,0 +1,60 @@
+﻿@using MudBlazor;
+@using System.Diagnostics.Metrics
+  
+
+ @typeparam TItem
+ 
+@if (itemOptions != null && itemOptions.Any()) // التحقق من أن القائمة ليست فارغة
+{
+<MudMenu Label="EndIcon" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+    <MudPaper Class="pa-4">
+        <MudText Typo="Typo.h6" Class="mud-width-full">
+            @(selectedItem == null ? "Nothing selected." : $"{displayProperty}: {GetPropertyValue(selectedItem)}")
+        </MudText>
+
+        <MudSelect T="TItem" @bind-Value="selectedItem" ToStringFunc="@(item => GetPropertyValue(item)?.ToString())" Label="Select your item" Variant="Variant.Outlined" Clearable>
+            @foreach (TItem item in itemOptions)
+            {
+                <MudChip Value="@item">@GetPropertyValue(item)?.ToString()</MudChip>
+            }
+        </MudSelect>
+
+        <MudDivider Class="my-2" />
+
+        <MudStack Spacing="4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DropShadow="false" @onclick="OnPayNowClick">
+                Pay Now
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudMenu>
+}
+@code {
+    // تعريف الخصائص التي سيتم تمريرها من الصفحة الأم
+    [Parameter] public List<TItem> itemOptions { get; set; }   // قائمة العناصر التي سيتم عرضها
+    [Parameter] public string displayProperty { get; set; }     // الخاصية التي سيتم عرضها من كل عنصر
+    private TItem selectedItem;                                // العنصر الذي سيتم اختياره
+
+    // دالة لاستخراج قيمة الخاصية من العنصر المحدد
+    private string GetPropertyValue(TItem item)
+    {
+        if (item == null) return string.Empty;
+
+        // البحث عن الخاصية المطلوبة باستخدام الانعكاس (Reflection)
+        var propertyInfo = typeof(TItem).GetProperty(displayProperty);
+        if (propertyInfo != null)
+        {
+            var value = propertyInfo.GetValue(item);  // الحصول على القيمة من الخاصية
+            return value?.ToString();  // تحويل القيمة إلى نص
+        }
+
+        return string.Empty;
+    }
+
+    // منطق الضغط على زر "Pay Now"
+    private void OnPayNowClick()
+    {
+        // يمكنك إضافة منطق دفع أو أي عملية أخرى هنا
+        Console.WriteLine($"Paying for item: {selectedItem}");
+    }
+}

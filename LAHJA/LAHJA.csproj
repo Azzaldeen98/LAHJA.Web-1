@@ -1,0 +1,90 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	  <AssemblyName>LAHJA</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Data\UI\Templates\NewFolder1\**" />
+    <Compile Remove="Infrastructure\**" />
+    <Compile Remove="UI\Teamplat\**" />
+    <Compile Remove="wwwroot\js\NewFolder\**" />
+    <Content Remove="Data\UI\Templates\NewFolder1\**" />
+    <Content Remove="Infrastructure\**" />
+    <Content Remove="UI\Teamplat\**" />
+    <Content Remove="wwwroot\js\NewFolder\**" />
+    <EmbeddedResource Remove="Data\UI\Templates\NewFolder1\**" />
+    <EmbeddedResource Remove="Infrastructure\**" />
+    <EmbeddedResource Remove="UI\Teamplat\**" />
+    <EmbeddedResource Remove="wwwroot\js\NewFolder\**" />
+    <None Remove="Data\UI\Templates\NewFolder1\**" />
+    <None Remove="Infrastructure\**" />
+    <None Remove="UI\Teamplat\**" />
+    <None Remove="wwwroot\js\NewFolder\**" />
+  </ItemGroup>
+	<ItemGroup>
+
+		<PackageReference Include="Blazored.LocalStorage" Version="4.5.0" />
+
+		<PackageReference Include="Blazorise.Captcha" Version="1.6.2" />
+
+		<PackageReference Include="Blazorise.Captcha.ReCaptcha" Version="1.6.2" />
+
+		<PackageReference Include="Castle.Core" Version="5.2.1" />
+
+		<PackageReference Include="FluentValidation" Version="11.11.0" />
+
+		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+
+		<PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.0" />
+
+		<PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.0" />
+
+		<PackageReference Include="MudBlazor" Version="7.15.0" />
+		<PackageReference Include="Blazor-ApexCharts" Version="0.9.16-beta" />
+		<PackageReference Include="MudBlazor.ThemeManager" Version="2.1.0" />
+		<PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+
+	</ItemGroup>
+	<ItemGroup>
+		
+		<PackageReference Include="IdentityModel" Version="6.0.0" />
+		<PackageReference Include="NSwag.AspNetCore" Version="8.0.2" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="ApplicationLayer\ModelGateway\" />
+	  <Folder Include="ApplicationLayer\RequestEvent\" />
+	  <Folder Include="ApplicationLayer\Roles\" />
+	  <Folder Include="ApplicationLayer\ServiceMethod\" />
+	  <Folder Include="ApplicationLayer\Setting\" />
+	  <Folder Include="Data\UI\Components\Profile\" />
+	  <Folder Include="Data\UI\GenerateTemplates\" />
+	  <Folder Include="Data\UI\GenerateTemplates\Auth\" />
+	  <Folder Include="Data\UI\Templates\User\" />
+	  <Folder Include="Data\UI\Templates\Request\" />
+	  <Folder Include="Data\UI\Templates\Setting\" />
+	  <Folder Include="Resources\Messages\Errors\" />
+	  <Folder Include="UI\Components\FeatureServices\" />
+	  <Folder Include="UI\Components\Training\" />
+	  <Folder Include="UI\Components\SidebarMen\" />
+	  <Folder Include="UI\Templates\Sections\Profile\" />
+	  <Folder Include="wwwroot\assets\images\Icon\" />
+	  <Folder Include="wwwroot\css\fonts\Jozoor_Font\__MACOSX\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Application\Application.csproj" />
+	  <ProjectReference Include="..\Client.Shared\Client.Shared.csproj" />
+	  <ProjectReference Include="..\Domain\Domain.csproj" />
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	</ItemGroup>
+ 
+
+
+</Project>
+
+
+

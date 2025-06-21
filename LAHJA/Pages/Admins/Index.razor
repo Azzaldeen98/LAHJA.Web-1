@@ -1,0 +1,37 @@
+﻿@page "/Admin"
+@*   <LAHJA.Components.Errors.Logs/> *@
+
+ 
+<MudPaper Class="pa-5 mx-auto mt-7" MaxWidth="1000px">
+    <MudTabs>
+
+        <MudTabPanel Text="تسجيل الدخول">
+        <LAHJA.Components.T.Login/>
+        </MudTabPanel>
+
+
+        <MudTabPanel Text="انشاء حساب جديد">
+            <LAHJA.Components.T.Rigister/>
+        </MudTabPanel>
+
+
+ 
+
+
+        <MudTabPanel Text="نسيت كلمة المرور">
+
+           <LAHJA.Components.T.ForgotPassword/>
+
+        </MudTabPanel>
+
+        <MudTabPanel Text="تسجيل الخروج">
+           <LAHJA.Components.T.Logout/>
+        </MudTabPanel>
+
+        <MudTabPanel Text="تغيير كلمة المرور">
+         <LAHJA.Components.T.ResetPassword/>
+        </MudTabPanel>
+    </MudTabs>
+
+</MudPaper>
+ 

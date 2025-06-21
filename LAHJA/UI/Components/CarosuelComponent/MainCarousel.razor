@@ -1,0 +1,67 @@
+@inject ISnackbar Snackbar
+@using LAHJA.Data.UI.Components.ServiceCard
+
+
+ 
+<style>
+
+     
+
+</style>
+
+@if (carosuelCardCompoentBar != null)
+{
+
+<div class="@carosuelCardCompoentBar.ClassContainer">
+    </div>
+
+
+
+
+
+
+    <MudGrid Justify="Justify.Center" class="@carosuelCardCompoentBar.ClassItem" >
+
+
+        <TempleteCarouselService Params="@carosuelCardCompoentBar.carosuelCardCompoent"
+                                 OnClick="@onclick" TypeCarosuelCard="@TypeCarosuelCard" />
+
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public DataBuildCarosuelCard? dataBuildCarosuelCard { get; set; }
+    [Parameter]
+    public bool TypeCarosuelCard{ get; set;}
+
+
+
+
+     CarosuelCardCompoentBar carosuelCardCompoentBar =null;
+     DataBuildCarosuelCard data = new DataBuildCarosuelCard();
+
+    protected override void OnInitialized()
+    {
+
+        dataBuildCarosuelCard = data;
+        carosuelCardCompoentBar = CarosuelCardCompoentBar.GetGenarelCard(dataBuildCarosuelCard);
+        StateHasChanged();
+    }
+    public string Text { get; set; } = "????";
+    public string ButtonText { get; set; } = "Click Me";
+    public int ButtonClicked { get; set; }
+    [Parameter] public EventCallback<ResponecCarouselCard> OnClick { get; set; }
+   
+
+    private async void onclick(ResponecCarouselCard obj)
+    {
+       //Snackbar.Add(obj.Id, Severity.Normal);
+        if (OnClick.HasDelegate)
+                {
+                    await OnClick.InvokeAsync(new ResponecCarouselCard(){Id=obj.Id});
+                }
+    }
+}
+ 
+ 

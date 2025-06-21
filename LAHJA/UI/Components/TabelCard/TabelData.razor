@@ -1,0 +1,255 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.UI.Components.Base
+@using System.Linq.Expressions
+<style>
+
+    .header-tabel-th {
+        font-weight: bold !important
+    }
+</style>
+@typeparam T
+
+
+
+<MudTable T="T" Items="@DataBuild" Hover="true" Dense="false" FixedHeader="@FixedHeader"
+          Style="@(FixedHeader ? "height:300px;" : "")"
+          OnRowClick="HandleRowClick"
+          OnSelectedItemsChanged="HandleSelectedItemsChanged"
+          OnSortChanged="HandleSortChanged"
+          OnPageChanged="HandlePageChanged"
+          MultiSelection="@MultiSelection"
+          RowStyle="RowStyle"
+          Elevation="0"
+          RowsPerPage="@RowsPerPage">
+
+    <HeaderContent>
+        <MudTh Class="header-tabel-th"> </MudTh>
+
+        @foreach (var column in (LabelColumns.Count > 0 ? LabelColumns : Columns))
+        {
+            <MudTh Class="header-tabel-th">@column</MudTh>
+        }
+    </HeaderContent>
+
+    <ToolBarContent>
+
+    </ToolBarContent>
+
+    <ColGroup>
+    </ColGroup>
+
+    <RowTemplate>
+
+        <MudIcon style="font-size: 16px; margin-left: 10px;" Icon="@Icons.Material.Filled.GridOn" class="mr-3"></MudIcon>
+
+        @foreach (var column in Columns)
+        {
+
+            if (column.ToLower().Contains("date") || column.ToLower().Contains("time"))
+            {
+               
+
+                    @if (DateTime.TryParse(GetPropertyValue(context, column)?.ToString(), out var dateValue))
+                    {
+                         <MudTd>
+                            <MudDatePicker Style="font-size:12px;" Label="" Date="dateValue" ReadOnly="true" />
+                        </MudTd>
+                    }
+                    else
+                    {
+                        <MudTd>
+                            <MudText Style="font-size:12px;">@GetPropertyValue(context, column)?.ToString()</MudText>
+                        </MudTd>
+                    }
+
+                    @* <MudDatePicker Style="font-size:12px !important" Label="" Date="DateTime.TryParse(GetPropertyValue(context, column)?.ToString(), out var dateValue) ? dateValue : (DateTime?)null" ReadOnly="true" /> *@
+                    @* <MudDatePicker Style="font-size:12px !important" Label="" Date="DateTime.Parse(GetPropertyValue(context, column).ToString())" ReadOnly="true" /> *@
+                @* </MudTd> *@
+
+            }
+
+
+            else if (column.ToLower().Contains("id"))
+            {
+                <MudTd>
+
+                    <IdCard Id="@(GetPropertyValue(context, column).ToString())"
+                            NumCharShow="6"
+                            Icon=null
+                            IsCopy=false
+                            MColor="Color.Info" />
+
+
+                </MudTd>
+            }
+            else if (column.ToLower().Contains("token"))
+            {
+                <MudTd>
+
+                    <IdCard Id="@(GetPropertyValue(context, column).ToString())"
+                            NumCharShow="15" />
+
+
+                </MudTd>
+            }
+
+            else if (column != "Status")
+            {
+                <MudTd>
+                    <CellCard Value="@GetPropertyValue(context, column)" />
+                </MudTd>
+            }
+            else
+            {
+
+                <StateCell State="@GetPropertyValue(context, column)" />
+
+            }
+
+        }
+
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    [Parameter] public List<T>? DataBuild { get; set; } = new();
+    [Parameter] public bool FixedHeader { get; set; } = true;
+    [Parameter] public bool MultiSelection { get; set; } = false;
+    [Parameter] public EventBuildTabelCard<T>? Events { get; set; }
+    [Parameter] public int RowsPerPage { get; set; } = 5;
+    [Parameter] public List<string> LabelColumns { get; set; } = new();
+
+
+    private List<ColumnDefinition<T, object>> Columns2 = new List<ColumnDefinition<T, object>>();
+    private string SearchText { get; set; } = "";
+    public List<string> Columns { get; set; } = new();
+
+    protected override void OnParametersSet()
+    {
+        if (DataBuild.Any())
+        {
+            Columns = typeof(T).GetProperties().Select(p => p.Name).ToList();
+        }
+        Columns2 = GenerateColumnsForType();
+
+    }
+
+    public class ColumnDefinition<T, TProperty>
+    {
+        public Expression<Func<T, TProperty>> Property { get; set; }
+        public string Title { get; set; }
+    }
+
+    private List<ColumnDefinition<T, object>> GenerateColumnsForType()
+    {
+        var properties = typeof(T).GetProperties();
+
+        var columns = properties.Select(prop =>
+        {
+            var parameter = Expression.Parameter(typeof(T), "x");
+            var propertyAccess = Expression.Property(parameter, prop);
+            var convertedProperty = Expression.Convert(propertyAccess, typeof(object));
+
+            var lambdaExpression = Expression.Lambda<Func<T, object>>(convertedProperty, parameter);
+
+            return new ColumnDefinition<T, object>
+                {
+                    Property = lambdaExpression,
+                    Title = prop.Name
+                };
+        }).ToList();
+
+        return columns;
+    }
+
+
+    private object GetPropertyValue(T item, string propertyName)
+    {
+        if (item == null)
+        {
+            return "-";
+        }
+
+        var prop = typeof(T).GetProperty(propertyName);
+
+        return prop?.GetValue(item) ?? "-";
+    }
+
+
+    private bool isboolValue(T item, string propertyName)
+    {
+        var prop = typeof(T).GetProperty(propertyName);
+
+        return prop?.PropertyType == typeof(bool);
+    }
+
+    private Task HandleRowClick(TableRowClickEventArgs<T> args)
+    {
+        return Events.OnRowClicked.InvokeAsync(args.Item);
+    }
+
+    private Task HandleSelectedItemsChanged(HashSet<T> selectedItems)
+    {
+        return Events.OnSelectedItemsChanged.InvokeAsync(selectedItems);
+    }
+
+    private Task HandleSortChanged(SortDirection sortDirection)
+    {
+        return Events.OnSortChanged.InvokeAsync(sortDirection);
+    }
+
+    private Task HandlePageChanged(int pageNumber)
+    {
+        return Events.OnPageChanged.InvokeAsync(pageNumber);
+    }
+
+    private void TriggerSearch()
+    {
+        Events.OnSearch.InvokeAsync(SearchText);
+    }
+
+    private void RefreshData()
+    {
+        StateHasChanged();
+    }
+
+    private string RowStyle(T item, int rowIndex)
+    {
+        return Events.OnRowRender != null ? Events.OnRowRender(item, rowIndex) : (rowIndex % 2 == 0 ? "background-color: #f9f9f9;" : "");
+    }
+
+    List<RenderFragment> getRowFragmentS()
+    {
+
+        return new() { CreateDynamicComponent(typeof(MudButton), new Dictionary<string, object>
+                     {
+                        { "Variant", Variant.Filled },
+                        { "Color", Color.Primary },
+                        { "ChildContent", (RenderFragment)(b => b.AddContent(0, "انقر هنا")) },
+                        { "OnClick", EventCallback.Factory.Create(this, () => Console.WriteLine("تم الضغط!")) }
+                     })
+        };
+    }
+
+    private RenderFragment CreateDynamicComponent(Type componentType, Dictionary<string, object> parameters = null)
+    {
+        return builder =>
+        {
+            builder.OpenComponent(0, componentType); // فتح وسم المكون
+
+            if (parameters != null)
+            {
+                int seq = 1;
+                foreach (var param in parameters)
+                {
+                    builder.AddAttribute(seq++, param.Key, param.Value);
+                }
+            }
+
+            builder.CloseComponent(); // إغلاق وسم المكون
+        };
+    }
+}

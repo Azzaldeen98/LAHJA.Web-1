@@ -1,0 +1,39 @@
+﻿@using LAHJA.Data.UI.Components.Base
+
+
+@if (Params != null)
+{
+            <div class="position-absolute top-0 start-0 mt-n3">
+
+        @* عرض الحوف تحت صورة يدالربوت *@
+        @if (Params.Icon != null)
+        {
+            <img src="@Params.Icon.Src" class="@Params.Icon.ClassImg"  />
+        }
+
+        </div>
+    
+
+}
+else
+{
+    <p>No data available</p>
+}
+
+@code {
+    [Parameter] public CardTextAndIcon? Params { get; set; }
+
+
+
+    // إذا كنت بحاجة إلى منطق إضافي، يمكنك إضافته هنا
+    protected override void OnInitialized()
+    {
+
+        if (Params != null && Params.IsUseStyleIneerItems)
+        {
+            Params.ClassItems += " " + CardTextAndIcon.INEERCLASS;
+        }
+
+
+    }
+}

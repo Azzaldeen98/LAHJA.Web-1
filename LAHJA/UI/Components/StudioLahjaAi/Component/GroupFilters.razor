@@ -1,0 +1,207 @@
+﻿@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+
+
+
+
+<div class="d-flex flex-row justify-content-around ">
+    @* @if (_buildDataStudioFilters != null)
+    {
+
+        @if (_buildDataStudioFilters.CategoriesFilter != null)
+        {
+            <FilterItemSelected Filter="_buildDataStudioFilters.CategoriesFilter" CurrentLanguage="@CurrentLanguage" />
+        
+        }
+        @if (_buildDataStudioFilters.LanguagesFilter != null)
+        {
+            <FilterItemSelected Filter="_buildDataStudioFilters.LanguagesFilter" CurrentLanguage="@CurrentLanguage" />
+        }
+        @if (_buildDataStudioFilters.ModelTypesFilter != null)
+        {
+
+            <FilterItemSelected Filter="_buildDataStudioFilters.ModelTypesFilter" CurrentLanguage="@CurrentLanguage" />
+        }
+        @if (_buildDataStudioFilters.DialectsFilter != null)
+        {
+            <FilterItemSelected Filter="_buildDataStudioFilters.DialectsFilter" CurrentLanguage="@CurrentLanguage" />
+        }
+
+        @if (_buildDataStudioFilters.ServiceTypeFilter != null)
+        {
+            <FilterItemSelected Filter="_buildDataStudioFilters.ServiceTypeFilter" CurrentLanguage="@CurrentLanguage" />
+        }
+
+        @if (_buildDataStudioFilters.SpeakerGendersFilter != null)
+        {
+            <FilterItemSelected Filter="_buildDataStudioFilters.SpeakerGendersFilter" CurrentLanguage="@CurrentLanguage" />
+        }
+
+        @if (_buildDataStudioFilters.SpeakerInfoFilter != null)
+        {
+            <FilterItemSelected Filter="_buildDataStudioFilters.SpeakerInfoFilter" CurrentLanguage="@CurrentLanguage" />
+        } *@
+
+     @*     @if (_buildDataStudioFilters.ModelReleasesFilter != null)
+         {
+             <FilterItemSelected Filter="_buildDataStudioFilters.ModelReleasesFilter" CurrentLanguage="@CurrentLanguage" />
+         } *@
+        
+        
+    @* } *@
+</div>
+
+@code {
+    [Parameter]
+    public string CurrentLanguage { get; set; } = "en";
+
+    [Parameter]
+    public EventCallback<SelectedStudioFilter> OnRequestData { get; set; }
+
+    // [Parameter]
+    // public BuildDataStudioFilter BuildDataStudioFilters { get => _buildDataStudioFilters; set { 
+
+    //         _buildDataStudioFilters = value; 
+
+    //         InitializeChangedEvents();
+    //         StateHasChanged();
+    //     } }
+
+
+    // private BuildDataStudioFilter _buildDataStudioFilters;
+
+    // [Parameter]
+    // public SelectedStudioFilter SelectedStudioFilter { get => _SelectedStudioFilter; set => _SelectedStudioFilter = value; }
+
+
+    // private SelectedStudioFilter _SelectedStudioFilter = new SelectedStudioFilter();
+
+    // protected override void OnInitialized()
+    // {
+
+
+
+    // }
+
+    // protected override async void OnAfterRender(bool firstRender)
+
+    // {
+    //     if (firstRender)
+    //     {
+    //         initChanged();
+    //     }
+    // }
+
+    // public async Task RequestDataAsync()
+    // {
+       
+    //     if (OnRequestData.HasDelegate && _SelectedStudioFilter!=null)
+    //     {
+    //         await OnRequestData.InvokeAsync(_SelectedStudioFilter);
+    //     }
+    // }
+
+
+    // private void InitializeChangedEvents()
+    // {
+    //     if (_buildDataStudioFilters != null)
+    //     {
+
+    //         if (_buildDataStudioFilters.CategoriesFilter != null)
+    //         {
+    //             _buildDataStudioFilters.CategoriesFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedCategory = item;
+    //             });
+
+    //         }
+    //         if (_buildDataStudioFilters.LanguagesFilter != null)
+    //         {
+    //             _buildDataStudioFilters.LanguagesFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedLangague = item;
+    //             });
+    //         }
+    //         if (_buildDataStudioFilters.ModelTypesFilter != null)
+    //         {
+    //             _buildDataStudioFilters.ModelTypesFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedModelType = item;
+    //             });
+
+    //         }
+    //         if (_buildDataStudioFilters.DialectsFilter != null)
+    //         {
+    //             _buildDataStudioFilters.DialectsFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedDialectType = item;
+    //             });
+    //         }
+
+    //         if (_buildDataStudioFilters.ServiceTypeFilter != null)
+    //         {
+    //             _buildDataStudioFilters.ServiceTypeFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedServiceType = item;
+    //             });
+    //         }
+
+    //         if (_buildDataStudioFilters.SpeakerGendersFilter != null)
+    //         {
+    //             _buildDataStudioFilters.SpeakerGendersFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedSpeakerGenders = item;
+    //             });
+    //         }
+
+    //         if (_buildDataStudioFilters.SpeakerInfoFilter != null)
+    //         {
+    //             _buildDataStudioFilters.SpeakerInfoFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //             {
+    //                 _SelectedStudioFilter.SelectedSpeakerInfo = item;
+    //             });
+    //         }
+
+    //         // if (_buildDataStudioFilters.ModelReleasesFilter != null)
+    //         // {
+    //         //     _buildDataStudioFilters.ModelReleasesFilter.OnSelectionChanged = EventCallback.Factory.Create<FilterItemData>(this, item =>
+    //         //     {
+    //         //         _SelectedStudioFilter.SelectedModelRelease = item;
+    //         //     });
+    //         // }
+
+
+    //     }
+
+    // }
+
+
+
+
+
+        // [Parameter] public bool IsVisible { get; set; }
+        // [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+        // [Parameter] public string Title { get; set; } = "Settings";
+        // [Parameter] public string CurrentLanguage { get; set; } = "en";
+        // [Parameter] public List<StudioFilterDefinition<FilterItemData>> Filters { get; set; } = new();
+
+        //     public class FilterItemData
+        //     {
+        //         public int Id { get; set; } = 0;
+        //         public string Identifier { get; set; }
+        //         public Dictionary<string, string> Text { get; set; }
+        //         public string Icon { get; set; }
+        //         public Type Component { get; set; }
+        //         public string TypeModel { get; set; }
+        //     }
+
+
+        //     public class FilterDefinition<FilterItemData>
+        // {
+        //     public string Title { get; set; }
+        //     public bool IsExpanded { get; set; }
+        //     public bool HasError { get; set; }
+        //     public string ErrorMessage { get; set; }
+        //         public List<FilterItemData> Options { get; set; } = new();
+        //         public EventCallback<FilterItemData> OnSelectionChanged { get; set; }
+        // }
+}

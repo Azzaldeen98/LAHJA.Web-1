@@ -1,0 +1,11 @@
+﻿@page "/payment"
+@page "/payment/{PlanId}"
+@using LAHJA.UI.Templates.Payment
+@attribute [Authorize]
+
+<TemplatePayment PlanId="@PlanId" />
+
+@code{
+
+    [Parameter] public string PlanId { get; set; }
+}

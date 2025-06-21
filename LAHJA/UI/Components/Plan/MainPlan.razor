@@ -1,0 +1,183 @@
+﻿
+@using Client.Shared.UI.Components.Skeleton.Cards
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Base
+@inject IDialogService DialogService
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Data.UI.Components.Plan.Css
+@using LAHJA.UI.Components.General.Skeleton
+@inject ISnackbar Snackbar
+
+@if (!IsDialog)
+{
+
+
+    <MudGrid Class="@(@MainPlanStyle.MainPlanGrid+" w-100")" Justify="Justify.SpaceAround" >
+        @if (IsLoading)
+        {
+           <SkeletonCardList Count="4" />
+        }
+        else
+        {
+            @if (DataBuild != null)
+            {
+                <MudItem Class="@MainPlanStyle.MainPlanItem">
+                    <TemplatePlan IsLoading="IsLoading" DataBuild="@DataBuild" />
+                </MudItem>
+            }
+            else if (DataBuilds != null && DataBuilds.Any())
+            {
+                @foreach (var item in DataBuilds)
+                {
+                    <MudItem Class="@MainPlanStyle.MainPlanItem" xs="12" sm="12" md="3">
+                        <TemplatePlan IsLoading="IsLoading" DataBuild="@item"
+                        OnSubmit="OnSubmitSubmitSelectPlan"
+                        SubmitUpgrade="SubmitUpgrade"
+                        SubmitOpenSubscription="SubmitOpenSubscription"
+                        SubmitCancel="SubmitCancel" />
+                    </MudItem>
+                }
+
+            }
+            else
+            {
+             
+
+                <MudAlert Class="@MainPlanStyle.MainPlanAlert" Severity="Severity.Error">@Error</MudAlert> 
+            }
+
+        }
+
+    </MudGrid>
+
+
+}
+
+
+@code
+{
+    [Parameter] public bool IsLoading { get; set; } = true;
+
+    public string Error { get; set; } = "No Data";
+
+    [Parameter]
+    public bool IsDialog { get; set; } = false;
+    [Parameter]
+    public InputTypePlan InputTypeComponts { get; set; } = InputTypePlan.List;
+    [Parameter]
+    public PlanViewModel DataBuild { get; set; } = null;
+    [Parameter]
+    public bool IsAuth { get; set; } = false;
+    [Parameter]
+    public IEnumerable<PlanViewModel> DataBuilds { get; set; } = null;
+
+
+
+    [Parameter] public EventCallback<PlanViewModel> SubmitUpgrade { get; set; }
+    [Parameter] public EventCallback<PlanViewModel> SubmitOpenSubscription { get; set; }
+    [Parameter] public EventCallback<DataBuildPlansBase> SubmitSelectPlan { get; set; }
+    [Parameter] public EventCallback<PlanViewModel> SubmitCancel { get; set; }
+
+
+    private async void OnSubmitSubmitSelectPlan(PlanViewModel PlanViewModel)
+    {
+        if (SubmitSelectPlan.HasDelegate)
+        {
+
+            await SubmitSelectPlan.InvokeAsync(new DataBuildPlansBase { PlanId = PlanViewModel.Id });
+
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+            @if (IsDialog)
+            {
+                       await Task.Delay(1000); 
+                        await ShowDialog();
+
+            }
+
+        }
+        catch(Exception ex)
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+
+
+    }
+
+
+
+    private async Task ShowDialog()
+    {
+        try
+        {
+
+            var parameters = new DialogParameters<MudDialogTemplatePlan>
+              {
+
+                  {x =>x.Items,DataBuilds},
+                  {x =>x.SingleItem,DataBuild},
+                  {x =>x.InputTypeComponts,InputTypePlan.List}
+              };
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
+
+            var dialog = await DialogService.ShowAsync<MudDialogTemplatePlan>("", parameters, options);
+
+            var result = await dialog.Result;
+            if (!result.Canceled && result.Data!=null)
+            {
+                var planData = (PlanViewModel)result.Data;
+                if (SubmitSelectPlan.HasDelegate && planData!=null)
+                {
+
+                    await SubmitSelectPlan.InvokeAsync(new DataBuildPlansBase { PlanId = planData.Id });
+
+                }
+
+
+            }
+            else
+            {
+
+                if (SubmitSelectPlan.HasDelegate)
+                {
+                    await SubmitSelectPlan.InvokeAsync(null);
+                }
+            }
+
+            StateHasChanged();
+        }
+
+
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+
+    }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+

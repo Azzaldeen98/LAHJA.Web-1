@@ -1,0 +1,100 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Models
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@inject LAHJA.ApiClient.Services.Query.IQueryTextToSpeechService queryTextToSpeechService
+@* @inherits BaseInitializationComponent *@
+ @inject LanguageService languageService
+ @inject IManageLanguageService _manageLanguageService
+
+<div style="position:relative">
+
+        <div class="px-4 py-5 my-5 text-center">
+        <MudIcon Size="Size.Large" style="direction:ltr !important;margin:8px !important" Color="@AppColors.BASE_COLOR_ENUM" Icon="@Icons.Material.Filled.BlurOn" Title="API" />
+
+        <MudText Typo="Typo.h4">@ParamsTrans["Title"]</MudText>
+            <div class="col-lg-6 mx-auto">
+                <p class=" mb-4">
+
+                @ParamsTrans["Description"]
+
+
+            </p>
+            <audio style="visibility:hidden; position:fixed" id="AudioPlay2" controls></audio>
+
+            <MudIconButton class="mx-2 " Size="Size.Medium" Icon="@Icons.Material.Filled.SurroundSound" Color="@AppColors.BASE_COLOR_ENUM" OnClick="@((e) => onClick())" Edge="Edge.End" />
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                
+                <MudChip T="string" Variant="Variant.Outlined" Icon="@Icons.Custom.Brands.MudBlazor" Label="true" Color="@AppColors.BASE_COLOR_ENUM"> @ParamsTrans["Chip1"]</MudChip>
+                <MudChip T="string" Variant="Variant.Outlined" Icon="@Icons.Custom.Brands.Twitter" Label="true" Color="@AppColors.BASE_COLOR_ENUM"> @ParamsTrans["Chip2"]</MudChip>
+
+
+                     </div>
+            </div>
+        </div>
+      
+
+    </div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        languageService.OnLanguageChanged += UpdateContent;
+        ParamsTrans =   Translations["ar"];
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var currentLangCode = await _manageLanguageService.GetLanguageAsync();
+
+            UpdateContent(currentLangCode);
+        }
+    }
+    // protected override void OnInitialized()
+    // {
+    //     languageService.OnLanguageChanged += UpdateContent;
+    // }
+
+
+    protected async void UpdateContent(string currentLangCode )
+    {
+
+        ParamsTrans = Translations.ContainsKey(currentLangCode) ? Translations[currentLangCode] : Translations["en"];
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private async void onClick()
+    {
+        var text = " هو إطار متقدم يعتمد على تقنيات الذكاء الاصطناعي لتوليد الكلام من النصوص. تعتمد جميع النماذج على بنية VITS، التي تتيح توليد موجات صوتية واقعية بناءً على المدخلات النصية. النماذج تحتوي على محولات لتحليل النص وتوليد الكلام بناءً على خصائص الصوت المحلية لكل لهجة.";
+
+       await queryTextToSpeechService.TextToSpeechAsync(new QueryRequestTextToSpeech { Data = text, TagId = "AudioPlay2" });
+    }
+    private Dictionary<string, string> ParamsTrans { get; set; }
+
+    private string currentLanguage = "ar"; 
+
+
+    private static readonly Dictionary<string, Dictionary<string, string>> Translations = new()
+        {
+            ["en"] = new()
+            {
+                ["Title"] = "LAHJA AI",
+                ["Description"] = "LAHJA AI is an advanced framework that relies on AI techniques to generate speech from text. All models are based on the VITS architecture, which enables the generation of realistic sound waves based on textual input. The models contain transformers to analyze text and generate speech based on the local voice characteristics of each accent.",
+                ["Chip1"] = "Lahja ai",
+                ["Chip2"] = "begin",
+                ["ButtonText"] = "Start"
+            },
+            ["ar"] = new()
+            {
+                ["Title"] = "LAHJA AI",
+                ["Description"] = "LAHJA AI هو إطار متقدم يعتمد على تقنيات الذكاء الاصطناعي لتوليد الكلام من النصوص. تعتمد جميع النماذج على بنية VITS، التي تتيح توليد موجات صوتية واقعية بناءً على المدخلات النصية. النماذج تحتوي على محولات لتحليل النص وتوليد الكلام بناءً على خصائص الصوت المحلية لكل لهجة.",
+                ["Chip1"] = "Lahja ai",
+                ["Chip2"] = "ابدأ",
+                ["ButtonText"] = "ابدأ"
+            }
+        };
+
+}

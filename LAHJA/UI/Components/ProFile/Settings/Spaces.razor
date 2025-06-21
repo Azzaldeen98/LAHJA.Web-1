@@ -1,0 +1,268 @@
+﻿@using Domain.Entities.AuthorizationSession
+@using Domain.ShareData
+
+@using LAHJA.ContextServices
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Space
+@using LAHJA.Helpers
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@using Microsoft.AspNetCore.Authorization
+@using global::Shared.Wrapper
+@attribute [Authorize]
+
+@inject IDialogService DialogService
+@* @inject ISnackbar Snackbar *@
+@* @inject IManageLanguageService _manageLanguageService *@
+@inject NavigationManager Navigation
+@inherits AppUtilityComponent
+
+
+<TabelDashCard 
+    T="DataBuildSpace" 
+    DataAndEventBuildTabel="dataAndEvent" 
+    StateCounts="cardStates"
+    IsLoading="isLoading"
+    ActionTabels="groupAction"
+    BarTabel="TranslationsLST" />
+
+
+@* @if (!string.IsNullOrEmpty(urlCore))
+{
+    <iframe src="@urlCore" />
+} *@
+
+
+@code{
+    private bool hasClickedRow = false;
+    private bool isLoading = true;
+    private DataAndEventBuildTabelCard<DataBuildSpace> dataAndEvent = null;
+
+    private string srcIframe = "https://lahja-core.onrender.com/createspace";
+    private List<DataBuildSpace>? _dataBuild=new();
+
+
+
+    [Parameter] public string Language { set => lg = value; get => lg; }
+
+    [Parameter] public bool IsLoading { set => isLoading = value; get => isLoading; }
+    [Parameter] public Func<DataBuildSpace, Task<Result<AuthorizationSessionWebResponse>>> SubmitCreateSpace { get; set; }
+
+    [Parameter] public List<DataBuildSpace>? DataBuild {
+        get => _dataBuild;
+        set
+        {
+            if(value!=null && value.Count > 0)
+            {
+                _dataBuild = value;
+                initData(_dataBuild);
+                StateHasChanged();
+            }
+        } 
+    }
+
+
+    [Parameter] public DataAndEventBuildTabelCard<DataBuildSpace>? DataAndEventBuild { get => dataAndEvent; set => dataAndEvent = value; }
+
+
+    private async Task OnSubmitCreateSpace()
+    {
+
+
+        if (SubmitCreateSpace != null)
+        {
+            var response = await SubmitCreateSpace(new DataBuildSpace());
+
+            if (response.Succeeded)
+            {
+                srcIframe= Helper.GetServiceSrcFrame(response.Data.UrlCore, response.Data.SessionToken);
+               await OpenDialog(srcIframe);
+
+            }
+        }
+    }
+
+
+    protected override void OnInitialized()
+    {
+        initData(_dataBuild);
+        StateHasChanged();
+
+    }
+    private void initData(List<DataBuildSpace> dataBuild)
+    {
+        if (dataBuild==null || dataBuild?.Any() == true)
+            isLoading = false;
+
+        dataAndEvent = new()
+            {
+                DataBuild = dataBuild,
+                LabelColumns = ColomsTrans[lg].ToList(),
+
+                Events = new()
+            };
+        cardStates = new()
+        {
+
+            new()
+            {
+                Value=_dataBuild.Where(x=>x.IsGpu).Count().ToString(),
+                Label=TranslationsLST[lg]["IsGpu"]
+
+            },
+
+             new()
+            {
+              Value=_dataBuild.Where(x=>!x.IsGpu).Count().ToString(),
+              Label=TranslationsLST[lg]["UnGpu"]
+            },
+
+              new()
+            {
+                Value=_dataBuild.Where(x=>x.IsGlobal).Count().ToString(),
+                Label=TranslationsLST[lg]["IsGlobal"]
+
+            },
+
+             new()
+            {
+              Value=_dataBuild.Where(x=>!x.IsGlobal).Count().ToString(),
+              Label=TranslationsLST[lg]["UnGlobal"]
+            },
+
+
+        };
+        groupAction.Actions = new()
+        {
+            new()
+            {
+                Icon=@Icons.Material.Filled.AddCircle
+                ,
+                Tag="create"
+                ,
+                Name=TranslationsLST[lg]["Create"]
+
+            },
+     
+        };
+        groupAction.ChipClicked += OnChipClicked;
+
+        // groupAction.CreateSpaceClicked = OnSubmitCreateSpace;
+    }
+
+    List<CardStateCount<string>>? cardStates = null;
+
+    GroupActionTabels groupAction = new GroupActionTabels();
+
+    private async Task OnChipClicked(CardActionTabel action)
+    {
+        if (action.Tag == "delete")
+        {
+            // Snackbar.Add("fgffg", Severity.Error);
+
+        }
+        else if(action.Tag=="create")
+        {
+            await OnSubmitCreateSpace();
+
+        }
+
+        // await Task.CompletedTask;
+
+    }
+
+    private async Task OpenDialog(string srcIframe)
+    {
+
+        if (!hasClickedRow)
+        {
+            hasClickedRow = true;
+
+
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+
+            var parameters = new DialogParameters<DialogContent>
+            {
+
+                { x =>x.DataBuild1,null },
+                {x => x.DataBuildCheck,null},
+                {x => x.Language,lg},
+                {x => x.UrlRedirect,Helper.GetFullPath(Navigation,RouterPage.DASHBOARD_SPACES)},
+                {x => x.UrlCancel,Helper.GetFullPath(Navigation,RouterPage.DASHBOARD_SPACES)},
+                {x => x.Data,null},
+                {x=>x.SrcIframe,srcIframe}
+            };
+
+            var dialog= DialogService.Show<DialogContent>("", parameters, options);
+            try
+            {
+                ///TODO
+                var result = await dialog.Result;
+                hasClickedRow = false;
+            }
+            catch (Exception)
+            {
+                hasClickedRow = false;
+            }
+
+        }
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, string>> TranslationsLST = new()
+        {
+            ["en"] = new()
+            {
+                ["Text1"] = "create your spaces",
+                ["Text2"] = "AI لهجة",
+                ["Description"] = "LAHJA platform provides a smart way to communicate with AI in your own dialect.",
+                ["ButtonLink"] = "Create Space",
+                ["Active"] = "Spaces Active",
+                ["UnActive"] = "Spaces UnActive",
+                ["IsGpu"] = "Uses a GPU",
+                ["IsGlobal"] = "Global",
+                ["UnGpu"] = "Does not use a GPU",
+                ["UnGlobal"] = "Not Global",
+                ["Create"] = "Create"
+
+            },
+            ["ar"] = new()
+            {
+                ["Text1"] = "انشى مساحاتك ",
+                ["Text2"] = "لهجة AI",
+                ["Description"] = "توفر  منصة لهجة  طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.",
+                ["ButtonLink"] = "انشاء مساحة ",
+                ["Active"] = "المساحات  النشطة",
+                ["UnActive"] = "المساحات غير النشطة",
+                ["IsGpu"] = "تستخدم Gpu",
+                ["IsGlobal"] = "عالمي",
+                ["UnGpu"] = "لا تستخدم Gpu",
+                ["UnGlobal"] = "غير عالمي",
+                ["Create"] = "انشاء"
+            }
+        };
+
+
+    Dictionary<string, string[]> ColomsTrans = new Dictionary<string, string[]>
+        {
+            { "en", new string[] { "ID", "Name", "Description", "RAM", "CPU Cores", "Disk Space", "GPU", "Global", "Bandwidth" } },
+            { "ar", new string[] { "المعرف", "الاسم", "الوصف", "الذاكرة العشوائية", "أنوية المعالج", "مساحة القرص", "وحدة معالجة الرسوميات", "عالمي", "عرض النطاق الترددي" } }
+        };
+    private List<DataBuildSpace> dataList = new List<DataBuildSpace>
+    {
+    new DataBuildSpace
+    {
+    Id = "1", Name = "Reactor 1", Description = "A powerful reactor", Ram = 16, CpuCores = 8, DiskSpace = 512, IsGpu = true, IsGlobal = true, Bandwidth = 100
+    },
+    new DataBuildSpace
+    {
+             Id = "2", Name = "Reactor 2", Description = "A powerful reactor", Ram = 16, CpuCores = 8, DiskSpace = 512, IsGpu = true, IsGlobal = true, Bandwidth = 100
+    },
+
+    };
+
+
+
+
+
+}

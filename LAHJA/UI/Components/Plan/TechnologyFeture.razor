@@ -1,0 +1,76 @@
+﻿@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Them
+ 
+ 
+@inject ISnackbar Snackbar
+@if (@Params != null)
+{
+
+
+
+
+
+
+
+    <MudTooltip Text="@Params.Value" style="padding:2% !important" Color="@AppColors.BASE_COLOR_ENUM" Placement="Placement.Bottom">
+
+        <MudText Typo="Typo.body2" style="padding:0% !important;margin:0% !important;font-size:12px !important;">
+            <MudIcon Icon="@Icon" Color="@(Params.Active?AppColors.BASE_COLOR_ENUM:Color.Error)" />
+            @Params.Key : @Params.Value
+            </MudText>
+        </MudTooltip>
+      @*   <MudText Typo="Typo.body2">
+            <MudIcon Icon="@Icons.Custom.Uncategorized.AlertSuccess" Color="Color.Primary" />
+        @Params.Price
+        </MudText> *@
+   
+
+
+}
+else
+{
+
+    <MudAlert Severity="Severity.Error">@Error</MudAlert>
+
+}
+
+@code
+{
+
+    [Parameter]
+    public bool flagTypeService { get; set; }
+    public string Error { get; set; } = "No Data";
+
+    [Parameter] public string Icon { get; set; } = Icons.Material.Sharp.CheckBox;
+
+    [Parameter] public PlanFeatureViewModel? Params { get; set; }
+
+    protected override void OnInitialized()
+    {
+
+        if (Params!=null)
+            Icon = Params.Active ? @Icons.Material.Sharp.CheckBox : @Icons.Material.Sharp.Cancel;
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    [Parameter] public EventCallback<PlanFeatureViewModel> OnClick { get; set; }
+
+}

@@ -1,0 +1,125 @@
+﻿@inject IJSRuntime JSRuntime
+
+
+<div class="flex flex-col p-3 max-md:hidden max-md:inset-x-0 max-md:bottom-20">
+	<div class="flex flex-1 flex-col gap-6 overflow-y-hidden rounded-xl border border-gray-200/80 bg-white bg-gradient-to-b from-white via-white p-3 shadow-sm dark:border-white/5 dark:bg-gray-900 dark:from-gray-800/40 dark:via-gray-800/40">
+		<div class="flex flex-col gap-2">
+			
+			<div class="flex flex-col gap-2">
+				<label for="countries" class="flex items-baseline text-sm font-medium text-gray-900 dark:text-white">Models<span class="ml-4 font-normal text-gray-400">31</span></label> 
+				<button @onclick="OpenText" class="relative flex items-center justify-between gap-6 overflow-hidden whitespace-nowrap rounded-lg border bg-gray-100/80 px-3 py-1.5 leading-tight shadow hover:brightness-95 dark:border-gray-700 dark:bg-gray-800 dark:hover:brightness-110">
+					<div class="flex flex-col items-start">
+						<div class="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-300">
+							<img class="size-3 flex-none rounded bg-gray-200 object-cover" src="https://cdn-avatars.huggingface.co/v1/production/uploads/646cf8084eefb026fb8fd8bc/oCTqufkdTkjyGodsx1vo1.png" alt="meta-llama avatar"> 
+							meta-llama</div>
+							<div>Llama-3.3-70B-Instruct</div>
+						</div>
+						<svg class="text-xl bg-gray-100 dark:bg-gray-600 rounded size-4 flex-none absolute right-2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M16.293 9.293L12 13.586L7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z" fill="currentColor"></path></svg></button></div>
+						<div class="flex items-center gap-2 self-end whitespace-nowrap px-2 text-xs">
+				<button class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32" class=""><path fill="currentColor" d="M28 6H18V4a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h10v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2ZM4 15h6.17l-2.58 2.59L9 19l5-5l-5-5l-1.41 1.41L10.17 13H4V4h12v20H4Zm12 13v-2a2 2 0 0 0 2-2V8h10v9h-6.17l2.58-2.59L23 13l-5 5l5 5l1.41-1.41L21.83 19H28v9Z"></path></svg>
+					Compare
+				</button> <a href="https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct" target="_blank" class="flex items-center gap-0.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+					<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 32 32"><path fill="currentColor" d="M10 6v2h12.59L6 24.59L7.41 26L24 9.41V22h2V6H10z"></path></svg>
+					Model page
+				</a>
+			</div>
+		</div>
+		<div class="flex flex-col gap-y-7 ">
+			<div>
+				<div class="flex items-center justify-between">
+					<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Temperature</label>
+					<input type="number" class="w-18 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700" min="0" max="2" step="0.1">
+				</div>
+				<input id="temperature-range" type="range" min="0" max="2" step="0.1" class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700 dark:accent-blue-500">
+			</div>
+			<div>
+				<div class="flex items-center justify-between">
+					<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Max Tokens</label> <input type="number" class="w-18 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700" min="0" max="64000" step="256">
+				</div>
+				<input id="temperature-range" type="range" min="0" max="64000" step="256" class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700 dark:accent-blue-500">
+			</div>
+			<div>
+				<div class="flex items-center justify-between">
+					<label for="temperature-range" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Top-P</label> <input type="number" class="w-18 rounded border bg-transparent px-1 py-0.5 text-right text-sm dark:border-gray-700" min="0" max="1" step="0.1">
+				</div> <input id="temperature-range" type="range" min="0" max="1" step="0.1" class="h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-black dark:bg-gray-700 dark:accent-blue-500">
+			</div> <div class="mt-2"><label class="flex cursor-pointer items-center justify-between"><input type="checkbox" class="peer sr-only"> <span class="text-sm font-medium text-gray-900 dark:text-gray-300" data-svelte-h="svelte-1aa4wyq">Streaming</span> <div class="peer relative h-5 w-9 rounded-full bg-gray-200 after:absolute after:start-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-black peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:peer-checked:bg-blue-600"></div></label></div>
+		</div>
+		<div class="mt-auto hidden" data-svelte-h="svelte-13dtc8j">
+			<div class="mb-3 flex items-center justify-between gap-2"><label for="default-range" class="block text-sm font-medium text-gray-900 dark:text-white">API Quota</label> <span class="rounded bg-gray-100 px-1.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">Free</span> <div class="ml-auto w-12 text-right text-sm">76%</div></div> <div class="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700"><div class="h-2 rounded-full bg-black dark:bg-gray-400" style="width: 75%"></div></div>
+		</div>
+	</div>
+	@if (isTextVisible)
+			{
+				<div @ref="popupDiv" class="popup">
+	               <Modelpage />			
+	              </div>
+			}
+</div>
+
+
+
+@code {
+	// حالة ظهور النص
+	private bool isTextVisible = false;
+
+	// مرجع للنافذة
+	private ElementReference popupDiv;
+
+	// فتح النص
+	private void OpenText()
+	{
+		isTextVisible = true;
+
+		// ربط حدث النقر العام
+		AddClickOutsideEvent();
+	}
+
+	// إغلاق النص
+	private void CloseText()
+	{
+		isTextVisible = false;
+
+		// إلغاء ربط حدث النقر العام
+		RemoveClickOutsideEvent();
+	}
+
+	// وظيفة التحقق من النقر خارج النافذة
+	[JSInvokable]
+	public void HandleOutsideClick()
+	{
+		CloseText();
+	}
+
+	// إضافة حدث النقر العام
+	private async void AddClickOutsideEvent()
+	{
+		await JSRuntime.InvokeVoidAsync("addOutsideClickHandler", DotNetObjectReference.Create(this), nameof(HandleOutsideClick), popupDiv);
+	}
+
+	// إزالة حدث النقر العام
+	private async void RemoveClickOutsideEvent()
+	{
+		await JSRuntime.InvokeVoidAsync("removeOutsideClickHandler");
+	}
+}
+<script>
+	let outsideClickHandler = null;
+
+	function addOutsideClickHandler(dotNetObj, methodName, popupDiv) {
+		outsideClickHandler = (event) => {
+			if (!popupDiv || !popupDiv.contains(event.target)) {
+				dotNetObj.invokeMethodAsync(methodName);
+			}
+		};
+		document.addEventListener("click", outsideClickHandler);
+	}
+
+	function removeOutsideClickHandler() {
+		if (outsideClickHandler) {
+			document.removeEventListener("click", outsideClickHandler);
+			outsideClickHandler = null;
+		}
+	}
+
+</script>

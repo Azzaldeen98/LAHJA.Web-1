@@ -1,0 +1,153 @@
+﻿@using Domain.ShareData
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.Localization
+@using global::Shared.Constants
+
+
+ @inject IStringLocalizer<MainLayout> Localizer
+
+
+ <div class="p-0 mx-0 w-100">
+    <MudPaper Elevation="1" Class="text-center text-lg-start text-dark" >
+        <!-- Social Media Section -->
+        <Section Class="d-flex justify-content-around py-2" Style="background-color:@AppColors.BASE_COLOR_FOUCS">
+            <MudText Class="me-5" Style="color: white;">@Localizer["SocialText"]</MudText>
+            <div>
+                <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Class="me-4" Style="color: white;" />
+                <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Class="me-4" Style="color: white;" />
+                <MudIconButton Icon="@Icons.Custom.Brands.Google" Class="me-4" Style="color: white;" />
+                <MudIconButton Icon="@Icons.Custom.Brands.Instagram" Class="me-4" Style="color: white;" />
+
+            @*     <MudIconButton Icon="@Icons.Custom.Brands.Linkedin" Color="@AppColors.BASE_COLOR_ENUM" Class="me-4" />
+                <MudIconButton Icon="@Icons.Custom.Brands.Github" Color="@AppColors.BASE_COLOR_ENUM" Class="me-4" /> *@
+            </div>
+        </Section>
+
+      
+        <Section>
+            <MudContainer MaxWidth="MaxWidth.Large" Class="text-center  mt-5">
+                <div class="row mt-3">
+                    <!-- Company Info -->
+                    <div class="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                        <MudText Class="text-uppercase fw-bold">@Params["CompanyName"]</MudText>
+                        <MudDivider Class="mb-4 mt-0 d-inline-block mx-auto" Style="width: 60px; height: 2px" />
+                         <MudText>@Params["CompanyDescription"]</MudText> 
+                    </div>
+
+                    <!-- Products Section -->
+             @*        <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                        <MudText Class="text-uppercase fw-bold">@Params["Products"]</MudText>
+                        <MudDivider Class="mb-4 mt-0 d-inline-block mx-auto" Style="width: 60px; height: 2px" />
+                        <MudText><MudLink href="#!" Color="@AppColors.BASE_COLOR_ENUM">LAHJA</MudLink></MudText>
+                        
+                    </div> *@
+
+                    <!-- Useful Links -->
+                    <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 align-content-start">
+                        <MudText Class="text-uppercase fw-bold">@Localizer["UsefulLinks"]</MudText>
+                        <MudDivider Class="mb-4 mt-0 d-inline-block mx-auto" Style="width: 60px;  height: 2px" />
+                        <MudText><MudLink href="/" Color="@AppColors.BASE_COLOR_ENUM">@Localizer["Home"]</MudLink></MudText>
+                        <AuthorizeView>
+                            <MudText><MudLink href="/services" Color="@AppColors.BASE_COLOR_ENUM">@Localizer["Services"]</MudLink></MudText>
+                        </AuthorizeView>
+
+                        <MudText><MudLink href="/pricing" Color="@AppColors.BASE_COLOR_ENUM">@Localizer["Pricing"]</MudLink></MudText>
+
+                        <AuthorizeView>
+                            <MudText><MudLink href="/studio" Color="@AppColors.BASE_COLOR_ENUM">@Localizer["Studio"]</MudLink></MudText>
+                        </AuthorizeView>
+
+                        <MudText><MudLink href="/" Color="@AppColors.BASE_COLOR_ENUM">@Localizer["Help"]</MudLink></MudText>
+                    </div>
+
+                    <!-- Contact Section -->
+                    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto start-0 mb-md-0 mb-4">
+                        <MudText Class="text-uppercase fw-bold">@Localizer["Contact"]</MudText>
+                        <MudDivider Class="mb-4 mt-0 d-inline-block mx-auto" Style="width: 60px;  height: 2px" />
+                        <MudText><MudIcon Icon="@Icons.Material.Filled.Home" Class="mr-3" />@Params["Address"]</MudText>
+                        <MudLink Href="http://digitalintelligence.sa:2096"><MudIcon Icon="@Icons.Material.Filled.Email" Class="mr-3" />@Email</MudLink>
+                        <MudLink Href="@($"Tel:{PhoneNumber}")"><MudIcon Icon="@Icons.Material.Filled.Phone" Class="mr-3" />@PhoneNumber</MudLink>
+                        @* <MudText><MudIcon Icon="@Icons.Material.Filled.Print" Class="mr-3" />@Params["Print"]</MudText> *@
+                    </div>
+                </div>
+            </MudContainer>
+        </Section>
+
+       
+        <Section Class="text-center p-2" Style="background-color: rgba(0, 0, 0, 0.2)">
+            <MudText>@Params["Copyright"]</MudText>
+        </Section>
+    </MudPaper>
+</div>
+
+@code {
+
+    private string lg = ConstantsApp.DEFAULT_LANGUAGE;
+
+    [Parameter] 
+    public Dictionary<string, string> Params { get; set; }
+    [Parameter] 
+    public string Email { get; set; } = "care@digitalintelligence.sa";
+    [Parameter]
+    public string PhoneNumber { get; set; } = "+ 05 234 567 89";
+
+    protected override void OnInitialized()
+    {
+        lg = CultureInfo.CurrentUICulture.Name ?? ConstantsApp.DEFAULT_LANGUAGE;
+        OnChangedLanguage(lg);
+
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, string>> Translations = new()
+    {
+        ["en"] = new()
+        {
+                ["SocialText"] = "Connect with us via social networks:",
+                ["CompanyName"] = "LAHJA  AI",
+                ["CompanyDescription"] = "“The dialect platform provides a smart way to communicate with AI in your own dialect.”",
+                ["Products"] = "Products",
+                ["UsefulLinks"] = "Useful Links",
+                ["Contact"] = "Contact Us",
+                ["Home"] = "Home",
+                ["Pricing"] = "Pricing",
+                ["Services"] = "Services",
+                ["Studio"] = "Studio",
+                ["Help"] = "Help",
+                ["Address"] = "Riyadh,Saudi Arabia",
+                ["Print"] = "+ 05 234 567 89",
+                ["Copyright"] = "© 2025 Copyright:LAHJA "
+        },
+        ["ar"] = new()
+            {
+                ["SocialText"] = "تواصل معنا عبر الشبكات الاجتماعية:",
+                ["CompanyName"] = "لــهجــة  AI",
+                ["CompanyDescription"] = "“توفر منصة لهجة طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.”",
+                ["Products"] = "المنتجات",
+                ["UsefulLinks"] = "روابط مفيدة",
+                ["Contact"] = "اتصل بنا",
+                ["Home"] = "الرئيسية",
+                ["Pricing"] = "الاشتراكات",
+                ["Services"] = "الخدمات",
+                ["Studio"] = "الاستديو",
+                ["Help"] = "مساعدة",
+                ["Address"] = "الرياض، المملكة العربية السعودية،  ",
+                ["Print"] = "+ 05 234 567 89",
+                ["Copyright"] = "© 2025 حقوق الطبع والنشر: LAHJA "
+        }
+    };
+
+
+
+    protected void OnChangedLanguage(string langCode)
+    {
+        lg = langCode;
+        Params = Translations.ContainsKey(lg) ? Translations[lg] : Translations["en"];
+        StateHasChanged();
+    }
+
+
+
+}
+

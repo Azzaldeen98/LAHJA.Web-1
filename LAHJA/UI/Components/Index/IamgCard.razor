@@ -1,0 +1,45 @@
+﻿@* 
+  <div class=" px-4 py-5 position-relative" id="hanging-icons">
+    <span class="position-absolute bottom-0 start-0">
+        <svg class="fill-body" width="1920" height="254" viewBox="0 0 1920 254" fill="rgb(31, 36, 52)" xmlns="http://www.w3.org/2000/svg">
+            <path d="M556.048 176.63C371.384 97.9289 108.406 143.838 0 176.63V254H1920V0C1863.62 35.5602 1712.53 98.8233 1559.27 67.394C1406.01 35.9648 1206.33 86.6647 1125.65 115.943C1012.72 168.964 740.712 255.331 556.048 176.63Z"></path>
+        </svg>
+    </span> 
+ <MudCarousel Class="mud-width-full" @ref="_carousel" ItemsSource="@_source" @bind-SelectedIndex="selectedIndex" Style="height:200px;" ShowArrows="@_arrows" ShowBullets="@_bullets" EnableSwipeGesture="@_enableSwipeGesture" AutoCycle="@_autocycle">
+	<ItemTemplate>
+		<div class="d-flex flex-column flex-column justify-center" style="height:100%">
+			<MudIcon Class="mx-auto" Icon="@Icons.Custom.Brands.MudBlazor" Size="@Size.Large" />
+			<MudText Align="@Align.Center" Class="mx-auto">@context</MudText>
+		</div>
+	</ItemTemplate>
+</MudCarousel>
+</div>
+@code {
+	private MudCarousel<string> _carousel;
+	private bool _arrows = true;
+	private bool _bullets = true;
+	private bool _enableSwipeGesture = true;
+	private bool _autocycle = true;
+	private IList<string> _source = new List<string>() { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+	private int selectedIndex = 2;
+
+	private async Task AddAsync()
+	{
+		_source.Add($"Item {_source.Count + 1}");
+		await Task.Delay(1);
+		_carousel.MoveTo(_source.Count - 1);
+	}
+
+	private async Task DeleteAsync(int index)
+	{
+		if (_source.Any())
+		{
+			_source.RemoveAt(index);
+			await Task.Delay(1);
+			_carousel.MoveTo(System.Math.Max(System.Math.Min(index, _source.Count - 1), 0));
+		}
+
+	}
+
+}
+ *@

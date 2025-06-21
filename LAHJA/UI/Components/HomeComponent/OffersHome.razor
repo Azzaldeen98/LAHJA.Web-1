@@ -1,0 +1,139 @@
+﻿@using LAHJA.Data.UI.Components.HomeModel
+  
+@if(DataBuild!=null)
+ {
+
+    <MudCarousel Class="mud-width-full"
+                 Style="height:500px;"
+                 ShowBullets="@_bullets" EnableSwipeGesture="@_enableSwipeGesture"
+                 AutoCycle="@_autocycle" TData="object">
+
+
+
+
+
+
+
+
+
+
+
+        @foreach (var item in DataBuild)
+        {
+
+
+
+
+            <MudCarouselItem Transition="Transition.Custom">
+                <div class="d-flex flex-column justify-center" style="height:100%; padding: 16px;">
+                    <MudCard Style="height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+                        <MudCardMedia Image="@item.ListtUrl" Height="250" />
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5" Class="mb-2">"@item.Descrption"</MudText>
+                            <MudText Typo="Typo.body1" Class="mb-2">
+
+                            </MudText>
+                        </MudCardContent>
+                        <MudCardActions Class="justify-end">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(()=>Submit(@item))">@item.Name</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </div>
+            </MudCarouselItem>
+
+
+        }
+
+    </MudCarousel>
+
+ }
+ else
+{
+ <h1>No </h1>   
+}
+
+
+
+@code {
+
+
+    [Parameter]
+    public List<DataBuildOffers>DataBuild{ get;set; }
+    private bool _arrows = true;
+    private bool _bullets = true;
+    private bool _enableSwipeGesture = true;
+    private bool _autocycle = true;
+    public EventCallback<DataBuildOffers> OnSubmit { get; set; }
+    private int selectedIndex = 2;
+
+    private async Task AddAsync()
+    {
+
+        await Task.Delay(1);
+
+    }
+
+
+    private async Task DeleteAsync(int index)
+    {
+
+
+
+        await Task.Delay(1);
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (DataBuild == null)
+        {
+
+            DataBuild = new List<DataBuildOffers>()
+        {
+            new DataBuildOffers()
+            {
+                Id="1",Name="Storage Data",Descrption="Data Storage Data Storage Data Storage",ListtUrl="/ai-hand.png"
+            },
+
+              new DataBuildOffers()
+            {
+                Id="2",Name="Storage Data",Descrption="Data Storage",ListtUrl="/ai-hand.png"
+            },
+             new DataBuildOffers()
+            {
+                Id="1",Name="Storage Data",Descrption="Data Storage",ListtUrl="/ai-hand.png"
+            },
+
+              new DataBuildOffers()
+            {
+                Id="2",Name="Storage Data",Descrption="Data Storage",ListtUrl="/ai-hand.png"
+            },
+
+        };
+        }
+
+
+        StateHasChanged();
+    }
+
+    async void Submit(DataBuildOffers obj)
+    {
+
+        try
+        {
+            if (OnSubmit.HasDelegate)
+            {
+                await OnSubmit.InvokeAsync(obj);
+            }
+        }
+        catch(Exception ex)
+        {
+            
+        }
+       
+    }
+
+
+    
+}

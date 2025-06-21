@@ -1,0 +1,115 @@
+﻿@* @page "/settings/subscriptions" *@
+@using System.Globalization
+@using Domain.ShareData
+@using LAHJA.ContextServices
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Data.UI.Components.ProFileModel
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.Data.UI.Templates.Auth
+@using LAHJA.Data.UI.Templates.Payment
+@using LAHJA.UI.Components.Auth
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.Plan
+@using LAHJA.UI.Components.ProFile
+@using LAHJA.UI.Components.ProFile.Settings
+@using LAHJA.UI.Components.ProFile.USettings
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+
+@inject IManageLanguageService _manageLanguageService
+
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile Template
+@inject LAHJA.Data.UI.Templates.Subscription.TemplateSubscription TemplateSub
+@inject LAHJA.Data.UI.Templates.Payment.TemplatePayment TemplatePayment
+
+@inherits AppUtilityComponent 
+
+    @if(Template!=null){
+
+    @if (isLoading)
+    {
+        <CustomPageSkeleton IsDisplay="isLoading" />
+    }
+    else if (buildData != null)
+    {
+        <Subscription Language="@lg"
+        DataBuild="buildData"
+        IsLoading="isLoading"
+        SubmitCheckoutManage="OnSubmitCheckoutManage"
+        SubmitPause="TemplateSub.BuilderComponents.SubmitPause"
+        SubmitResume="TemplateSub.BuilderComponents.SubmitResume"
+        SubmitDelete="OnSubmitDeleteSubscription" />
+    }
+
+
+}
+
+
+
+
+
+@code{
+    private bool isLoading = true;
+    private List<DataBuildUserSubscriptionInfo> buildData;
+    private string lg = CultureInfo.CurrentUICulture.Name;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lg = CultureInfo.CurrentUICulture.Name;
+        await loadedData();
+
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // await loadedData();
+        }
+    }
+    private async Task OnSubmitDeleteSubscription(DataBuildUserSubscriptionInfo dataBuild)
+    {
+        if (TemplateSub.BuilderComponents.SubmitDelete != null)
+        {
+            var response = await TemplateSub.BuilderComponents.SubmitDelete(dataBuild);
+            if (response.Succeeded)
+            {
+                services.GoTo(RouterPage.DASHBOARD_SUBSCRIPTION);
+            }
+            else
+            {
+                
+            }
+        }
+       
+    }
+    private async Task OnSubmitCheckoutManage(DataBuildUserSubscriptionInfo dataBuild)
+    {
+        ///TemplatePayment.BuilderComponents.SubmitCheckoutManage = EventCallback.Factory.Create<DataBuildPaymentBase>(this, OnRowClicked);
+        if (TemplatePayment.BuilderComponents.SubmitCheckoutManage != null)
+        {
+            await TemplatePayment.BuilderComponents.SubmitCheckoutManage(new() { PlanId = dataBuild.PlanId });
+        }
+    }
+
+    private async Task loadedData()
+    {
+        var res = await Template.GetDataBuildSubscriptions(new());
+        if (res.Succeeded)
+        {
+            buildData = res.Data;
+        }
+
+        isLoading = false;
+        StateHasChanged();
+    }
+
+   
+
+    
+
+
+
+  } 

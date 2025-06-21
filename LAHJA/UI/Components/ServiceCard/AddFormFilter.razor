@@ -1,0 +1,771 @@
+﻿@using Domain.ShareData
+@using LAHJA.ApiClient.Models
+@using LAHJA.ApiClient.Services.VoiceBot
+@using LAHJA.Data.UI.Components.ServiceCard
+ 
+@inject ISnackbar Snackbar
+ 
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+
+
+
+
+
+@using LAHJA.Data.UI.Models
+@using LAHJA.Them
+@using MudBlazor
+@using LAHJA.Data.UI.Components.ServiceCard
+@using Microsoft.AspNetCore.Components
+@using LAHJA.ApiClient.Services.Query
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject LAHJA.ApiClient.Services.IT2TService _T2TService
+@inject IQueryTextToSpeechService _queryTextToSpeechService
+@inject IVoiceBotService _VoiceBotService
+
+<style>
+
+
+    .fontsize
+    {
+        font-size:
+        10px !important;
+    }
+</style>
+
+
+
+<MudGrid Spacing="3" Justify="Justify.SpaceBetween" Style="font-size:10px!important p-4 m-2">
+
+   
+        <MudItem xs="12" sm="4" md="4">
+
+            <MudGrid>
+                   <MudItem xs="12" sm="12" md="12">
+            <MudTextField Label="Enter Name" Variant="Variant.Outlined" @bind-Value="_name" />
+        </MudItem>
+        <MudItem xs="12" sm="12" md="12" lg="12">
+            
+                <MudText Typo="Typo.body2">@(TypeLanguage ? "Language" : "اللغة")</MudText>
+                <MudChipSet @bind-SelectedValues="_selected2"
+                            SelectionMode="SelectionMode.SingleSelection"
+                            CheckMark="_checkMark2" Variant="Variant.Text" Style="font-size:10px!important">
+                    @foreach (var value in propertyValues["Language"])
+                    {
+                        <MudChip Value="@value" Color="@ColorCheck" OnClick="@(() => SerchDataLangagaue(@value))" Class="fontsize">@value</MudChip>
+                    }
+                </MudChipSet>
+         
+        </MudItem>
+
+
+
+
+
+            @if (ListDialect.Any())
+            {
+                  <MudItem xs="12" sm="12" md="12" lg="12">
+            
+                <MudText Typo="Typo.body2">@(TypeLanguage ? "Dialect" : "اللهجة")</MudText>
+                <MudChipSet @bind-SelectedValues="_selected3" Style="font-size:10px!important"
+                            SelectionMode="SelectionMode.SingleSelection"
+                            CheckMark="_checkMark3" Variant="Variant.Text">
+                        @foreach (var item in propertyValues["Dialect"])
+                        {
+                            <MudChip Value="@item" Color="@ColorCheck" OnClick="@(() => SerchDataDialect(@item))" Class="fontsize">@item</MudChip>
+                        }
+                </MudChipSet>
+           
+        </MudItem>
+
+    
+             }
+
+            @if (ListType.Any())
+            {
+                <MudItem xs="12" sm="12" md="12" lg="12">
+
+                    <MudText Typo="Typo.body2">@(TypeLanguage ? "Type" : "النوع")</MudText>
+                    <MudChipSet @bind-SelectedValues="_selected1"
+                                SelectionMode="SelectionMode.SingleSelection" Style="font-size:10px!important"
+                                CheckMark="_checkMark1" Variant="Variant.Text">
+                        @foreach (var value in propertyValues["Type"])
+                        {
+
+                            <MudChip Value="@value" Color="@ColorCheck" Class="fontsize" OnClick="@(() => SerchDataType(@value))">@value</MudChip>
+                        }
+                    </MudChipSet>
+
+                </MudItem>
+
+
+
+             }
+
+
+      
+
+        
+
+
+          
+                    @if (typemodel == "Text To Speech" || typemodel == "نص إلى كلام")
+                    {
+
+
+
+                    <MudItem xs="12" sm="12" md="12" lg="12">
+                       
+                            <MudText Typo="Typo.body2">@(TypeLanguage ? "Voice" : "الصوت")</MudText>
+                            <MudChipSet   T="string"
+                                SelectionMode="SelectionMode.SingleSelection" Style="font-size:10px!important"
+                                        CheckMark="_checkMark4" Variant="Variant.Text">
+
+                                @foreach (var value in propertyValues["Voice"])
+                                {
+                            <MudChip Value="@value" Class="fontsize" OnClick="() =>OnServiceSelected(value)" Color="@ColorCheck">@value</MudChip>
+                                }
+                            </MudChipSet>
+                       
+                    </MudItem>
+                
+
+          
+
+
+        }
+
+       
+
+
+
+
+
+
+        @if (ListAuthor.Any())
+        {
+
+
+
+
+            <MudItem xs="12" sm="12" md="12" lg="12">
+               
+
+                    <MudText Typo="Typo.body2">@(TypeLanguage ? "Author" : "النماذج ")</MudText>
+                    <MudChipSet T="ModelProperties" @bind-SelectedValues="_selected5"
+                                SelectionMode="SelectionMode.MultiSelection" Style="font-size:10px!important" 
+                                CheckMark="_checkMark5" Variant="Variant.Text">
+                                @foreach (var item in ListAuthor)
+                                {
+
+                                    <MudChip Value="@item"  Class="fontsize" Color="@ColorCheck">@item.Author</MudChip>
+
+                        }
+
+                    </MudChipSet>
+                
+            </MudItem>
+
+
+        }
+
+     
+
+
+
+        <MudItem xs="12" sm="6">
+            <MudButton Variant="Variant.Outlined" Class="fontsize" OnClick="SubmitForm" Color="@ColorCheck">
+                 
+                @(TypeLanguage ? "Submit" : "تطبيق")
+            </MudButton>
+
+        </MudItem>
+
+        <MudItem xs="12" sm="6">
+
+                <MudButton Variant="Variant.Outlined" Class="fontsize" Color="@ColorCheck" OnClick="Navigateto">
+              
+                @(TypeLanguage ? "Studio  AI": "  استديو AI")
+            </MudButton>
+
+        </MudItem>
+      
+
+
+            </MudGrid>
+
+        </MudItem>
+ 
+          <MudItem xs="12" sm="6" md="8">
+
+
+
+        <MudTable Items="@DataBuildCheck" Dense="true" Bordered="true" Striped="true" Class="fontsize">
+                    <HeaderContent>
+                        <MudTh>Description</MudTh>
+                        <MudTh>Input</MudTh>
+                        <MudTh>Output</MudTh>
+                         <MudTh>*</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Description">@context.Description</MudTd>
+                        <MudTd DataLabel="Input">
+                        
+
+
+                           @context.Input
+                           
+                        </MudTd>
+
+
+                       
+
+                        <MudTd  >
+
+
+
+                   @if (context.Type == "نص إلى نص" || context.Type == "Text To Text")
+
+
+                        {
+
+                        <MudText Style="font-size:10px!important">   @context.OutPut </MudText>
+                         
+
+                        }
+                        else
+                        {
+                              <Audio Src="@context.Input" Controls="true"  id="OutputPlayerId"/>
+                        }
+
+                      </MudTd>
+                            <MudItem>
+
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                   Color="AppColors.BASE_COLOR_ENUM" OnClick="Navigateto" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Link" Color="AppColors.BASE_COLOR_ENUM" OnClick="OnclickCard" />
+
+                    </MudItem>
+                    </RowTemplate>
+                </MudTable>
+
+        </MudItem>
+      
+
+    </MudGrid>
+
+ 
+
+
+
+
+@code
+{
+
+    [Parameter]
+    public Color ColorCheck { get; set; } = AppColors.BASE_COLOR_ENUM;
+    [Parameter]
+    public string TypeMode { get; set; } = " ";
+    [Parameter] public bool TypeLanguage { get; set; } = true;
+
+    private Dictionary<string, List<string>> propertyValues = null;
+
+
+    private string _name = string.Empty;
+
+    List<ModelProperties> ListAuthor = new List<ModelProperties>();
+    List<ModelProperties> ListType = new List<ModelProperties>();
+    List<ModelProperties> ListDialect = new List<ModelProperties>();
+    [Parameter] public List<ModelProperties>DataBuildCheck { get; set; } = null;
+    [Parameter] public List<ModelProperties> DataBuild1 { get; set; } = null;
+
+
+    private IReadOnlyCollection<string> _selected4 = new HashSet<string>(){};
+    private IReadOnlyCollection<string> _selected1 = new HashSet<string>() {};
+    private IReadOnlyCollection<string> _selected2 = new HashSet<string>()
+    {
+
+    };
+    private IReadOnlyCollection<string> _selected3 = new HashSet<string>()
+    {
+
+    };
+    private IReadOnlyCollection<ModelProperties> _selected5 = new HashSet<ModelProperties>()
+    {
+
+    };
+
+
+
+
+    private bool _checkMark1 = false;
+    private bool _checkMark2 = false;
+    private bool _checkMark3 = false;
+    private bool _checkMark4 = false;
+    private bool _checkMark5 = false;
+
+
+
+    public void OnclickCard()
+
+    {
+
+        try
+
+        {
+
+
+
+
+
+            Navigation.NavigateTo("/TextToText");
+
+
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+
+
+        }
+
+
+
+    }
+
+    string typemodel;
+
+    [Parameter] public string? ModelId { get; set; } = "vits-ar-sa-A";
+
+    private async void SerchDataLangagaue(string langauge)
+    {
+        try
+        {
+
+
+            ListDialect.Clear();
+            ListDialect = DataBuild1
+         .Where(m => m.Language == langauge)
+         .ToList();
+
+
+        }
+        catch(Exception ex)
+        {
+
+
+        }
+    }
+
+    private async void SerchDataDialect(string dialect)
+    {
+        try
+        {
+
+
+            ListType.Clear();
+            ListType = DataBuild1
+         .Where(m => m.Dialect == dialect)
+         .ToList();
+
+
+        }
+        catch(Exception ex)
+        {
+
+
+        }
+    } 
+
+    private async void SerchDataType(string type)
+    {
+        try
+        {
+
+
+            ListAuthor.Clear();
+            if (type == "Text To Speech" || type == "نص إلى كلام")
+            {
+                typemodel = type;
+
+            }
+            else
+            {
+
+            typemodel = type;
+            ListAuthor = DataBuild1
+           .Where(m => m.Type == type)
+           .ToList();
+            }
+       
+            StateHasChanged();
+
+
+        }
+
+
+        catch(Exception ex)
+        {
+
+        }
+
+    }
+    private void OnServiceSelected(string voice)
+    {
+        ListAuthor.Clear();
+
+    
+        ListAuthor = DataBuild1
+       .Where(m => m.Type == typemodel && m.Voice == voice)
+       .ToList();
+        StateHasChanged();
+
+
+    }
+        private async void SubmitForm()
+    {
+
+
+        try
+        {
+           
+
+            if (!string.IsNullOrWhiteSpace(_name))
+            {
+
+                ResultResponce.Clear();
+                if (_selected5.Any() && _selected5.Count != 0)
+                {
+
+                    foreach (var item in _selected5)
+                    {
+
+                        if (item.Type == "نص إلى نص" || item.Type == "Text To Text")
+                        {
+
+
+
+                            var result = await TextToText(_name, item);
+                            Snackbar.Add(result.OutPut, Severity.Error);
+                            if (result != null) ResultResponce.Add(result);
+
+
+                        }
+                        else
+                        {
+
+
+                            var resut = new ModelProperties()
+                                {
+
+                                    Input = _name,
+
+                                    Description = item.Description,
+                                    Type = item.Type,
+                                    Tab="Sound"
+
+
+
+
+
+                                };
+                            ResultResponce.Add(resut);
+                            TextSpeech(_name, item);
+
+                        }
+
+                    }
+
+                }
+
+                clear();
+                DataBuildCheck.Clear();
+                DataBuildCheck = ResultResponce;
+                StateHasChanged();
+            }
+            else
+            {
+                 Snackbar.Add("النص فارغ ", Severity.Error);
+            }
+
+
+
+
+
+        }
+
+        catch
+        {
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+    private async Task<ModelProperties> TextToText(string content, ModelProperties serviceaApp)
+    {
+
+        try
+        {
+
+            var response = await _T2TService.T2TAsync(new QueryRequestTextToText { Text = content });
+            if (response.Succeeded)
+            {
+
+
+                string decodedText = response.Data.Result;
+                serviceaApp = new ModelProperties()
+                    {
+
+                        Input = content,
+                        Type="Text To Text",
+                        Description = serviceaApp.Description,
+                        OutPut = decodedText,
+                        Tab="Txt"
+
+
+
+                    };
+
+                return serviceaApp;
+            }
+
+
+            return null;
+
+        }
+
+        catch (Exception ex)
+        {
+            return null;
+        }
+
+
+
+
+
+    }
+    List<ModelProperties> ResultResponce = new List<ModelProperties>();
+
+    private async void TextSpeech(string textSpeech, ModelProperties serviceaApp)
+
+    {
+
+
+
+
+        if (!string.IsNullOrEmpty(textSpeech))
+        {
+
+            StateHasChanged();
+            var request = new QueryRequest
+                {
+
+                    QueryRequestTextToText = new QueryRequestTextToText { Text = textSpeech },
+                    QueryRequestTextToSpeech = new QueryRequestTextToSpeech
+                    {
+                        TagId = "OutputPlayerId",
+                        Url = "https://api-inference.huggingface.co/models/wasmdashai/" + ModelId
+                    }
+                };
+
+            var response = await _VoiceBotService.TextToSpeechAsync(request);
+            if (response.Succeeded)
+            {
+
+
+
+            }
+            else
+            {
+
+
+            }
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+    }
+
+
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+
+            TypeLanguage = true;
+         
+            propertyValues = PropertyGenerator.propertyValues;
+        }
+        else
+        {
+            TypeLanguage = false;
+            
+            propertyValues = PropertyGenerator.propertyValuesInArabic;
+
+
+
+        }
+
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+   
+
+
+    public void clear()
+    {
+
+
+        string _name = string.Empty;
+
+        _selected1 = null;
+        _selected2 = null;
+        _selected3 = null;
+        _selected4 = null;
+        _selected5 = null;
+
+
+        _checkMark1 = false;
+        _checkMark2 = false;
+        _checkMark3 = false;
+        _checkMark4 = false;
+        _checkMark5 = false;
+    }
+
+
+    private async Task Navigateto()
+
+    {
+
+        try
+
+        {
+
+
+
+            Navigation.NavigateTo("/studio");
+
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+           
+
+        }
+
+    }
+   
+    private void HandleSelectionChanged(HashSet<string> selected)
+    {
+
+    }
+    private Dictionary<string, HashSet<string>> selectedValues = new Dictionary<string, HashSet<string>>();
+
+  
+  
+}

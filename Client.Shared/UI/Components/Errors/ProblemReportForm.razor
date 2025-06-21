@@ -1,0 +1,98 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using MudBlazor
+@inject ISnackbar Snackbar
+
+
+<MudContainer Class="rtl" MaxWidth="MaxWidth.Medium">
+    <MudPaper Class="pa-6 mt-6" Elevation="4">
+        <MudText Typo="Typo.h4" Class="text-center mb-4">مرحباً بك في نظام الإبلاغ عن المشكلات</MudText>
+        <MudText Typo="Typo.subtitle2" Align="Align.Center" Class="mb-6">نقدّر جهودك في مساعدتنا لتحسين الخدمات. يرجى تقديم تقرير مفصل عن المشكلة التي واجهتها.</MudText>
+        <MudText Typo="Typo.subtitle2" Align="Align.Center" Class="mb-6">نقدّر جهودك في مساعدتنا لتحسين الخدمات. يرجى تقديم تقرير مفصل عن المشكلة التي واجهتها.</MudText>
+
+        <EditForm Model="_model" OnValidSubmit="SubmitReport">
+            <MudGrid GutterSize="3">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="الاسم الكامل" @bind-Value="_model.Name" Required="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField Label="البريد الإلكتروني" @bind-Value="_model.Email" Required="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect T="ProblemType" Label="نوع المشكلة" @bind-Value="_model.Type" Required="true">
+                        <MudSelectItem Value="ProblemType.Technical">مشكلة تقنية</MudSelectItem>
+                        <MudSelectItem Value="ProblemType.Service">مشكلة في الخدمة</MudSelectItem>
+                        <MudSelectItem Value="ProblemType.Billing">مشكلة في الفواتير</MudSelectItem>
+                        <MudSelectItem Value="ProblemType.Other">مشكلة أخرى</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="عنوان المشكلة" @bind-Value="_model.Title" Required="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField Label="وصف المشكلة" Lines="5" @bind-Value="_model.Description" Required="true" TextArea="true" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle2">إرفاق ملفات (اختياري)</MudText>
+                    <InputFile OnChange="HandleFileUpload" multiple />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">إرسال التقرير</MudButton>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudPaper>
+
+    <MudExpansionPanels Class="my-10">
+        <MudExpansionPanel Text="كم من الوقت يستغرق حل المشكلة؟">
+            وقت حل المشكلة يعتمد على نوعها وتعقيدها، وعادةً المشكلات البسيطة تحل خلال 24-48 ساعة.
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="كيف يمكنني متابعة حالة التقرير؟">
+            سيتم إرسال رقم التقرير عبر البريد الإلكتروني لمتابعته من خلال صفحة "متابعة التقارير".
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="هل يمكنني تعديل التقرير بعد إرساله؟">
+            لا يمكن تعديل التقرير مباشرة، لكن يمكنك التواصل مع خدمة العملاء باستخدام رقم التقرير.
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+
+    <MudPaper Elevation="0" Class="p-6 mt-8 text-center" Style="background-color: #f3f4f6">
+        <MudText Typo="Typo.h6">هل تحتاج إلى مساعدة فورية؟</MudText>
+        <MudText Typo="Typo.subtitle2">فريق الدعم متاح على مدار الساعة لمساعدتك</MudText>
+        <MudStack Direction="Row" Justify="Justify.Center" Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Phone">+966 12 345 6789</MudButton>
+            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Email">support@example.com</MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private ReportModel _model = new();
+
+    private async Task SubmitReport()
+    {
+        Snackbar.Add("تم إرسال التقرير بنجاح!", Severity.Success);
+        _model = new();
+    }
+
+    private void HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        // معالجة الملفات لاحقًا إن لزم
+    }
+
+    public class ReportModel
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public ProblemType Type { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
+
+    public enum ProblemType
+    {
+        Technical,
+        Service,
+        Billing,
+        Other
+    }
+}
+

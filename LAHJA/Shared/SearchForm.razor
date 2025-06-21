@@ -1,0 +1,40 @@
+﻿@using LAHJA.Them
+
+<style>
+    .custom-textfield {
+        height: 40px !important; /* يمكنك تعديل الارتفاع */
+        font-size: 12px !important; /* تصغير النص إذا لزم الأمر */
+    }
+
+        .custom-textfield .mud-input {
+            padding: 0px  !important; /* ضبط المسافة الداخلية */
+            height: 100% !important; /* تأكد من تطابق الارتفاع */
+        }
+
+        .custom-textfield .mud-input-adornment {
+            align-items: center !important; /* الحفاظ على محاذاة الأيقونات */
+        }
+
+</style>
+
+@* <MudTextField @bind-Value="BuildData"
+              Label="Search"
+              IconSize="Size.Medium"
+              Variant="Variant.Outlined"
+              Adornment="Adornment.End"
+              AdornmentIcon="@Icons.Material.Filled.Search"
+              AdornmentColor="@AppColors.BASE_COLOR_ENUM"
+              Class="custom-textfield" /> *@
+<form class="d-flex flex-row justify-content-around align-items-center">
+
+    <input class="form-control p-2" style="background-color:Transparent !important; border-radius:10px" type="search" placeholder="Search" aria-label="Search">
+    <MudIcon Icon="@Icons.Material.Filled.Search" Size="Size.Medium" Class="mx-2" style="font-size:30px !important" Color="@AppColors.BASE_COLOR_ENUM" />
+</form>
+ 
+
+
+@code {
+
+    [Parameter] public string BuildData { get; set; }
+    [Parameter] public string Content { get; set; }
+}

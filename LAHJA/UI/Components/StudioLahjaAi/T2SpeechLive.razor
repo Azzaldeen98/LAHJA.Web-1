@@ -1,0 +1,91 @@
+@using LAHAJ.Loading
+@using LAHJA.ApiClient.Models
+@using LAHJA.ApiClient.Services.Query
+@using LAHJA.ApiClient.Services.VoiceBot
+@using LAHJA.Data.UI.Components.StudioLahjaAiVM
+@using LAHJA.Data.UI.Models
+@using LAHJA.Data.UI.Templates.Services
+@using LAHJA.Helpers
+@using LAHJA.Them
+@using MudBlazor
+@using LAHJA.Data.UI.Components.ServiceCard
+@using Microsoft.AspNetCore.Components
+
+@inject TemplateServices templateServices
+
+@inject ISnackbar Snackbar
+@inherits StudioAi
+
+@if (!string.IsNullOrEmpty(_srcFrame))
+{
+@*     <iframe src="@_srcFrame"
+            width="100%"
+            height="600"
+            style="border: none;height:100%"
+            onload="@OnFrameLoaded">
+    </iframe> *@
+
+    <IframeComponent Lg="@Lg"
+                     StyleCss="width:100%;height:100%;border:none;"
+                     IsLoading="true"
+                     UrlCancel="@UrlCancel"
+                     UrlRedirect="@(Helper.GetFullPath(Navigation,$"{UrlPage}"))"
+                     SrcIFrame="@_srcFrame" />
+}
+
+@* @if (isLoading)
+{
+    <Loading IsLoading="@isLoading" />
+} *@
+
+@code
+{
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await CreateSessionTokenAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            // await CreateSessionTokenAsync();
+        }
+    }
+    private async Task OnSubmit(DataBuildServiceBase data)
+    {
+        try
+        {
+                 data.ServiceId = "2";
+                var response = await templateServices.Text2Speech(data);
+                if (response.Succeeded)
+                {
+
+                }
+                else
+                {
+                    Snackbar.Add("·«ÌÊÃœ ·œÌﬂ —’Ìœ ﬂ«›Ì „‰ «·ÿ·»« ", Severity.Warning);
+
+                }
+            
+
+
+        }
+
+        catch (Exception ex)
+        {
+
+        }
+     
+
+    }
+
+   
+
+
+
+}
+

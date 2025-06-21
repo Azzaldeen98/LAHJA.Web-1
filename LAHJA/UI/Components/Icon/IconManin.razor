@@ -1,0 +1,45 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@if (Params != null)
+{
+    <div class="col-md-6 col-lg-4">
+        <div class="card card-body bg-transparent text-center p-0">
+            <!-- Icon -->
+            <div class="text-center mb-3">
+                <svg class="text-info" width="70" height="70" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2.25 12C2.25 17.3848 6.61522 21.75 12 21.75C16.567 21.75 20.4006 18.6099 21.4597 14.371C21.6257 13.7067 21.7086 13.3746 21.5327 13.0378C21.4825 12.9418 21.3914 12.8251 21.3104 12.7532C21.0263 12.5009 20.6322 12.5009 19.844 12.5009H13.3C12.5501 12.5009 12.1751 12.5009 11.9122 12.3099C11.8273 12.2482 11.7527 12.1735 11.691 12.0886C11.5 11.8258 11.5 11.4508 11.5 10.7009V4.15579C11.5 3.36762 11.5 2.97353 11.2477 2.68944C11.1758 2.60845 11.0591 2.51733 10.9631 2.46717C10.6263 2.29122 10.2942 2.37415 9.63002 2.54002C5.39056 3.59871 2.25 7.43258 2.25 12Z" fill="currentColor" fill-opacity="0.18"></path>
+                    <path d="M13 9.2V4.32462C13 3.48021 13 3.05801 13.2763 2.76826C13.3548 2.68601 13.4813 2.59592 13.5847 2.54872C13.9489 2.38243 14.2968 2.50291 14.9926 2.74388C17.9219 3.75832 20.2417 6.07807 21.2562 9.00738C21.4971 9.70318 21.6176 10.0511 21.4513 10.4153C21.4041 10.5187 21.314 10.6452 21.2318 10.7237C20.942 11 20.5198 11 19.6754 11H14.8C14.0501 11 13.6751 11 13.4122 10.809C13.3273 10.7473 13.2527 10.6727 13.191 10.5878C13 10.3249 13 9.94994 13 9.2Z" fill="currentColor"></path>
+                </svg>
+            </div>
+            <!-- Title and content -->
+            @if (!string.IsNullOrEmpty(Params.Name))
+            {
+                <h6 class="mb-0" style="margin-left: 2%;">@Params.Name</h6>
+            }
+            <p class="mb-md-0">@Params.Description</p>
+
+
+           @*  @if (!string.IsNullOrEmpty(Params.Description))
+            {
+                <p class="mb-md-0">@Params.Description</p>
+            } *@
+            
+        </div>
+    </div>
+}
+else
+{
+    <p>No data available</p>
+}
+
+@code {
+    [Parameter] public CaerdSevicisIcon? Params { get; set; }
+
+    // يمكن إضافة منطق إضافي عند تهيئة الكومبوننت
+    protected override void OnInitialized()
+    {
+        if (Params != null && Params.IsUseStyleIneerItems)
+        {
+            Params.ClassItems += " " + CaerdSevicisIcon.INEERCLASS;
+        }
+    }
+}

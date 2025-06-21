@@ -1,0 +1,13 @@
+﻿@*@if (@Params.Src != null)
+{
+    <li class="@Params.ClassContanier">
+        <a href="#" class="@Params.ClassIcon" style="--bs-bg-opacity:0.05">
+            <img src="@Params.Src" class="@Params.ClassImg" alt="icon">
+        </a>
+    </li>
+}
+
+@code{
+    [Parameter] public CardIcon Params { set; get; } = new CardIcon();
+
+}*@

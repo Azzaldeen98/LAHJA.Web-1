@@ -1,0 +1,14 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@if (Params.DataBuild != null && Params.IsActive)
+{
+    <li class="@Params.ClassContainer">
+        <a href="#" class="@Params.ClassItem" style="--bs-bg-opacity:0.05">
+            <img src="@Params.DataBuild" class="@Params.ClassImg" alt="icon">
+        </a>
+    </li>
+}
+
+@code{
+    [Parameter] public CardComponentIcon Params { set; get; } = new CardComponentIcon();
+
+}

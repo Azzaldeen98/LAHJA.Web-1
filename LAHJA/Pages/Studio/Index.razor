@@ -1,0 +1,16 @@
+﻿
+@page "/studio/"
+@page "/studio/{*Url}"
+
+@using LAHJA.UI.Templates.Studio
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+
+<TemplateStudio  Url="@Url"/> 
+
+@code {
+
+    [Parameter] public string Url { get; set; } = "start";
+}
+

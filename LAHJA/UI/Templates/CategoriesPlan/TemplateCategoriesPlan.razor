@@ -1,0 +1,93 @@
+﻿
+@using Domain.ShareData
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components.Category
+@using LAHJA.UI.Components.Category
+@using LAHJA.UI.Components.Plan
+@using LAHJA.UI.Templates.Plans
+
+
+ @inject IManageLanguageService _manageLanguageService
+
+@inject LAHJA.Data.UI.Templates.Categories.TemplateCategories Template
+
+
+
+@if (isLoading)
+
+{
+
+    <Loading IsLoading="isLoading" />
+
+}
+else
+{
+
+    @if (Template != null && categories?.Any()==true)
+    {
+
+        <MainCategory DataBuild="categories"  />
+
+        @* @if (Template.SubscriptionPlans != null && Template.SubscriptionPlans.Count() > 0) *@
+        @* { *@
+
+        @*     <MainPlan DataBuilds="Template.SubscriptionPlans" IsDialog="true"  OnSubmit="Template.BuilderComponents.SubmitSubscriptionPlan" /> *@
+
+
+
+        @* } *@
+
+
+    }
+
+
+}
+
+
+@code
+{
+
+
+    [Parameter] public bool IsLoading { get => isLoading; set => isLoading = value; }
+
+    private bool isLoading = true;
+
+    private List<CategoryComponent> categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (Template.BuilderComponents.GetAllCategories != null)
+        {
+            var response = await Template.BuilderComponents.GetAllCategories();
+            if (response.Succeeded)
+            {
+                categories = response.Data;
+            }
+
+            isLoading = false;
+            StateHasChanged();
+        }
+        
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+
+
+
+    //     if (firstRender)
+    //     {
+
+       
+
+
+
+ 
+
+    //     }
+
+    //     var temp= Template.BuilderComponents.Categories;
+
+    // }
+}

@@ -1,0 +1,51 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+
+<MudTextField T="string"
+              InputType="InputType.Email"
+              Class="@Class"
+              FullWidth="@FullWidth"
+              Label="@Label"
+              Style="direction:ltr"
+              Required="@Required"
+              RequiredError="@RequiredError"
+              Validation="@(new EmailAddressAttribute() { ErrorMessage = ValidationMessage })"
+              Value="@Value"
+              ValueChanged="@(async v => await OnValueChanged(v))"/>
+
+@code {
+
+
+    [Parameter] public string Label { get; set; } = "Email";
+    [Parameter] public string RequiredError { get; set; } = "Email is required!";
+    [Parameter] public string ValidationMessage { get; set; } = "The email address is invalid!";
+    [Parameter] public bool Required { get; set; } = true;
+    [Parameter] public bool FullWidth { get; set; } = true;
+    [Parameter] public string Class { get; set; }
+
+    private string _value;
+
+    [Parameter]
+    [Category(CategoryTypes.FormComponent.Data)]
+    public string Value
+    {
+        get => _value;
+        set
+        {
+            if (_value != value)
+            {
+                _value = value;
+                ValueChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    private async Task OnValueChanged(string newValue)
+    {
+        _value = newValue;
+        await ValueChanged.InvokeAsync(newValue);
+    }
+}
+

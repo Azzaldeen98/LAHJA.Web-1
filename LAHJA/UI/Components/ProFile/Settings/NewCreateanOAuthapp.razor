@@ -1,0 +1,36 @@
+﻿<section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+	<div class="mb-6">
+		<div class="flex justify-between">
+			<h3 class="flex flex-row items-center text-xl font-bold">
+
+				Create an OAuth app
+			</h3>
+		</div>
+	</div>
+	<div class="SVELTE_HYDRATER contents" data-target="UserSettingsApplication" data-props="{&quot;app&quot;:null,&quot;csrf&quot;:&quot;eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ4ODMzOTIxMjYsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiIwYTM0Yzg5YmM2N2E2ZjBhN2NmYTNiMmVjOTM0ZWM0YzY1MGZhYWE4MmU2ZWYyM2NmZjgxYTRkMGE5Njg0NWI2In0=&quot;}">
+		<form class="flex flex-col gap-4" method="post" action="/settings/applications/">
+			<input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ4ODMzOTIxMjYsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiIwYTM0Yzg5YmM2N2E2ZjBhN2NmYTNiMmVjOTM0ZWM0YzY1MGZhYWE4MmU2ZWYyM2NmZjgxYTRkMGE5Njg0NWI2In0="> <label>
+				Application Name
+				<input type="text" class="form-input" name="name" placeholder="eg: My App" required="">
+			</label>  <label>
+				Homepage URL
+				<input type="url" name="url" class="form-input" placeholder="eg: https://myapp.com" required="">
+			</label> <label>
+				Logo URL
+				<input type="url" name="logoUrl" class="form-input" placeholder="eg: https://myapp.com/favicon.ico" required="">
+			</label> <label>
+				Token Expiration
+				<select class="form-input" name="expiration"><option value="15">15 minutes</option><option value="60">one hour</option><option value="480">8 hours</option><option value="1440">one day</option><option value="10080">one week</option><option value="43200">30 days</option></select>
+			</label> <div class="flex flex-col gap-2">
+				Scopes
+				<label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="openid"> <span class="ml-2 text-gray-600">openid</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="profile"> <span class="ml-2 text-gray-600">profile</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="email"> <span class="ml-2 text-gray-600">email</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="read-repos"> <span class="ml-2 text-gray-600">read-repos</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="write-repos"> <span class="ml-2 text-gray-600">write-repos</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="manage-repos"> <span class="ml-2 text-gray-600">manage-repos</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="write-discussions"> <span class="ml-2 text-gray-600">write-discussions</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="read-billing"> <span class="ml-2 text-gray-600">read-billing</span> </label><label class="flex items-center"><input type="checkbox" class="form-input" name="scope" value="inference-api"> <span class="ml-2 text-gray-600">inference-api</span> </label>
+			</div> <div class="flex flex-col gap-2">
+				<div class="flex items-center justify-between">
+					Redirect URLs
+
+					<button type="button" class="btn-1">+</button>
+				</div> <input type="url" class="form-input" name="" placeholder="eg: https://myapp.com/auth/callback" required="">
+			</div> <div class="mt-4 flex gap-2"><button class="btn-1" type="submit">Create application</button> </div>
+		</form>
+	</div>
+</section>

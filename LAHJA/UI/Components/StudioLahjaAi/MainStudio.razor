@@ -1,0 +1,1391 @@
+﻿ @* @page "/studio" *@
+@* @page "/studio/{*Url}" *@
+@* @using Domain.ShareData *@
+@* @using LAHJA.Data.UI.Components.StudioLahjaAiVM *@
+@* @using LAHJA.Helpers.Services *@
+@* @using LAHJA.Them *@
+@* @using Microsoft.AspNetCore.Authorization *@
+@* @inject LanguageService languageService *@
+@* @inject IManageLanguageService _manageLanguageService *@
+@* @inject ISnackbar snackbar *@
+@* @inject NavigationManager  Navigation *@
+@* @attribute [Authorize] *@
+
+@* <MudPaper Style="overflow:hidden;height:100%;position:fixed;left:0;width:100%" Elevation="0">
+
+    <MudDrawerContainer Class="mud-height-full" Style="height:100%">
+        <!-- Top Action Bar -->
+        <MudList T="string" Dense="true" Class="d-flex flex-grow-1 py-0" Style="@("background-color:"+@AppColors.BASE_COLOR_FOUCS)">
+   
+            <MudSpacer />
+            <MudText Typo="Typo.h5" class="text-light" Align="Align.Center">@GetText("Studio")</MudText>
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.Stream" OnClick="@(() =>ShowEX())"  />
+
+
+        </MudList>
+        <MudDivider />
+   
+        <!-- Left Drawer Menu -->
+        <MudContainer >
+            <MudDrawer Open="false" Fixed="true" Elevation="1" Style="height:100%!important" Variant="@DrawerVariant.Mini">
+            <MudNavMenu Class="font-size-nav-v2">
+                @foreach (var item in Categories)
+                {
+
+                        <MudButton Class="m-0 p-0" OnClick="@(() => SelectMenuItem(item))">
+                            <div class="d-flex flex-column " style="justify-content:center;align-items:center;padding:20%">
+
+                                <MudIconButton Icon="@item.Icon"  Class="m-0 p-0" Size="Size.Medium" OnClick="@(() => SelectMenuItem(item))" />
+                                <MudText Class="m-0 p-0" Style="font-size:9px">@item.Text[CurrentLanguage].Split()[0] </MudText>
+
+                            </div>
+                        </MudButton>
+                }
+            </MudNavMenu>
+        </MudDrawer>
+        </MudContainer>
+
+       @*   <MudContainer Class="display-mobile-mode">
+        <MudDrawer @bind-Open="@IsMenuOpen" Class="display-mobile-mode" Fixed="true" Elevation="1" Variant="@DrawerVariant.Temporary">
+            <MudNavMenu Class="font-size-nav-v2">
+                @foreach (var item in Categories)
+                {
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => SelectMenuItem(item))" Icon="@item.Icon">@item.Text[CurrentLanguage]</MudNavLink>
+                }
+            </MudNavMenu>
+        </MudDrawer>
+
+        </MudContainer>
+        <!-- Main Content Area -->
+ 
+        <MudMainContent Class="p-2" style="height:100% !important;">
+
+
+          @*   <MudDrawer @bind-Open="@IsSettingsMenuVisible" Fixed="false" Anchor="Anchor.End"
+                       Elevation="0" Variant="@DrawerVariant.Temporary" Class="h-100 ">
+                <MudDrawerHeader>
+                    <MudText Typo="Typo.h6">@GetText("Settings")</MudText>
+                </MudDrawerHeader>
+                <MudNavMenu>
+                    <MudList T="object" Class="d-flex flex-column justify-content-center align-items-center">
+
+                        <MudListItem  Text="@GetText("Languages")" Error="@_errorLanguage" ErrorText="@_errorLanguageMsg" @bind-Expanded="_expandedLanguage">
+                            <NestedList>
+                                @if (ListLangauge != null && ListLangauge?.Count() > 0)
+                                {
+                                <MudRadioGroup T="CategoryData" ValueChanged="SelectLangauge" Class="mb-3 d-flex justify-content-around border p-3">
+                                    @foreach (var setting in ListLangauge)
+                                    {
+                                        <MudRadio Class="md-item-font" Value="@setting" Color="@AppColors.BASE_COLOR_ENUM">@setting.Text[CurrentLanguage]</MudRadio>
+                                    }
+                                </MudRadioGroup>
+                                 }
+                            </NestedList>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudDivider />
+                        <MudListItem Text="@GetText("Sound Types")" @bind-Expanded="_expandedTypeSound">
+                            <NestedList>
+                                @if (TypeSound!=null && TypeSound?.Count() > 0)
+                                {
+                                <MudRadioGroup T="CategoryData" Error="@_errorTypeSound" ErrorText="@_errorTypeSoundMsg" ValueChanged="SelectTypeSound" Class="mb-3 d-flex justify-content-around border p-3">
+                                    @foreach (var setting in TypeSound)
+                                    {
+                                        <MudRadio Class="md-item-font" Color="@AppColors.BASE_COLOR_ENUM" Value="@setting">@setting.Text[CurrentLanguage]</MudRadio>
+                                    }
+                                
+                                </MudRadioGroup>
+                                }
+                          
+                            </NestedList>
+                        </MudListItem>
+
+                        <MudListItem Text="@GetText("Type Lahja")" @bind-Expanded="_expandedTypeLahja">
+                            <NestedList>
+                                @if (TypeLahja != null && TypeLahja?.Count() > 0)
+                                {
+                                <MudRadioGroup T="CategoryData" Error="@_errorTypeLahja" ErrorText="@_errorTypeLahjaMsg" ValueChanged="SelectTypeLahja" Class="mb-3 d-flex justify-content-around border p-3">
+                                    @foreach (var setting in TypeLahja)
+                                    {
+                                        <MudRadio Class="md-item-font" Color="@AppColors.BASE_COLOR_ENUM" Value="@setting">@setting.Text[CurrentLanguage]</MudRadio>
+                                    }
+                                    </MudRadioGroup>
+                                }
+                         
+                            </NestedList>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem Text="@GetText("Models")"> 
+                        
+                            <NestedList>
+                                @if (selectedModelsReleases != null && selectedModelsReleases?.Count() > 0)
+                                {
+                                    <MudRadioGroup T="CategoryData" Error="@_errorModelRelease" ErrorText="@_errorModelReleaseMsg" ValueChanged="SelectModelReleases" Class="mb-3 d-flex justify-content-around flex-row-reverse border p-3">
+                                        @foreach (var setting in selectedModelsReleases)
+                                        {
+                                            <MudRadio Class="md-item-font" Color="@AppColors.BASE_COLOR_ENUM" Value="@setting">@setting.Text[CurrentLanguage]</MudRadio>
+                                        }
+                                    </MudRadioGroup>
+                                }
+                             
+                            </NestedList>
+                        </MudListItem>
+                    </MudList>
+                </MudNavMenu>
+            </MudDrawer> 
+           
+            <MudPaper  Class="pa-0 overflow-y-auto h-100" Style="height:100%"  Elevation="0">
+
+                        @if (!string.IsNullOrEmpty(Url))
+                        {
+                            @RenderComponentBasedOnUrl
+                        }
+                        else
+                        {
+                            @if(SelectedComponent!=null)
+                                @SelectedComponent
+
+                            else{
+                                <StartStudio />
+                            }
+                        }
+             
+            </MudPaper>
+         
+        </MudMainContent>
+
+    </MudDrawerContainer>
+</MudPaper> *@
+
+@code {
+
+//     private string CurrentLanguage = "ar";
+//     private bool IsMenuOpen = true; 
+//     private bool IsMenuOpenTag = false;
+//     private bool IsSettingsMenuVisible = false; 
+//     private bool _expandedLanguage = false;
+//     private bool _expandedTypeSound = false;
+//     private bool _expandedTypeLahja = false;
+//     private bool _expandedModelRelease = false; 
+
+//     private bool _errorLanguage = false;
+//     private bool _errorTypeSound = false;
+//     private bool _errorTypeLahja = false;
+//     private bool _errorModelRelease = false;   
+
+//     private string? _errorLanguageMsg="";
+//     private string? _errorTypeSoundMsg = "";
+//     private string? _errorTypeLahjaMsg = "";
+//     private string? _errorModelReleaseMsg = "";
+
+//     private RenderFragment? SelectedComponent;
+
+
+
+//     [Parameter] public string Url { get; set; }
+
+//     private class CategoryData
+//     {
+//         public int Id { get; set; } = 0;
+//         public string Identifier { get; set; }
+//         public Dictionary<string, string> Text { get; set; }
+//         public string Icon { get; set; }
+//         public Type Component { get; set; }
+//         public string UrlPage { get; set; }
+//         public string TypeModel { get; set; }
+//         public string ServiceId { get; set; }
+//     }
+
+
+//     private CategoryData _selectedComponent;
+//     private CategoryData SelectedTypeSound;
+//     private CategoryData SelectedTypeLangague;
+//     private CategoryData SelectedTypeLahagaModel;
+//     private CategoryData SelectedModelRelease;
+
+//     private Dictionary<string, string> TranslationLabels;
+//     private List<CategoryData> selectedModelsReleases=new List<CategoryData>();
+//     private List<CategoryData> TypeLahja=new List<CategoryData>();
+
+
+//     [Parameter] public bool TypeLanguage { get; set; } = false;
+
+
+
+//     protected override void OnInitialized()
+//     {
+     
+//         SelectMenuItem(Categories[0]);
+//         changeLanguage("ar");
+//         StateHasChanged();
+
+//     }
+//     Selected Component
+
+
+//     private void ToggleMenu()
+//     {
+//         IsMenuOpen = !IsMenuOpen;
+//         StateHasChanged();
+//     }
+
+
+//     void ShowEX()
+//     {
+
+//     }
+
+//     public void SetActiveTab(string url)
+//     {
+//         if (string.IsNullOrEmpty(url))
+//             return;
+
+//         Url = url;
+//         Navigation.NavigateTo(url);
+
+//     }
+
+//     private RenderFragment RenderComponentBasedOnUrl => builder =>
+//     {
+//         if (builder == null)
+//         {
+//             throw new ArgumentNullException(nameof(builder));
+//         }
+
+//         if (string.IsNullOrEmpty(Url))
+//         {
+//             Url = "start";
+//         }
+
+//         var componentMap = new Dictionary<string, Type>
+//                                 {
+//                         { "start", typeof(StartStudio) },
+//                         { "t2Text", typeof(T2Text) },
+//                         { "t2Speech", typeof(T2Speech) },
+//                         { "t2SpeechLive", typeof(T2SpeechLive) },
+//                         { "chatT2Text", typeof(ChatT2Text) },
+//                         { "voiceChat", typeof(VoiceChat) },
+//                       };   
+
+
+//         var componentMap = new Dictionary<string, CategoryData>
+//                             {
+//                     { "start", Categories[0] },
+//                     { "t2Text", Categories[1]},
+//                     { "t2Speech", Categories[2] },
+//                     { "t2SpeechLive", Categories[3] },
+//                     { "chatT2Text", Categories[4]},
+//                     { "voiceChat", Categories[5] },
+//                   };
+
+//         if (componentMap.TryGetValue(Url, out var item))
+//         {
+
+//             builder.OpenComponent(0, item.Component);
+//             if (item.UrlPage != "studio/start")
+//             {
+//                 if (!string.IsNullOrEmpty(item.ServiceId))
+//                     builder.AddAttribute(1, "ServiceId", item.ServiceId);
+
+//                 if (!string.IsNullOrEmpty(item.UrlPage))
+//                     builder.AddAttribute(1, "UrlPage", item.UrlPage); 
+
+
+//                 builder.AddAttribute(1, "UrlCancel", "studio/start");
+//             }
+
+
+//             builder.CloseComponent();
+
+//         }
+//         else
+//         {
+
+//             builder.OpenComponent(0, typeof(StartStudio));
+//             builder.CloseComponent();
+//         }
+
+//         ToggleMenu();
+//     };
+
+
+
+//     private void SelectMenuItem(CategoryData item)
+//     {
+//         if (!string.IsNullOrEmpty(Url))
+//             SetActiveTab(item.UrlPage);
+//         else
+//             SelectMenuItem2(item);
+
+//     } 
+    
+
+//     private void SelectMenuItem2(CategoryData item)
+//     {
+      
+
+//         _selectedComponent = item;
+
+//         var parameters = new Dictionary<string, object>();
+
+//         if (!string.IsNullOrEmpty(item.ServiceId))
+//             parameters.Add("ServiceId", item.ServiceId); 
+
+//         if (!string.IsNullOrEmpty(item.UrlPage))
+//             parameters.Add("UrlPage", item.UrlPage);
+
+//         SelectedComponent = RenderComponent(item.Component, parameters);
+
+//         ToggleMenu();
+//     }
+
+//     public static RenderFragment RenderComponent(Type componentType, Dictionary<string, object> parameters = null)
+//     {
+//         return builder =>
+//         {
+//             builder.OpenComponent(0, componentType);
+
+//             if (parameters != null)
+//             {
+//                 foreach (var param in parameters)
+//                 {
+//                     if (!string.IsNullOrEmpty(param.Key) && param.Value!=null)
+//                         builder.AddAttribute(1, param.Key, param.Value);
+//                 }
+//             }
+
+//             builder.CloseComponent();
+//         };
+//     }
+
+//     private void ToggleSettingsMenu()
+//     {
+//         IsSettingsMenuVisible = !IsSettingsMenuVisible;
+//         StateHasChanged();
+//     }
+//     Helper to dynamically render components
+
+
+//     protected override async void OnAfterRender(bool firstRender)
+
+//     {
+//         if (firstRender)
+//         {
+//             CurrentLanguage = await _manageLanguageService.GetLanguageAsync();
+//             changeLanguage(CurrentLanguage);
+
+//         }
+
+
+//     }
+//     protected async void changeLanguage(string currentLangCode)
+//     {
+//         CurrentLanguage = currentLangCode;
+//         TranslationLabels = currentLangCode == "ar" ? ArabicLabels : EnglishLabels;
+//         StateHasChanged();
+//     }
+
+//     private string GetText(string key)
+//     {
+
+//         if (TranslationLabels.ContainsKey(key))
+//         {
+//             return TranslationLabels[key];
+//         }
+//         return key; 
+//     }
+
+
+//     private List<CategoryData> getListEnglishModelRelease ()
+//     {
+
+//         return   new List<CategoryData>(){
+//             new CategoryData
+//                 {
+//                     Id=1,
+//                     TypeModel="T2S",
+//                     Identifier = "vits-en-v1",
+//                     Text = new Dictionary<string, string>
+//                     {
+//                         { "ar", "لهجة 2.3 انجليزي" },
+//                         { "en", "Lahja English 2.3" }
+//                     },
+//                     Icon = Icons.Material.Filled.Group
+//         },
+//         };
+//     }
+//     private List<CategoryData> getListArabicModelRelease(string gender)
+//     {
+
+//         if (gender=="M")
+//             return new  List<CategoryData>() {
+//                 new CategoryData
+//                 {   Id=2,
+//                     TypeModel="T2S",
+//                     Identifier = "vits-ar-sa-A",
+//                     Text = new Dictionary<string, string>
+//                     {
+//                         { "ar", "لهجة احمد 2.1" },
+//                         { "en", "Lahja Ahmed 2.1" }
+//                     },
+//                     Icon = Icons.Material.Filled.Group
+//                 },
+
+//              };
+//         else
+//         {
+//             return new List<CategoryData>() {
+//                 new CategoryData
+//                 {   Id=3,
+//                     TypeModel="T2S",
+//                     Identifier = "vits-ar-sa-huba-v2",
+//                     Text = new Dictionary<string, string>
+//                     {
+//                         { "ar", "لهجة هبة 2.5" },
+//                         { "en", "Lahja huba 2.5" }
+//                     },
+//                     Icon = Icons.Material.Filled.Group
+//                 }
+//              };
+//         }
+//     }
+
+
+//     private List<CategoryData> ListLangauge = new()
+// {
+//     new CategoryData
+//     {
+//         Identifier = "Arabic",
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "العربية" },
+//             { "en", "Arabic" }
+//         },
+//         Icon = Icons.Material.Filled.Group
+//     },
+//     new CategoryData
+//     {
+//         Identifier = "English",
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "الإنجليزية" },
+//             { "en", "English" }
+//         },
+//         Icon = Icons.Material.Filled.Group
+//     },
+
+
+// };
+//     private List<CategoryData> TypeSound = new()
+// {
+//     new CategoryData
+//     {
+//         Identifier = "M",
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "رجل" },
+//             { "en", "Male" }
+//         },
+//         Icon = Icons.Material.Filled.Group
+//     },
+//     new CategoryData
+//     {
+//         Identifier = "F",
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", " أنثى" },
+//             { "en", "Female" }
+//         },
+//         Icon = Icons.Material.Filled.Group
+//     }
+// };
+
+//     private List<CategoryData> getTypeLahja(string language)
+//     {
+//         if (language == "English")
+//         {
+//             return new(){
+//                     new CategoryData
+//                     {
+//                         Identifier = "EN",
+//                         Text = new Dictionary<string, string>
+//                         {
+//                             { "ar", "الرسمية" },
+//                             { "en", "Official" }
+//                         },
+//                         Icon = Icons.Material.Filled.Group
+//                     },
+//                 };
+//         }
+//         else
+//         { if (language=="Arabic")
+//             return new()
+//         {
+//             new CategoryData
+//             {
+//                 Identifier = "NA",
+//                 Text = new Dictionary<string, string>
+//                 {
+//                     { "ar", "اللهجة النجدية" },
+//                     { "en", "Najdi Accent" }
+//                 },
+//                 Icon = Icons.Material.Filled.Group
+//             },
+//             new CategoryData
+//             {
+//                 Identifier = "HA",
+//                 Text = new Dictionary<string, string>
+//                 {
+//                     { "ar", "اللهجة الحجازية" },
+//                     { "en", "Hejaz Accent" }
+//                 },
+//                 Icon = Icons.Material.Filled.Group
+//             },
+//             new CategoryData
+//             {
+//                 Identifier = "SH",
+//                 Text = new Dictionary<string, string>
+//                 {
+//                     { "ar", "اللهجة الجنوبية" },
+//                     { "en", "Southern Accent" }
+//                 },
+//                 Icon = Icons.Material.Filled.Group
+//             },
+//             new CategoryData
+//             {
+//                 Identifier = "EA",
+//                 Text = new Dictionary<string, string>
+//                 {
+//                     { "ar", "اللهجة الشرقية" },
+//                     { "en", "Eastern Accent" }
+//                 },
+//                 Icon = Icons.Material.Filled.Group
+//             }
+//         };
+//         }
+//     }
+
+
+//     private void SelectLangauge(CategoryData item)
+//     {
+
+//         SelectedTypeLangague = item;
+
+//         IsSettingsMenuVisible = false;
+
+//         StateHasChanged();
+
+//     }
+//     private void SelectTypeSound(CategoryData item)
+//     {
+//         if (SelectedTypeLangague != null)
+//         {
+
+//             _errorLanguage = false;
+//             _errorLanguageMsg = "";
+
+//             SelectedTypeSound = item;
+//             if (TypeLahja != null && TypeLahja.Count() > 0)
+//             {
+//                 TypeLahja.Clear();
+//                 SelectedTypeLahagaModel = null;
+//                 _expandedTypeLahja = false;
+//                 StateHasChanged();
+//             }
+
+
+//             TypeLahja = getTypeLahja(SelectedTypeLangague.Identifier);
+
+
+
+
+//             if (selectedModelsReleases != null && selectedModelsReleases.Count() > 0)
+//             {
+//                 SelectedModelRelease = null;
+//                 selectedModelsReleases.Clear();
+//                 _expandedModelRelease = false;
+//                 StateHasChanged();
+//             }
+
+//             = SelectedTypeLangague.Identifier == "Arabic" ? getListArabicModelRelease(SelectedTypeSound.Identifier) : getListEnglishModelRelease();
+//         }
+//         else
+//         {
+//             snackbar.Add("من فضلك قم بتحديد اللغة لتتمكن من عرض  بقية الاعدادات", Severity.Warning);
+//             _errorLanguage = true;
+//             _errorLanguageMsg = "! Selected the language !!";
+//         }
+
+//         IsSettingsMenuVisible = false;
+
+//         StateHasChanged();
+
+//     }
+//     private void SelectTypeLahja(CategoryData item)
+//     {
+//         if (SelectedTypeLangague != null)
+//         {
+//             if (SelectedTypeSound != null)
+//             {
+//                 SelectedTypeLahagaModel = item;
+
+//                 selectedModelsReleases = SelectedTypeLangague.Identifier == "Arabic" ? getListArabicModelRelease(SelectedTypeSound.Identifier) : getListEnglishModelRelease();
+
+//                 _errorTypeSound = false;
+//                 _errorLanguage = false;
+//                 _errorLanguageMsg = "";
+//                 _errorTypeSoundMsg = "";
+
+
+//                 StateHasChanged();
+//             }
+//             else
+//             {
+//                 _errorTypeSound = true;
+//                 _errorTypeSoundMsg = "! Selected the  Type Sound !!";
+//             }
+
+//         }
+//         else
+//         {
+
+//             _errorLanguage = true;
+//             _errorLanguageMsg = "! Selected the language !!";
+//         }
+
+
+//     }
+//     private void SelectModelReleases(CategoryData item)
+//     {
+//         if (SelectedTypeLangague != null && item != null)
+//         {
+//             if (SelectedTypeSound != null)
+//             {
+//                 if (SelectedTypeLahagaModel != null)
+//                 {
+//                     _errorTypeLahja = false;
+//                     _errorTypeSound = false;
+//                     _errorLanguage = false;
+//                     _errorLanguageMsg = "";
+//                     _errorTypeSoundMsg = "";
+//                     _errorTypeLahjaMsg = "";
+
+//                     SelectedModelRelease = item;
+//                     if (_selectedComponent != null && _selectedComponent.Component != null && _selectedComponent.TypeModel == "T2S")
+//                     if (item.TypeModel == "T2S")
+//                         SelectedComponent = RenderFragmentHelper.RenderComponent(typeof(T2Speech), item.Id, "ModelId", item.Identifier);
+//                     StateHasChanged();
+//                 }
+//                 else
+//                 {
+//                     snackbar.Add("من فضلك يجب تحديد اللغة وجنس المتحدث واللهجة لتتمكن من عرض  بقية الاعدادات", Severity.Warning);
+//                     _errorTypeLahja = true;
+//                     _errorTypeLahjaMsg = "! Selected the Type Lahaga Model Or Type Sound !!";
+//                 }
+
+//             }
+//             else
+//             {
+//                 snackbar.Add("من فضلك يجب تحديد اللغة وجنس المتحدث  لتتمكن من عرض  بقية الاعدادات", Severity.Warning);
+//                 _errorTypeSound = true;
+
+//                 _errorTypeSoundMsg = "! Selected the  Type Sound !!";
+
+//             }
+
+//         }
+//         else
+//         {
+//             snackbar.Add("من فضلك يجب تحديد اللغة لتتمكن من عرض  بقية الاعدادات", Severity.Warning);
+//             _errorLanguage = true;
+//             _errorLanguageMsg = "! Selected the language !!";
+//         }
+
+
+//     }
+
+
+//     public class RenderFragmentHelper
+//     {
+//         public static RenderFragment RenderComponent(Type componentType, int index = 0, string key = "", string value = "") =>
+//             builder =>
+//             {
+//                 builder.OpenComponent(index, componentType);
+//                 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
+//                     builder.AddAttribute(1, key, value);
+//                 builder.AddAttribute(1, "OnSubmit", EventCallback.Factory.Create(this, OnSubmitT2Speech));
+//                 builder.CloseComponent();
+//             };
+//     }
+
+//     private void OnSubmitT2Speech()
+//     {
+
+//     }
+
+
+   
+// private List<CategoryData> Categories = new()
+// {
+//     new CategoryData
+//     {   Id=0,
+//         Identifier = "Start",
+//         UrlPage = "studio/start",
+//         Component = typeof(StartStudio),
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "تطبيقات البداية" },
+//             { "en", "Start Applications" }
+//         },
+//         Icon = Icons.Material.Filled.Apps
+//     },
+//     new CategoryData
+//     {   Id=1,
+//         ServiceId = "serv_cec8071f426d4180ad5dd29bb618bc12",
+//         Identifier = "studio-t2text",
+//         UrlPage = "studio/t2Text",
+//         Component = typeof(T2Text),
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "نص إلى نص" },
+//             { "en", "Text to Text" }
+//         },
+//         Icon = Icons.Material.Filled.TextDecrease
+//     },
+//     new CategoryData
+//     {   Id=2,
+//         Identifier = "T2Speech",
+//         ServiceId = "serv_8284631079cc40ff8fb8afa15dd86dcd",
+//         UrlPage = "studio/t2Speech",
+//         Component = typeof(T2Speech),
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "نص إلى كلام" },
+//             { "en", "Text to Speech" }
+//         },
+//         Icon = Icons.Material.Filled.Speaker
+//     },
+//     new CategoryData
+//     {   Id=3,
+//         ServiceId = "serv_8284631079cc40ff8fb8afa15dd86dcd",
+//         Identifier = "studio-t2speech",
+//         UrlPage = "studio/t2SpeechLive",
+//         Component = typeof(T2SpeechLive),
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "نص إلى كلام مباشر" },
+//             { "en", "Real-time Text to Speech" }
+//         },
+//         Icon = Icons.Material.Filled.Living
+//     },
+//     new CategoryData
+//     {   Id=4,
+//          ServiceId = "serv_4d5a62dc4eb246338619db0f18a52479",
+//         Identifier = "chatbot",
+//         Component = typeof(ChatT2Text),
+//         UrlPage = "studio/chatT2Text",
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "دردشة نصية" },
+//             { "en", "Text Chat" }
+//         },
+//         Icon = Icons.Material.Filled.Chat
+//     },
+//     new CategoryData
+//     {   Id=4,
+//          ServiceId = "serv_8284631079cc40ff8fb8afa15dd86dcd",
+//         Identifier = "VoiceChat",
+//         Component = typeof(VoiceChat),
+//         UrlPage = "studio/voiceChat",
+//         Text = new Dictionary<string, string>
+//         {
+//             { "ar", "دردشة صوتية" },
+//             { "en", "Voice Chat" }
+//         },
+//         Icon = Icons.Material.Filled.VoiceChat
+//     },
+
+// };
+
+
+
+
+//     private Dictionary<string, string> EnglishLabels = new()
+// {
+//     { "Studio", "Studio LAHJA AI" },
+//     { "Settings", "Settings" },
+//     { "Languages", "Languages" },
+//     { "Type Lahja", "Type Lahja" },
+//     { "Sound Types", "Sound Types" },
+//     { "Models", "Models" },
+// };
+
+//     private Dictionary<string, string> ArabicLabels = new()
+// {
+//     { "Studio", "استديو لهجة AI" },
+//     { "Settings", "الإعدادات" },
+//     { "Languages", "اللغات" },
+//     { "Type Lahja", "نوع اللهجة" },
+//     { "Sound Types", "أنواع الصوت" },
+//     { "Models", "النماذج" },
+// };
+
+
+    // private void SelectSetting(SettingItem setting)
+    // {
+    //     IsSettingsMenuVisible = false; Close settings menu after selection
+    //     SelectedComponent = builder =>
+    //     {
+    //         builder.OpenElement(0, "div");
+    //         builder.AddContent(1, $"You selected: {setting.Name}");
+    //         builder.CloseElement();
+    //     };
+    //     StateHasChanged();
+    // }
+
+
+
+
+
+    // private void ToggleDrawer()
+    // {
+    //     _open = !_open;
+    // }
+
+
+
+    // private void ToggleStartDrawer()
+    // {
+    //     _openStart = !_openStart;
+    // }
+
+    // private void ToggleEndDrawer()
+    // {
+    //     _openEnd = !_openEnd;
+    //     StateHasChanged();
+    // }
+
+
+    // private void onclick(CategoryData item)
+    // {
+    //     itemtab = item.Identifier;
+    //     ToggleEndDrawer();
+    //     StateHasChanged();
+    // }
+
+
+ 
+
+
+
+
+//     private List<CategoryData> CategoriesAr = new()
+// {
+
+
+//     new CategoryData { Identifier = "Start",Component=typeof(StartStudio) , Text = "تطبيقات البداية", Icon = Icons.Material.Filled.Apps },
+//     new CategoryData { Identifier = "Forums",Component=typeof(T2Text), Text = "نص إلى نص", Icon = Icons.Material.Filled.TextDecrease },
+//     new CategoryData { Identifier = "Social",Component=typeof(T2Speech), Text = "نص إلى كلام", Icon = Icons.Material.Filled.Speaker },
+//     new CategoryData { Identifier = "Stream Realtime",Component=typeof(T2SpeechLive), Text = "نص إلى كلام مباشر", Icon = Icons.Material.Filled.Living },
+//     new CategoryData { Identifier = "ChatText",Component=typeof(ChatT2Text), Text = "دردشة نصية", Icon = Icons.Material.Filled.Chat },
+
+
+// };
+
+    // private List<CategoryData> ListModelReleases = new()
+    // {
+
+    //     new CategoryData { Identifier = "Model number1", Text = "Lahja 2.0 Text", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "Model number2", Text = "Lahja 2.1", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "Model number3", Text = "Lahja 2.3", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "Model number5", Text = "Lahja 2.5", Icon = Icons.Material.Filled.Group }
+
+    // };
+
+    // private List<CategoryData> ListLangauge = new()
+    // {
+
+
+
+    //     new CategoryData { Identifier = "Arabic", Text = "Arabic", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "English", Text = "English", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "china", Text = "china", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "Egpit", Text = "Egpit", Icon = Icons.Material.Filled.Group }
+
+    // };
+
+
+ //    private List<CategoryData> Categories = new()
+ // {
+ //     new CategoryData { Identifier = "Start", Text = "Starter Apps", Icon = Icons.Material.Filled.Group },
+ //     new CategoryData { Identifier = "Forums", Text = "Text To Text", Icon = Icons.Material.Filled.Group },
+ //     new CategoryData { Identifier = "Social", Text = "Text To Speech ", Icon = Icons.Material.Filled.Forum },
+ //     new CategoryData { Identifier = "Stream Realtime", Text = "Text TO Speech Live", Icon = Icons.Material.Filled.Forum },
+ //     new CategoryData { Identifier = "ChatText", Text = "Chat Text", Icon = Icons.Material.Filled.Forum },
+
+ // };
+
+
+
+
+//     private List<CategoryData> TypeSoundEnglish = new()
+//     {
+
+//         new CategoryData { Identifier = "M", Text = "Male  ", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "F", Text = "Famle  ", Icon = Icons.Material.Filled.Group }
+
+
+//     };
+
+//     private List<CategoryData> TypeSoundArabic = new()
+// {
+//     new CategoryData { Identifier = "M", Text = "صوت ذكر", Icon = Icons.Material.Filled.Group },
+//     new CategoryData { Identifier = "F", Text = "صوت أنثى", Icon = Icons.Material.Filled.Group }
+// };
+
+//     private List<CategoryData> TypeLahjaArabic = new()
+//     {
+
+// new CategoryData { Identifier = "NA", Text = "اللهجة النجدية", Icon = Icons.Material.Filled.Group },
+// new CategoryData { Identifier = "HA", Text = "اللهجة الحجازية", Icon = Icons.Material.Filled.Group },
+// new CategoryData { Identifier = "SH", Text = "اللهجة الجنوبية", Icon = Icons.Material.Filled.Group },
+// new CategoryData { Identifier = "EA", Text = "اللهجة الشرقية", Icon = Icons.Material.Filled.Group },
+
+
+//     };
+
+    // private List<CategoryData> TypeLahjaEnglish = new()
+    // {
+    //     new CategoryData { Identifier = "NA", Text = "Najdi  ", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "HA", Text = "Hejazi  ", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "SH", Text = "Southern  ", Icon = Icons.Material.Filled.Group },
+    //     new CategoryData { Identifier = "EA", Text = "Eastern  ", Icon = Icons.Material.Filled.Group },
+
+    // };
+
+
+}
+
+@*
+
+          @*   <MudDrawer @bind-Open="@IsSettingsMenuVisible" Fixed="false" Anchor="Anchor.End"
+            Elevation="0" Variant="@DrawerVariant.Temporary" Class="h-100"  >
+                <MudDrawerHeader>
+                    <MudText Typo="Typo.h6">Settings</MudText>
+                </MudDrawerHeader>
+                <MudNavMenu>
+                    <MudList T="object"  Class="d-flex flex-column justify-content-center align-items-center">
+
+                        <MudListItem Text="Languages" @bind-Expanded="_expandedLanguage">
+                            <NestedList>
+
+                                <MudRadioGroup T="CategoryData" ValueChanged="SelectLangauge" Class="mb-3 d-flex justify-content-around border p-3">
+                                    @foreach (var setting in ListLangauge)
+                                    {
+                                        <MudRadio Value="@setting" Color="@AppColors.BASE_COLOR_ENUM">@setting.Text[CurrentLanguage]  </MudRadio>
+                                    }
+                                </MudRadioGroup>
+                            </NestedList>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem Text="Type LAHJA" @bind-Expanded="_expandedTypeLahja">
+                             <NestedList>
+                                <MudRadioGroup T="CategoryData" ValueChanged="SelectTypeLahja" Class="mb-3 d-flex justify-content-around border p-3">
+
+                                    @foreach (var setting in TypeLahja)
+                                    {
+                                        <MudRadio Color="@AppColors.BASE_COLOR_ENUM" Value="@setting">@setting.Text[CurrentLanguage]</MudRadio>
+                                    }
+
+                            </MudRadioGroup>
+                            </NestedList>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem Text="Sound Types" @bind-Expanded="_expandedTypeSound">
+                                  <NestedList>
+                                <MudRadioGroup T="CategoryData" ValueChanged="SelectTypeSound" Class="mb-3 d-flex justify-content-around border p-3">
+
+                                    @foreach (var setting in TypeSound)
+                                    {
+                                        <MudRadio  Color="@AppColors.BASE_COLOR_ENUM" Value="@setting">@setting.Text[CurrentLanguage]</MudRadio>
+                                    }
+
+                            </MudRadioGroup>
+                            </NestedList>
+                        </MudListItem>
+                        <MudDivider />
+                        <MudListItem Text="Models" @bind-Expanded="_expandedModelRelease">
+                         <NestedList>
+                                <MudRadioGroup T="CategoryData" ValueChanged="SelectModelReleases" Class="mb-3 d-flex justify-content-around flex-row-reverse border p-3">
+
+                                @foreach (var setting in ListModelReleases)
+                                {
+                                        <MudRadio Color="@AppColors.BASE_COLOR_ENUM" Value="@setting">@setting.Text[CurrentLanguage]</MudRadio>
+                                }
+
+                        </MudRadioGroup>
+                        </NestedList>
+                        </MudListItem>
+
+
+
+
+
+                       @* <MudListItem Text="Languages" @bind-Expanded="_expandedLanguage">
+                            <NestedList>
+                                    @foreach (var setting in ListLangauge)
+                                    {
+                                        <MudNavLink OnClick="@(() => SelectLangauge(setting))">@setting.Text[CurrentLanguage]</MudNavLink>
+                                    }
+
+                            </NestedList>
+                        </MudListItem>
+                        <MudDivider />
+                     <MudListItem Text="Type LAHJA" @bind-Expanded="_expandedTypeLahja">
+                        <NestedList>
+                            @foreach (var setting in TypeLahja)
+                            {
+                                <MudNavLink OnClick="@(() => SelectTypeLahja(setting))">@setting.Text[CurrentLanguage]</MudNavLink>
+                            }
+                        </NestedList>
+                        </MudListItem>
+                    <MudDivider />
+                    <MudListItem Text="Sound Types" @bind-Expanded="_expandedTypeSound">
+                        <NestedList>
+                            @foreach (var setting in TypeSound)
+                            {
+                                <MudNavLink OnClick="@(() => SelectTypeSound(setting))">@setting.Text[CurrentLanguage]</MudNavLink>
+                            }
+                            </NestedList>
+                        </MudListItem>
+                    <MudDivider />
+                    <MudListItem Text="Models" @bind-Expanded="_expandedModelRelease">
+                     <NestedList>
+                            @foreach (var setting in ListModelReleases)
+                            {
+                                <MudNavLink OnClick="@(() => SelectModelReleases(setting))">@setting.Text[CurrentLanguage]</MudNavLink>
+                            }
+                            </NestedList>
+                        </MudListItem>
+                   </MudList>
+                </MudNavMenu>
+            </MudDrawer> 
+
+
+
+
+<MudPaper Style="overflow:hidden; position:relative;height:100%">
+    <MudDrawerContainer Class="mud-height-full">
+        <MudList T="string" Dense="true" Class="d-flex   flex-grow-1 py-0 mb-3">
+
+
+
+            <MudCheckBox />
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" />
+            <MudIconButton Icon="@Icons.Material.Filled.MoreVert" />
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" />
+
+
+
+        </MudList>
+        <MudDivider />
+        <MudDrawer @bind-Open="@_open" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+            <MudNavMenu>
+
+                @foreach (var item in MenuItems)
+                {
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => SelectMenuItem(item))" Icon="@Icons.Material.Filled.Home">@item.Name</MudNavLink>
+                }
+            </MudNavMenu>
+        </MudDrawer>
+
+
+        <MudMainContent>
+            <MudPaper Class="pa-4">
+                @if (SelectedComponent != null)
+                {
+                    @SelectedComponent
+                }
+                else
+                {
+                    <MudText Typo="Typo.h6">Select an item from the menu to display content</MudText>
+                }
+            </MudPaper>
+        </MudMainContent>
+    </MudDrawerContainer>
+</MudPaper> *@
+        @*
+        @if (@itemtab == "Start")
+        {
+        <T2Speech />
+        <T2Text />
+        <StartStudio />
+        @if (_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+        }
+        else if (@itemtab == "Social")
+        {
+
+
+        <T2Speech />
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+
+
+        }
+        else if (@itemtab == "Forums")
+        {
+        <T2Text />
+
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+        }
+        else if (@itemtab == "ChatText")
+        {
+        <ChatT2Text />
+
+
+
+
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+
+
+
+
+        }
+        else if (@itemtab == "Stream Realtime")
+        {
+        <T2SpeechLive />
+
+
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+
+        }
+        else if (itemtab == "ChangeLog")
+        {
+
+        <LogChangeModelCompoent />
+
+
+        } *@
+
+
+        @*   <MudDrawer @bind-Open="@_openEnd" Fixed="false" Anchor="Anchor.End" Elevation="0" Variant="@DrawerVariant.Temporary">
+        <MudDrawerHeader>
+        <MudText Typo="Typo.h6">@(TypeLanguage ? "Settings" : "الاعدادت ")" </MudText>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="ToggleEndDrawer" Style="margin:4px!important" />
+        </MudDrawerHeader>
+        <MudNavMenu>
+        <MudList T="object" Class="vertical">
+
+
+
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Type  Langagaue Model" : "الغات ")">
+        <NestedList>
+
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in ListLangauge)
+        {
+
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+
+
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+
+
+        </MudList>
+
+        @if (itemtab == "ChatText")
+
+        {
+
+
+        <MudList T="object" Class="vertical">
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Type Audio" : "انواع الاصوات ")">
+        <NestedList>
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in TypeSound)
+        {
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+        </MudList>
+
+
+
+
+
+        }
+
+
+
+
+
+
+        <MudList T="object" Class="vertical">
+
+
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Model" : "النماذج ")">
+        <NestedList>
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in ListModelReleases)
+        {
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+
+        </MudList>
+
+        <MudList T="object">
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Available dialects" : "الهجات ")">
+        <NestedList>
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in TypeLahja)
+        {
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+
+
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+        </MudList>
+
+        <MudList T="object" Class="vertical">
+
+
+
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Tool" : "الادوات ")">
+        <NestedList>
+        <MudButton>Get Token </MudButton>
+
+        </NestedList>
+        <NestedList>
+        <MudSwitch Color="Color.Primary">"Speed  Sound</MudSwitch>
+
+        </NestedList>
+        </MudListItem>
+
+        </MudList>
+        </MudNavMenu>
+        </MudDrawer>
+        *@
+
+
+
+
+
+
+
+
+
+
+@* @code
+{
+
+ 
+    private bool IsMenuOpen = false;
+
+    // Menu Items
+    private List<MenuItem> MenuItems = new List<MenuItem>
+    {
+        new MenuItem { Name = "T2Speech", Component = typeof(T2Speech) },
+        new MenuItem { Name = "T2Text", Component = typeof(T2Text) },
+        new MenuItem { Name = "StartStudio", Component = typeof(StartStudio) }
+    };
+
+    // Selected Component
+    private RenderFragment? SelectedComponent;
+
+    private void ToggleMenu()
+    {
+        IsMenuOpen = !IsMenuOpen;
+    }
+
+    private void SelectMenuItem(MenuItem item)
+    {
+        SelectedComponent = RenderFragmentHelper.RenderComponent(item.Component);
+        IsMenuOpen = false; // Close the menu on mobile
+    }
+
+    // Helper to dynamically render components
+    public class RenderFragmentHelper
+    {
+        public static RenderFragment RenderComponent(Type componentType) =>
+            builder =>
+            {
+                builder.OpenComponent(0, componentType);
+                builder.CloseComponent();
+            };
+    }
+
+    // Menu Item Class
+    public class MenuItem
+    {
+        public string Name { get; set; }
+        public Type Component { get; set; }
+    }
+} *@
+
+
+@code {
+
+
+    
+
+  
+
+}

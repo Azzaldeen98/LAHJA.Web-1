@@ -1,0 +1,608 @@
+﻿@using Domain.ShareData
+@using LAHJA.ApiClient.Models
+@using LAHJA.ApiClient.Services.VoiceBot
+@using LAHJA.Data.UI.Components.ServiceCard
+ 
+@inject ISnackbar Snackbar
+
+@using LAHJA.Data.UI.Components.ServiceVM
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+
+
+
+
+
+@using LAHJA.Data.UI.Models
+@using LAHJA.Them
+@using MudBlazor
+@using LAHJA.Data.UI.Components.ServiceCard
+@using Microsoft.AspNetCore.Components
+@using LAHJA.ApiClient.Services.Query
+@inject IDialogService DialogService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject LAHJA.ApiClient.Services.IT2TService _T2TService
+@inject IQueryTextToSpeechService _queryTextToSpeechService
+@inject IVoiceBotService _VoiceBotService
+
+
+
+
+
+ 
+ <MudPaper Class="p-4 m-2">
+
+
+    <MudGrid Class="mt-3" Style="font-size:10px!important" Justify="Justify.SpaceBetween">
+
+            <MudItem xs="12" md="5">
+
+
+
+
+            <MudGrid Spacing="3" >
+                <MudItem xs="12" sm="12" md="12">
+
+                    
+                    
+
+                    <MudTextField Label="@(TypeLanguage ? "Enter Name" : "ادخل انص ")" Variant="Variant.Outlined" T="string" @bind-Value="_name" />
+
+                
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12" lg="12">
+                  
+                        <MudText Typo="Typo.body2">@(TypeLanguage ? "Language" : "اللغة")</MudText>
+
+                        <MudChipSet @bind-SelectedValues="_selected1" Variant="Variant.Text" SelectionMode="SelectionMode.SingleSelection" CheckMark="_checkMark1">
+                        @foreach (var language in DataBuild)
+                        {
+                                <MudChip OnClick="() => OnLanguageSelected(language)" Value="@language.Name" Color="@ColorCheck">@language.Name"</MudChip>
+                            }
+                        </MudChipSet>
+
+                   
+
+                </MudItem>
+
+
+                @if (availableDialects.Any())
+                {
+
+
+
+
+                    <MudItem xs="12" sm="12" md="12" lg="12">
+                      
+                            <MudText Typo="Typo.body2">@(TypeLanguage ? "Dialect" : "اللهجة")</MudText>
+                            <MudChipSet @bind-SelectedValues="_selected2" Variant="Variant.Text" SelectionMode="SelectionMode.SingleSelection" CheckMark="_checkMark2">
+                                @foreach (var dialect in availableDialects)
+                                {
+                                <MudChip OnClick="() => OnDialectSelected(dialect)" Value="@dialect.Name" Color="@ColorCheck">@dialect.Name</MudChip>
+                                }
+                            </MudChipSet>
+                        
+                    </MudItem>
+
+
+
+
+
+
+                }
+
+
+
+                @if (availableServices.Any())
+                {
+
+
+
+                    <MudItem xs="12" sm="12" md="12" lg="12">
+                        
+
+                            <MudText Typo="Typo.body2">@(TypeLanguage ? "Author" : "النماذج ")</MudText>
+
+
+                            <MudChipSet T="string" Variant="Variant.Text" SelectionMode="SelectionMode.MultiSelection"
+                                        CheckMark="_checkMark3">
+                                @foreach (var service in availableServices)
+                                {
+                                    <MudChip OnClick="() => OnServiceSelected(service)" Color="@ColorCheck">@service.Name</MudChip>
+                                }
+                            </MudChipSet>
+                        
+                    </MudItem>
+
+
+
+
+                }
+
+
+
+
+
+
+                <MudItem xs="12" sm="6">
+                    <MudButton Variant="Variant.Outlined" Color="@ColorCheck" OnClick="SubmitForm">
+
+                        @(TypeLanguage ? "Submit" : "تطبيق")
+                    </MudButton>
+
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+
+                    <MudButton Variant="Variant.Outlined" Color="@ColorCheck">
+
+                        @(TypeLanguage ? "Studio  AI" : "  استديو AI")
+                    </MudButton>
+
+                </MudItem>
+            </MudGrid>
+
+        </MudItem>
+
+          <MudItem xs="12" md="7" >
+
+
+
+
+            @if (ResultResponce.Any())
+            {
+
+
+
+
+ 
+
+
+
+                    @foreach (var item in ResultResponce)
+                    {
+
+
+
+
+                        <MudExpansionPanels Style="width:100%!important">
+                            <MudExpansionPanel Text="@item.Name" Expanded="true">
+                            <MudCard>
+                                 
+                                 <MudCardHeader>
+
+                                    <MudText Typo="Typo.body2"  >@item.Descrption</MudText>
+                                     </MudCardHeader>
+                                <MudCardContent>
+                                    <MudText>@item.Input</MudText>
+                                    @if (item.Type =="TxT")
+                                    {
+                                        <MudText Typo="Typo.body2">@item.OutPut</MudText>
+                                    }
+                                  
+                                    else
+                                    {
+                                         <Audio id="OutputPlayerId" Controls="true" />
+                                    }
+                                    
+                                </MudCardContent>
+                                <MudCardActions>
+
+                                    <MudTooltip Text="Delete">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="@ColorCheck" />
+                                    </MudTooltip>
+                                    <MudTooltip Text="Add">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Share" Color="@ColorCheck" />
+                                     </MudTooltip>
+                                    
+                                </MudCardActions>
+                            </MudCard>
+                            </MudExpansionPanel>
+                        </MudExpansionPanels>
+                    } 
+@* 
+                <MudTable Items="@ResultResponce" Dense="true" Bordered="true" Striped="true">
+                    <HeaderContent>
+                        <MudTh>Description</MudTh>
+                        <MudTh>Input</MudTh>
+                        <MudTh>Output</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>@context.Descrption</MudTd>
+                        <MudTd  >
+                            @context.Input
+                        </MudTd>
+                        <MudTd  >
+                            
+
+                               @if (context.Type == "TxT")  
+                            {
+                                <span>@context.Input</span>
+                            }
+                            else  
+                            {
+                                <Audio Src="@context.Input" Controls="true" />
+                            } 
+                            
+                           </MudTd>
+                    </RowTemplate>
+                </MudTable>
+ *@
+
+                }
+             else
+             {
+
+
+                <MudExpansionPanels Style="width:100%!important">
+                    <MudExpansionPanel Text="Outputs" Expanded="true">
+                    
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+
+
+            }
+
+
+
+            </MudItem>
+
+         
+
+
+
+
+         
+
+
+     </MudGrid>
+
+
+</MudPaper>  
+
+
+ 
+<style>
+
+    .mud-chip-set 
+    {
+
+        margin-bottom: 10px;
+    }
+</style>
+
+
+
+
+@code
+{
+
+
+
+
+    private string _name = string.Empty;
+    [Parameter] public bool TypeLanguage { get; set; } = true;
+    [Parameter] public Color ColorCheck { get; set; } = AppColors.BASE_COLOR_ENUM;
+    [Parameter] public List<LanguageModel> DataBuild { get; set; }
+    private bool _checkMark1 = false;
+    private bool _checkMark2 = false;
+    private bool _checkMark3 = false;
+
+
+
+
+
+
+
+
+
+    private IReadOnlyCollection<string> _selected1 = new HashSet<string>() { };
+
+    private IReadOnlyCollection<string> _selected2 = new HashSet<string>() { };
+
+    private List<DialectModel> availableDialects = new List<DialectModel>();
+    private List<ServiceaAppModel> availableServices = new List<ServiceaAppModel>();
+    private HashSet<ServiceaAppModel> selectedServices = new HashSet<ServiceaAppModel>();
+    private void OnLanguageSelected(LanguageModel language)
+    {
+
+
+
+
+
+
+
+        availableDialects = language.Dialects;
+        availableServices.Clear();
+        selectedServices.Clear();
+     //  ResultResponce.Clear();
+        _checkMark2=_checkMark3=false;
+
+    }
+
+    private void OnDialectSelected(DialectModel dialect)
+    {
+        availableServices = dialect.Services;
+        selectedServices.Clear();
+     //   ResultResponce=dialect.Services; 
+        _checkMark2 = _checkMark3 = false;
+    }
+
+    private void OnServiceSelected(ServiceaAppModel service)
+    {
+        if (selectedServices.Contains(service))
+        {
+            selectedServices.Remove(service);   
+        }
+        else
+        {
+            selectedServices.Add(service);
+
+        }
+    }
+
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+
+
+
+        }
+
+
+        catch(Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+
+    }
+
+    private async void SubmitForm()
+    {
+
+
+        try
+        {
+
+
+            if (!string.IsNullOrWhiteSpace(_name))
+            {
+
+                ResultResponce.Clear();
+                if (selectedServices.Any() && selectedServices.Count != 0)
+                {
+
+                    foreach (var item in selectedServices)
+                    {
+
+                        if(item.Type=="TxT")
+                        {
+
+
+
+                            var result= await  TextToText(_name, item);
+                            if (result != null) ResultResponce.Add(result);
+
+
+                        }
+                        else
+                        {
+
+
+                            var resut = new ServiceaAppModel()
+                                {
+
+
+
+
+
+                                    Input = _name,
+                                    Name = item.Name,
+                                    Descrption = item.Descrption,
+                                    Type = item.Type
+                                    
+
+
+
+                                };
+                            ResultResponce.Add(resut);
+                            TextSpeech(_name,item);
+
+                        }
+
+                    }
+
+                }
+
+                clear();
+                StateHasChanged();
+            }
+            else
+            {
+                Snackbar.Add("ادخل انص ", Severity.Error);
+            }
+
+
+
+
+
+        }
+
+        catch
+        {
+
+
+        }
+
+    }
+
+
+    [Parameter] public string? ModelId { get; set; } = "vits-ar-sa-A";
+
+
+
+
+    private async Task<ServiceaAppModel> TextToText(string content, ServiceaAppModel serviceaApp)
+    {
+
+        try
+        {
+
+            var response = await _T2TService.T2TAsync(new QueryRequestTextToText { Text = content });
+            if (response.Succeeded)
+            {
+
+
+                string decodedText = response.Data.Result;
+                serviceaApp = new ServiceaAppModel()
+                    {
+
+                        Input = content,
+                        Name=serviceaApp.Name,
+                        Type=serviceaApp.Type,
+                            Descrption=serviceaApp.Descrption,
+                        OutPut = decodedText,
+                         
+
+
+                    };
+
+                return serviceaApp;
+            }
+
+
+            return null;
+
+        }
+
+        catch(Exception ex)
+        {
+            return null;
+        }
+      
+
+
+
+
+    }
+    List<ServiceaAppModel> ResultResponce = new List<ServiceaAppModel>();
+
+    private async void TextSpeech(string textSpeech, ServiceaAppModel serviceaApp)
+
+    {
+
+
+
+
+        if (!string.IsNullOrEmpty(textSpeech))
+        {
+
+            StateHasChanged();
+            var request = new QueryRequest
+                {
+
+                    QueryRequestTextToText = new QueryRequestTextToText { Text = textSpeech },
+                    QueryRequestTextToSpeech = new QueryRequestTextToSpeech
+                    {
+                        TagId = "OutputPlayerId",
+                        Url = "https://api-inference.huggingface.co/models/wasmdashai/" + ModelId
+                    }
+                };
+
+            var response = await _VoiceBotService.TextToSpeechAsync(request);
+            if (response.Succeeded)
+            {
+
+
+
+            }
+            else
+            {
+
+
+            }
+        }
+
+    }
+  
+
+
+    public void clear()
+    {
+
+          availableServices.Clear();
+          selectedServices.Clear();
+          _name = string.Empty;
+
+        _selected1 = null;
+        _selected2 = null;
+        _checkMark1 = false;
+        _checkMark2 = false;
+        _checkMark3 = false;
+       
+    }
+
+   
+    public class ResultTypeModel
+    {
+
+
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string TypeResult { get; set; }
+        public string Descrption { get; set; }
+
+        public string Content { get; set; }
+
+
+
+
+
+    }
+
+}
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+ 

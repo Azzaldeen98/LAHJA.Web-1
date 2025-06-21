@@ -1,0 +1,169 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Models.Plan
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.Icon
+@using LAHJA.UI.Components.TabelCard
+@inject ISnackbar Snackbar
+
+@typeparam T
+
+@inherits TabelDataGrid<T>
+
+
+
+<div class="p-5 w-100">
+    <div class="p-1 RCardP">
+
+        @if (BarTabel != null && BarTabel.Any())
+        {
+            <CardShowExperience IsShowImage="false" Translations="BarTabel" />
+        }
+
+
+        @* <StateCountCard Params="StateCounts" /> *@
+
+
+        @* <ActionTabelCard Params="ActionTabels.Actions" *@
+        @*                  ChipClicked="ActionTabels.ChipClicked" /> *@
+
+
+        @if (StateCounts != null && StateCounts.Any())
+        {
+            <StateCountCard Params="StateCounts" />
+        }
+
+        @if (ActionTabels != null)
+        {
+            <ActionTabelCard Params="ActionTabels.Actions" ChipClicked="ActionTabels.ChipClicked" />
+        }
+
+    </div>
+
+    <TableSkeleton IsDisplay="isLoading" />
+
+      @if(Items!=null&&Items.Count()>0){
+
+        <TabelDataGrid T="T" 
+             Items="@Items"
+             Tag="@Tag"
+             Style="@Style"
+             Class="@Class"
+             ApplyDropClassesOnDragStarted="@ApplyDropClassesOnDragStarted"
+             Filterable="@Filterable"
+             Bordered="@Bordered"
+             Breakpoint="@Breakpoint"
+             CanCancelEdit="@CanCancelEdit"
+             ChildRowContent="@ChildRowContent"
+             CloneStrategy="@CloneStrategy"
+             ColGroup="@ColGroup"
+             ColumnResizeMode="@ColumnResizeMode"
+             ColumnsPanelReordering="@ColumnsPanelReordering"
+         
+             Culture="@Culture"
+             CurrentPage="@CurrentPage"
+             Dense="@Dense"
+             DragDropColumnReordering="@DragDropColumnReordering"
+             DragIndicatorIcon="@DragIndicatorIcon"
+             DragIndicatorSize="@DragIndicatorSize"
+             DropAllowedClass="@DropAllowedClass"
+             DropNotAllowedClass="@DropNotAllowedClass"
+             EditDialogOptions="@EditDialogOptions"
+             EditMode="@EditMode"
+             EditTrigger="@EditTrigger"
+             Elevation="@Elevation"
+             FilterCaseSensitivity="@FilterCaseSensitivity"
+             FilterDefinitions="@FilterDefinitions"
+             FilterMode="@FilterMode"
+             FilterTemplate="@FilterTemplate"
+             FixedFooter="@FixedFooter"
+             FixedHeader="@FixedHeader"
+             FooterClass="@FooterClass"
+             Groupable="@Groupable"
+             GroupClass="@GroupClass"
+             GroupClassFunc="@GroupClassFunc"
+             GroupExpanded="@GroupExpanded"
+             GroupStyle="@GroupStyle"
+             GroupStyleFunc="@GroupStyleFunc"
+             Header="@Header"
+             HeaderClass="@HeaderClass"
+             Height="@Height"
+             Hideable="@Hideable"
+             HorizontalScrollbar="@HorizontalScrollbar"
+             Hover="@Hover"
+             ItemSize="@ItemSize"
+             Loading="@Loading"
+             LoadingContent="@LoadingContent"
+             LoadingProgressColor="@LoadingProgressColor"
+             MultiSelection="@MultiSelection"
+             NoRecordsContent="@NoRecordsContent"
+             Outlined="@Outlined"
+             OverscanCount="@OverscanCount"
+           
+             QuickFilter="@QuickFilter"
+             ReadOnly="@ReadOnly"
+             RowClass="@RowClass"
+             RowClassFunc="@RowClassFunc"
+             RowLoadingContent="@RowLoadingContent"
+             RowsPerPage="@RowsPerPage"
+             RowStyle="@RowStyle"
+             RowStyleFunc="@RowStyleFunc"
+             SelectedItem="@SelectedItem"
+             SelectedItems="@SelectedItems"
+             SelectOnRowClick="@SelectOnRowClick"
+             ServerData="@ServerData"
+             ShowColumnOptions="@ShowColumnOptions"
+             ShowFilterIcons="@ShowFilterIcons"
+             ShowMenuIcon="@ShowMenuIcon"
+             SortDefinitions="@SortDefinitions"
+             SortMode="@SortMode"
+             Square="@Square"
+             Striped="@Striped"
+             ToolBarContent="@ToolBarContent"
+             Validator="@Validator"
+             Virtualize="@Virtualize"
+             VirtualizeServerData="@VirtualizeServerData"
+             CurrentPageChanged="CurrentPageChanged"
+             RowsPerPageChanged="RowsPerPageChanged"
+             RowClick="RowClick"
+             RowContextMenuClick="RowContextMenuClick"
+             SelectedItemChanged="SelectedItemChanged"
+             SelectedItemsChanged="SelectedItemsChanged"
+             CommittedItemChanges="CommittedItemChanges"
+             CanceledEditingItem="CanceledEditingItem"
+             StartedEditingItem="StartedEditingItem"
+             FormFieldChanged="FormFieldChanged"
+             LabelColumns="LabelColumns"
+             ISShowColumnsEdit=ISShowColumnsEdit
+             EditClicked=EditClicked 
+             IsStickyLeft=IsStickyLeft
+             IsStickyRight=IsStickyRight/>
+
+
+      
+    }
+    else if (!isLoading)
+    {
+        <PlanCreateStart Params="PlanCreateStartData" OnClick="ActionTabels.ChipClicked" />
+    }
+
+</div>
+
+
+@code{
+
+    private bool isLoading = true;
+    [Parameter] public bool IsLoading { set => isLoading = value; get => isLoading; }
+
+    [Parameter] public List<CardStateCount<string>>? StateCounts { set; get; }
+
+    [Parameter]
+    public PlanCreateStartData PlanCreateStartData { set; get; } = new();
+    [Parameter] public GroupActionTabels? ActionTabels { set; get; }
+
+    [Parameter]
+    public Dictionary<string, Dictionary<string, string>> BarTabel { set; get; } = new();
+ 
+
+
+}

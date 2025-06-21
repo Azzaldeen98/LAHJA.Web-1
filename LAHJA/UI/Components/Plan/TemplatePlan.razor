@@ -1,0 +1,430 @@
+﻿@using Domain.ShareData
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Plan
+
+
+@inject NavigationManager Navigation
+@inherits CardPlan<PlanViewModel>
+@inject ISnackbar Snackbar
+@inject IManageLanguageService _manageLanguageService
+@using LAHJA.Them
+@using System.Globalization
+@* @attribute [Allow] *@
+@if (dataBuild != null)
+{
+
+    <div class="p-0 m2">
+
+        <MudCard Class="@("p-0  position-relative m-auto "+@dataBuild.ClassImport)">
+
+            <MudText Typo="Typo.h6" Class="@(dataBuild.HeaderImport+" w-100")"> @dataBuild.Name</MudText>
+            <small class="mx-3">@dataBuild.Description</small>
+            <MudCardContent>
+                <MudText Typo="Typo.body1" Class="mb-1">
+                    @if (!dataBuild.IsFree)
+                    {
+                        <MudText Typo="Typo.h5"> @(dataBuild.MonthlyPrice)$ <small style="font-size:9px">/ @DMonth[lg]</small> </MudText>
+                    }
+                </MudText>
+                <MudList Dense="true" T="object">
+                    @if (_isDisplayButton){
+                        @if (dataBuild.IsSubscriptionActive)
+                        {
+                            <MudCardActions>
+                                <MudButton style="width:100%" Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM"
+                                           OnClick="@(()=>OnSubmitOpenSubscription(@dataBuild))"
+                                Class="@AppTextStyle.TEXT_TRANSFORM_NORMAL">@GetTranslation("Open Subscription")</MudButton>
+                            </MudCardActions>
+                        }
+                        else
+                        {
+                            @if (dataBuild.IsFree)
+                            {
+
+                                <MudCardActions>
+                                    <MudButton Disabled="@(dataBuild.NumberOfSubscriptions > 0)" style="width:100%"
+                                        Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM"
+                                               OnClick="@(()=>OnSubmitSelectPlan(@dataBuild))"
+                                               Class="@AppTextStyle.TEXT_TRANSFORM_NORMAL">@GetTranslation("Select Plan")</MudButton>
+                                </MudCardActions>
+
+
+                            }
+                            else{
+
+                                if (dataBuild.Name?.ToLower()?.Contains("enterprise")==true)
+                                {
+                                    <MudCardActions>
+                                        <MudButton style="width:100%" Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM"
+                                                   OnClick="@(()=>OnSubmitContactUs(@dataBuild))"
+                                                   Class="@AppTextStyle.TEXT_TRANSFORM_NORMAL">@GetTranslation("Contact Us")</MudButton>
+                                    </MudCardActions>
+                                }
+                                else if (dataBuild.IsSubscriptionAllowed)
+                                {
+                                    <MudCardActions>
+                                        <MudButton style="width:100%" Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM"
+                                                   OnClick="@(()=>OnSubmitSelectPlan(@dataBuild))"
+                                                   Class="@AppTextStyle.TEXT_TRANSFORM_NORMAL">@GetTranslation("Select Plan")</MudButton>
+                                    </MudCardActions>
+                                }
+
+                            }
+                        }
+                    }
+
+                    <MudDivider />
+                    @if (dataBuild.Features != null && dataBuild.Features.Count() > 0)
+                    {
+                        //Services List
+                        <MudListItem Text="Services" @bind-Expanded="_expanded">
+                            <NestedList>
+
+                                @foreach (var feature in dataBuild.Features)
+                                {
+                                    <MudListItem>
+                                        <FeaturePlanCard Param="feature"  AllowUpdate="_allowUpdate" IsAuth="IsAuth" OnClickDelete="ONclickDeleteNumberFeture" OnClickEdit="ONclickEditNumberFeture" />
+                                    </MudListItem>
+
+                                }
+                            </NestedList>
+                        </MudListItem>
+
+
+
+                    }
+                </MudList>
+                <MudDivider />
+                <MudCardActions Class="w-100">
+                    @if (dataBuild.IsUpgradeAllowed)
+                    {
+                        @* @if (_isUpgrade) *@
+                        @* { *@
+
+                        @*     <MudButton Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+" w-100")" Variant="Variant.Filled" *@
+                        @*     Color="@AppColors.BASE_COLOR_ENUM" OnClick="@(()=>Submit(dataBuild))">@GetTranslation("Upgrade")</MudButton> *@
+
+                        @* } *@
+                        @* else if (_allowUpdate) *@
+                        {
+
+                            @*  <MudButton Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+"  w-100")"
+                            Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM"
+                                       OnClick="@(()=>OnSubmitConfirm(@Params))">@GetTranslation("Confirm")</MudButton> *@
+
+                        }
+
+                        @* <MudButton Class="@(@AppTextStyle.TEXT_TRANSFORM_NORMAL+" px-3")" Variant="Variant.Filled" Color="Color.Default" OnClick="@(()=>OnSubmitCancel(@Params))">Cancel</MudButton> *@
+                    }
+
+                </MudCardActions>
+            </MudCardContent>
+            @* } *@
+
+        </MudCard>
+    </div>
+
+}
+
+
+
+
+
+@code {
+
+    [Parameter] public bool AllowUpdate { get => _allowUpdate; set => _allowUpdate = value; }
+
+    [Parameter] public bool IsUpgrade { get => _isUpgrade; set => _isUpgrade = value; }
+
+    [Parameter] public bool IsExpanded { get => _expanded; set=>_expanded=value; }
+
+    [Parameter] public bool IsLoading { get => _isLoading; set => _isLoading = value; }
+
+    [Parameter] public bool IsDisplaySelectButton { get => _isDisplayButton; set=>_isDisplayButton=value; }
+    // [Parameter] public bool IsSubscriptionAllowed { get => _isSubscriptionAllowed; set => _isSubscriptionAllowed = value; }
+
+    [Parameter] public PlanViewModel? DataBuild { get => dataBuild; set => dataBuild=value; }
+
+    [Parameter] public EventCallback<PlanViewModel> SubmitContactUs { get; set; }
+    [Parameter] public EventCallback<PlanViewModel> SubmitUpgrade { get; set; }
+    [Parameter] public EventCallback<PlanViewModel> SubmitOpenSubscription { get; set; }
+    @* [Parameter] public EventCallback<PlanViewModel> SubmitSelectPlan { get; set; } *@
+    [Parameter] public EventCallback<PlanViewModel> SubmitCancel { get; set; }
+
+
+    private PlanViewModel dataBuild ;
+    private bool _isSubscriptionAllowed = true;
+    private bool _isDisplayButton = true;
+    private bool _expanded = false;
+    private bool _isLoading = true;
+
+    private bool _allowUpdate = false;
+
+    private bool _isUpgrade { get; set; } = false;
+    private string lg { get; set; } = "en";
+    private Dictionary<string, string> DMonth = new()
+    {
+        { "en", "month" },
+        { "ar", "شهر" }
+    };
+
+    protected override void OnInitialized()
+    {
+        lg= CultureInfo.CurrentUICulture.Name;
+        if (dataBuild != null)
+        {
+            if (dataBuild.Status == "active")
+            {
+                @* _isDisplayButton = false; *@
+            }
+
+            _isLoading = false;
+        }
+        StateHasChanged();
+    }
+
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         lg = await _manageLanguageService.GetLanguageAsync();
+    //         StateHasChanged();
+    //     }
+    // }
+
+    private Color GetChipColor(bool status)
+
+    {
+
+        return status == true ? Color.Success : Color.Error;
+
+    }
+
+    private async Task OnSubmitContactUs(PlanViewModel data)
+    {
+        if (SubmitContactUs.HasDelegate && data != null)
+        {
+            await SubmitContactUs.InvokeAsync(data);
+        }
+    }
+
+
+    private async Task OnSubmitCancel(PlanViewModel input)
+    {
+        if (SubmitCancel.HasDelegate && input != null)
+        {
+            await SubmitCancel.InvokeAsync(input);
+        }
+    }
+
+    private async Task OnSubmitUpgrade(PlanViewModel input)
+    {
+        if (SubmitUpgrade.HasDelegate && input != null)
+        {
+            await SubmitUpgrade.InvokeAsync(input);
+        }
+    }
+
+
+    private async Task OnSubmitOpenSubscription(PlanViewModel input)
+    {
+        if (SubmitOpenSubscription.HasDelegate && input != null)
+        {
+            await SubmitOpenSubscription.InvokeAsync(input);
+        }
+    }
+    private async Task OnSubmitSelectPlan(PlanViewModel input)
+
+    {
+
+        try
+
+        {
+
+            if (OnSubmit.HasDelegate)
+            {
+
+                await OnSubmit.InvokeAsync(input);
+
+            }
+
+
+
+
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+        }
+
+
+
+    }
+
+    private async void ONclickDeleteNumberFeture(PlanFeatureViewModel numberOfService)
+
+    {
+
+        try
+
+        {
+
+            dataBuild.Price -= numberOfService.Price;
+
+            dataBuild.Features.Remove(numberOfService);
+
+
+
+            StateHasChanged();
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+        }
+
+
+
+    }
+
+    private async void ONclickEditNumberFeture(PlanFeatureViewModel numberOfService)
+
+    {
+
+        try
+
+        {
+
+            dataBuild.Price += numberOfService.Price;
+
+            StateHasChanged();
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+        }
+
+
+
+    }
+
+    private async void ONclickEditNumberService(PlanFeatureViewModel PlanFeatureViewModel)
+
+    {
+
+        try
+
+        {
+
+
+
+            CalculateTotalPrice();
+
+            StateHasChanged();
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+            Snackbar.Add(ex.Message, Severity.Error);
+
+        }
+
+
+
+    }
+
+    private void CalculateTotalPrice()
+
+    {
+
+
+
+        try
+
+        {
+
+            // Price = 0;
+
+            // foreach (var item in Params.Services)
+
+            // {
+
+            //     Price += item.Price;
+
+            // }
+
+
+
+            // foreach (var item in Params.numberOfServices)
+
+            // {
+
+            //     Price += item.Price;
+
+            // }
+
+
+
+
+
+
+
+        }
+
+        catch (Exception ex)
+
+        {
+
+
+
+        }
+
+    }
+
+    private string GetTranslation(string key)
+    {
+        return lg == "ar"
+            ? TransAr.GetValueOrDefault(key, key)
+            : TransEn.GetValueOrDefault(key, key);
+    }
+
+    private Dictionary<string, string> TransEn = new Dictionary<string, string>()
+    {
+        { "Confirm", "Confirm" },
+        { "Upgrade", "Upgrade" },
+        { "Contact Us", "Contact Us" },
+        { "Select Plan", "Select Plan" },
+        { "Open Subscription", "Open Subscription" },
+
+    };
+
+    private Dictionary<string, string> TransAr = new Dictionary<string, string>()
+    {
+        { "Confirm", "تأكيد" },
+        { "Contact Us", "إتصل بناء" },
+        { "Upgrade", "ترقية" },
+         { "Select Plan", "اختيار الخطه" },
+          { "Open Subscription", "فتح الاشتراك" },
+
+    };
+
+}

@@ -1,0 +1,260 @@
+﻿@using LAHJA.Data.UI.Components.Payment.DataBuildBillingBase
+
+@using LAHJA.UI.Components.Payment.CreditCard
+@inject LAHJA.Data.UI.Templates.Billing.TemplateBilling templateBilling
+
+
+
+
+@if (billingContact == null)
+{
+        <MudExpansionPanels>
+            <MudExpansionPanel @bind-Expanded="@open" HideIcon="true">
+                <TitleContent>
+                    <div class="d-flex">
+                        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined">
+                           @Translate("Billing Method")
+                        </MudAlert>
+                        <MudIcon Icon="@(open ? Icons.Material.Filled.Close : Icons.Material.Filled.Add)" class="ml-auto"></MudIcon>
+                    </div>
+                </TitleContent>
+                <ChildContent>
+                    <FormBilling Title="@Translate("Payment Information")" 
+                                 OnEdit="OnSaveData"
+                                 OnDelete="templateBilling.BuilderComponents.SubmitDeleteBillingDetails"
+                                 OnClickSave="OnSaveData" />
+                </ChildContent>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+   
+}
+else
+{
+    <MudContainer >
+        
+        <FormBilling Title="@Translate("Payment Information")"
+                     OnEdit="OnSaveData"
+                     OnDelete="templateBilling.BuilderComponents.SubmitDeleteBillingDetails"
+                     Params="@billingContact"
+                     OnClickSave="@OnSaveData" />
+    </MudContainer>
+                 
+
+   @*   <MudExpansionPanels>
+         <MudExpansionPanel @bind-Expanded="@open" HideIcon="true">
+            <TitleContent>
+                 <MudText Typo="Typo.h6" Class="font-weight-bold">@Translate("Billing Information")</MudText>
+
+                 <MudPaper Class="p-4 mb-4 shadow-md rounded-lg" Elevation="3">
+                     <MudText Class="mb-2"><strong>@Translate("Name"):</strong> @billingContact.FullName</MudText>
+                     <MudText Class="mb-2"><strong>@Translate("Country"):</strong> @billingContact.Country</MudText>
+                     <MudText Class="mb-2"><strong>@Translate("City"):</strong> @billingContact.City</MudText>
+                     <MudText Class="mb-2"><strong>@Translate("Phone Number"):</strong> @billingContact.MobilePhoneNumber</MudText>
+                     <MudText Class="mb-2"><strong>@Translate("Address1"):</strong> @billingContact.Address1</MudText>
+
+                     @if (!string.IsNullOrEmpty(billingContact.Address2))
+                     {
+                         <MudText Class="mb-2"><strong>@Translate("Address2"):</strong> @billingContact.Address2</MudText>
+                     }
+
+                     <div class="d-flex justify-end mt-3">
+                         <MudButton Variant="Variant.Outlined" OnClick="@(()=>OnDeleteBillingInfo(billingContact))" Color="Color.Error" StartIcon="Icons.Material.Filled.Delete" Class="px-4 py-2">@Translate("Remove")</MudButton>
+                     </div>
+                 </MudPaper>
+
+                 <MudIcon Icon="@(open ? Icons.Material.Filled.Close : Icons.Material.Filled.Edit)" class="ml-auto" />
+             </TitleContent> 
+
+             <ChildContent>
+                 <FormBilling ReadOnly="ReadOnly"
+                              OnEdit="OnSaveData"
+                              OnDelete="templateBilling.BuilderComponents.SubmitDeleteBillingDetails" 
+                              Params="@billingContact"
+                              OnClickSave="@OnSaveData" />
+             </ChildContent>
+         </MudExpansionPanel>
+     </MudExpansionPanels> *@
+}
+
+
+
+@code
+{
+    bool open;
+    private bool flag = true;
+    private DataBuildBillingBase? billingContact = null;
+
+
+
+    [Parameter] public DataBuildBillingBase BuildData { get => billingContact; set => billingContact = value; }
+    [Parameter] public EventCallback<DataBuildBillingBase> OnSelect { get; set; }
+    [Parameter] public EventCallback<DataBuildBillingBase?> ReadData { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+
+
+    private Dictionary<string, string> translations;
+    private string CurrentLanguage = "ar"; // اللغة الافتراضية
+
+    private async void OnSaveData(DataBuildBillingBase billingContact)
+    {
+        try
+        {
+            if (billingContact  != null)
+            {
+                if (templateBilling.BuilderComponents.SubmitUpdateBillingDetails != null)
+                {
+                    await templateBilling.BuilderComponents.SubmitUpdateBillingDetails(billingContact);
+                }
+
+                if (templateBilling.BuilderComponents.SubmitCreateBillingDetails != null)
+                {
+                    await templateBilling.BuilderComponents.SubmitCreateBillingDetails(billingContact);
+                }    
+
+              
+            }
+
+
+            if (ReadData.HasDelegate)
+            {
+                await ReadData.InvokeAsync(billingContact);
+            }
+        }
+        catch (Exception e)
+        {
+
+        }
+    }
+    private async void OnDeleteBillingInfo(DataBuildBillingBase billingContact)
+    {
+        try
+        {
+            if (templateBilling.BuilderComponents.SubmitDeleteBillingDetails != null && billingContact!=null)
+            {
+                await templateBilling.BuilderComponents.SubmitDeleteBillingDetails(billingContact);
+            }
+        }
+        catch(Exception e)
+        {
+
+        }
+    }
+
+
+
+    private void LoadTranslations()
+    {
+        if (CurrentLanguage == "ar")
+        {
+            translations = new Dictionary<string, string>
+        {
+            { "Payment Information", "معلومات الدفع" },
+            { "Billing Information", "معلومات الفوترة" },
+            { "Name", "الاسم" },
+            { "Country", "الدولة" },
+            { "City", "المدينة" },
+            { "Phone Number", "رقم الهاتف" },
+            { "Address1", "العنوان 1" },
+            { "Address2", "العنوان 2" },
+            { "Remove", "إزالة" },
+            { "The reactor temperature exceeds the optimal range", "درجة حرارة المفاعل تتجاوز النطاق الأمثل" },
+            { "Billing Method", "طريقة الفوترة" }
+        };
+        }
+        else
+        {
+            translations = new Dictionary<string, string>
+        {
+            { "Payment Information", "Payment Information" },
+            { "Billing Information", "Billing Information" },
+            { "Name", "Name" },
+            { "Country", "Country" },
+            { "City", "City" },
+            { "Phone Number", "Phone Number" },
+            { "Address1", "Address1" },
+            { "Address2", "Address2" },
+            { "Remove", "Remove" },
+            { "The reactor temperature exceeds the optimal range", "The reactor temperature exceeds the optimal range" },
+            { "Billing Method", "Billing Method" }
+        };
+        }
+    }
+
+    private string Translate(string key)
+    {
+        return translations.ContainsKey(key) ? translations[key] : key;
+    }
+
+    protected override async void OnInitialized()
+    {
+        LoadTranslations();
+
+        if (billingContact != null && ReadData.HasDelegate)
+        {
+                await ReadData.InvokeAsync(billingContact);
+        }
+        
+     
+    }
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+
+       @*  try
+        {
+            BillingContactt(billingContact);
+        }
+        catch(Exception ex)
+        {
+            
+        } *@
+
+    }
+    private void Tabb()
+    {
+        flag = false;
+        StateHasChanged();
+    }
+
+    private async void  Cancle(bool _flag)
+    {
+        flag = true;
+        StateHasChanged();
+
+
+    }
+    private async void BillingContactt(DataBuildBillingBase billingContact)
+    {
+        try
+        {
+            if (OnSelect.HasDelegate)
+            {
+
+                await OnSelect.InvokeAsync(billingContact);
+            }
+        }
+        catch
+        {
+
+        }
+
+    }
+
+    // private async  void  OnclickCreate(DataBuildBillingBase _billingContact)
+    // {
+    //     try
+    //     {
+    //         billingContact = _billingContact;
+    //         BillingContactt(billingContact);
+
+    //         StateHasChanged();
+
+    //     }
+    //     catch(Exception ex)
+    //     {
+            
+    //     }
+    // }
+
+}

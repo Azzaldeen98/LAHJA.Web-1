@@ -1,0 +1,164 @@
+@using LAHJA.Data.UI.Components.ServiceCard
+@using System.Text.Json.Serialization
+@using System.Text.Json;
+@using LAHJA.Data.UI.Models
+@using LAHJA.Pages.FeatureServices
+@using LAHJA.UI.Components.StudioLahjaAi
+@inject IDialogService DialogService
+@inject IJSRuntime jsRuntime
+@using LAHJA.Them
+
+<style>
+    .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .card:hover {
+        transform: scale(3.7);
+    }
+
+</style>
+
+
+
+@if (serviceComponentPar != null)
+{
+
+
+
+ 
+    <MudContainer Class="@serviceComponentPar.ClassContainer">
+        <MudText Typo="Typo.h3" Align="Align.Center" GutterBottom="true">Name  </MudText>
+        <MudText Align="Align.Center">Decrption</MudText>
+        <MudGrid Class="mt-8">
+
+
+
+
+            <MudItem xs="12" sm="6" md="4">
+
+            <TextToDialectCompoent Param="@serviceComponentPar.textToDialectComponent"
+                                       OnResult="@DataBuildReturn" OnSubmit="@OnSubmitText" />
+
+            </MudItem>
+
+
+            <MudItem xs="12" sm="12" md="4">
+
+                <TextToSpeechCompoent OnResult="@DataBuildReturn" OnSubmit="@OnSubmitText" Param="@serviceComponentPar.textToSpeechComponent" />
+
+            </MudItem>
+            <MudItem xs="12" sm="12" md="4">
+
+                <TextToSpeechCompoent OnResult="@DataBuildReturn" OnSubmit="@OnSubmitText" Param="@serviceComponentPar.textToSpeechComponent" />
+
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+
+    <FeatureServices />
+    <TableServiceModelCompoent />
+
+}
+else
+{
+
+
+    <h1>erorr</h1>
+}
+
+@code {
+
+
+
+
+
+    [Parameter]
+
+
+    public DataBuildServicePage DataBuildPage { get; set; }
+    [Parameter] public EventCallback<OnDataResult> OnSubmit { get; set; }
+    [Parameter] public OnDataResult DataBuildReturn { get; set; }
+
+    ServiceComponentPar serviceComponentPar = null;
+
+
+    protected override void OnInitialized()
+    {
+        DataBuildPage = serviceData;
+
+        serviceComponentPar = ServiceComponentPar.GetGenarelCard(DataBuildPage);
+        StateHasChanged();
+    }
+
+    private async void OnSubmitVoiceBot(OnDataResult obj)
+    {
+        DataModelVoiceBot requestData = new DataModelVoiceBot {
+
+            Text2Text = new DataModelText2Text
+            {
+                Input=obj.Text,
+            },
+            Speech  = new DataModelText2Speech
+            {
+                   AudioPlayerID = "OutputPlayerId",
+            }
+
+        };
+        string json = JsonSerializer.Serialize(requestData);
+        var response = await jsRuntime.InvokeAsync<string>("VoiceBot", json);
+        if (response != null)
+        {
+
+        }
+
+    }
+    private async void OnSubmitText(OnDataResult obj)
+    {
+
+        if (obj != null)
+        {
+            OnSubmitVoiceBot(obj);
+            // var requestData = new QueryRequestTextToSpeech { Data= obj.Text};
+            // string json = JsonSerializer.Serialize(requestData);
+            // var response=  await jsRuntime.InvokeAsync<string>("queryModelTextToSpeech",json);
+            // if (response!=null)
+            // {
+                
+            // }
+
+        }
+
+        DataBuildReturn = obj;
+        DataBuildReturn.Sccess = true;
+        StateHasChanged();
+
+
+    }
+
+
+    private Task OpenDialogAsync()
+    {
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+        return DialogService.ShowAsync<DialogUsageExample_Dialog>("Simple Dialog", options);
+
+    }
+
+
+
+    private DataBuildServicePage serviceData = new DataBuildServicePage();
+    private string selectedLanguage;
+    private string selectedDialect;
+    private string convertedText;
+    private bool isModalOpen = false;
+    private string videoLink;
+
+
+
+}

@@ -1,0 +1,128 @@
+﻿ 
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.UI.Components.CarosuelComponent
+@if (DataBuild != null)
+{
+
+    <div class="position-relative" style="position:relative;background:#212529">
+        <div class="wkC position-relative" style="position:relative">
+            <div class="wk1 " style="position:relative">
+                <div class="animated-text divtextheaderH">
+                    <h1 class="textHeader"> Lahja<span class="testimonial-heading-style"> AI </span></h1>
+                    <p style="padding:5%;font-size: 17px;border-left: 1px solid #6e6161">
+                        We provide models that help to aid in the creation of different attack sequences
+                        . You can deal with AGS models choosing the model you want ?.
+                    </p>
+
+
+
+                    <MudButton Href="/chatai"
+                               Rel="nofollow noopener"
+                               Variant="Variant.Outlined"
+                               EndIcon="@Icons.Custom.Brands.GitHub"
+                               Color="Color.Primary">
+                        Get  started
+                    </MudButton>
+                </div>
+            </div>
+            <div class="wk2" style="padding: 1% 5%;">
+               
+
+
+
+
+                 
+   <MudCarousel Class="Params.ClassContainer" Style="height:400px;width:400px;" ShowArrows="true"   AutoCycle="true" TData="object">
+
+
+
+
+           @foreach (var item in DataBuild.carosuelCardModel.UrlList)
+            {
+
+                <MudCarouselItem  >
+                    <div class="Params.ClassItem" style="height:100%">
+
+
+                        <MudCardMedia Image="@item" Height="250"   />
+
+                    </div>
+
+                </MudCarouselItem>
+            }
+            </MudCarousel>
+
+
+
+
+
+
+
+
+                @*   <img src="/css/ICON-removebg-preview.png" class="wave-image" style="width:100%;height:100%;border-radius: 28px 196px " /> *@
+            </div>
+        </div>
+        <span class="position-absolute bottom-0 start-0">
+            <svg class="fill-body" width="1920" height="254" viewBox="0 0 1920 254" fill="#fff" xmlns="http://www.w3.org/2000/svg">
+                <path d="M556.048 176.63C371.384 97.9289 108.406 143.838 0 176.63V254H1920V0C1863.62 35.5602 1712.53 98.8233 1559.27 67.394C1406.01 35.9648 1206.33 86.6647 1125.65 115.943C1012.72 168.964 740.712 255.331 556.048 176.63Z"></path>
+            </svg>
+        </span>
+    </div>
+
+
+    
+}
+else
+{
+    
+
+    <h1>Not Data</h1>
+
+
+
+
+
+}
+
+
+
+
+    @code
+{
+
+    [Parameter] public DataBuildCarosuelCard DataBuild { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        if (DataBuild == null)
+        {
+
+
+
+
+            DataBuild = new DataBuildCarosuelCard()
+                {
+                    carosuelCardModel = new CarosuelCardModel()
+                    {
+
+                        Id = "1",
+                        Name = "Tab1",
+                        // NamePige = "SSS",
+                        UrlList = new List<string>()
+                    {
+                        "/ai-hand.png","/ai-hand.png","/ai-hand.png"
+                    }
+                    }
+                };
+                StateHasChanged();
+
+        }
+
+
+    }
+
+
+       
+
+    }

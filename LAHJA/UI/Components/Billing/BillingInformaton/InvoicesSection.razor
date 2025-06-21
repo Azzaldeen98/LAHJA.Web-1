@@ -1,0 +1,353 @@
+﻿@using Domain.ShareData
+@using LAHJA.Them
+ 
+ 
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+<MudTable Items="@Elements" Dense="true" Hover="true" Bordered="true" Striped="true" Filter="new Func<Invoice,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">@GetLocalizedText("Periodic Elements", "الفاتوره")</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString1" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+
+        <MudTh>#</MudTh>
+        <MudTh>@GetLocalizedText("Status", "الحالة")</MudTh>
+        <MudTh>@GetLocalizedText("Client", "عميل")</MudTh>
+        <MudTh>@GetLocalizedText("Total", "المجموع")</MudTh>
+        <MudTh>@GetLocalizedText("Issue Date", "تاريخ الإصدار")</MudTh>
+
+        <MudTh>@GetLocalizedText("Actions", "الإجراءات")</MudTh>
+
+
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd>@context.Id</MudTd>
+        <MudTd>@context.Status</MudTd>
+        <MudTd>@context.Client</MudTd>
+        <MudTd>@context.Total</MudTd>
+        <MudTd>@context.Date</MudTd>
+
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+            
+            Color="AppColors.BASE_COLOR_ENUM" OnClick="@(()=>ViewInvoice(context.Id))" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() =>DeleteInvoice(context.Id))" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+
+
+@code 
+{
+
+
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = false;
+    private bool bordered = false;
+    private string searchString1 = "";
+    private Invoice selectedItem1 = null;
+
+
+    private HashSet<Invoice> selectedItems = new HashSet<Invoice>();
+
+
+
+    private IEnumerable<Invoice> Elements = new List<Invoice>();
+
+
+
+    protected override async Task OnInitializedAsync()
+
+    {
+
+
+
+        try
+
+        {
+
+
+
+            languageService.OnLanguageChanged += changeLanguage;
+
+            changeLanguage("ar");
+
+
+
+        }
+
+        catch
+
+        {
+
+        }
+
+    }
+
+
+
+    private bool FilterFunc1(Invoice element) => FilterFunc(element, searchString1);
+
+
+
+    private bool FilterFunc(Invoice element, string searchString)
+
+    {
+
+        if (string.IsNullOrWhiteSpace(searchString))
+
+            return true;
+
+        if (element.Status.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+
+            return true;
+
+        if (element.Total.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+
+            return true;
+
+
+
+        return false;
+
+    }
+
+
+
+
+
+
+
+
+
+    protected override async void OnAfterRender(bool firstRender)
+
+    {
+
+
+
+        if (firstRender)
+
+        {
+
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+
+            changeLanguage(currentLanguage);
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+    private async void changeLanguage(string language)
+
+    {
+
+
+
+        if (language == "en")
+
+        {
+
+
+
+            isArabic =false;
+
+
+
+
+
+
+
+
+            Elements = invoices;
+
+
+
+
+        }
+
+        else
+
+        {
+
+
+
+            isArabic = true;
+
+
+
+
+            Elements = invoicear;
+
+
+
+
+
+        }
+
+        InvokeAsync(StateHasChanged);
+
+
+
+    }
+
+
+
+    private void ViewInvoice(int id)
+
+    {
+
+
+
+        Console.WriteLine($"Viewing invoice with ID: {id}");
+
+    }
+
+
+
+    private void DeleteInvoice(int id)
+
+    {
+
+
+
+        var invoice = invoices.FirstOrDefault(i => i.Id == id);
+
+        if (invoice != null)
+
+        {
+
+            invoices.Remove(invoice);
+
+        }
+
+        StateHasChanged();
+
+    }
+
+
+
+    private List<Invoice> invoices = new()
+    {
+
+        new Invoice { Id = 5089, Status = "Paid", Client = "Jamal Creed", Total = "3077 USD", Date = "May 2020", Balance = "0" },
+        new Invoice { Id = 5041, Status = "Paid", Client = "Charles Tuttle", Total = "2230 USD", Date = "November 2020", Balance = "0" },
+        new Invoice { Id = 5027, Status = "Paid", Client = "Devon Walridge", Total = "2787 USD", Date = "September 2020", Balance = "0" }
+    };
+
+
+
+    private List<Invoice> paginatedInvoices;
+
+
+
+    private async Task<TableData<Invoice>> LoadServerData(TableState state)
+
+    {
+
+
+
+
+
+        int skip = state.Page * state.PageSize;
+
+        var data = invoices.Skip(skip).Take(state.PageSize).ToList();
+
+        return new TableData<Invoice> { Items = data, TotalItems = invoices.Count };
+
+    }
+
+
+
+
+
+
+
+
+
+    bool isArabic = true;
+
+
+
+
+
+    private string GetLocalizedText(string englishText, string arabicText)
+
+    {
+
+       
+
+        return isArabic ? arabicText : englishText;
+
+    }
+
+    public class Invoice
+
+    {
+
+        public int Id { get; set; }
+
+        public string Status { get; set; }
+
+        public string Client { get; set; }
+
+        public string Total { get; set; }
+
+        public string Date { get; set; }
+
+        public string Balance { get; set; }
+
+    }
+
+
+
+    private List<Invoice> invoicear = new()
+    {
+        new Invoice { Id = 5089, Status = "مدفوع", Client = "جمال كريد", Total = "3077 دولار", Date = "مايو 2024", Balance = "0" },
+        new Invoice { Id = 5041, Status = "مدفوع", Client = "جمال كريد", Total = "2230 دولار", Date = "نوفمبر 2024", Balance = "0" },
+        new Invoice { Id = 5027, Status = "مدفوع", Client = "جمال كريد", Total = "2787 دولار", Date = "سبتمبر 2024", Balance = "0" }
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

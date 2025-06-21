@@ -1,0 +1,364 @@
+﻿@page "/ShowInSound"
+
+@inject IJSRuntime JSRuntime
+@using LAHJA.ApiClient.Models
+@using LAHJA.ApiClient.Services.Query
+@using LAHJA.ApiClient.Services.VoiceBot
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Data.UI.Models
+@using System.Text.Json
+@using LAHJA.Them
+@inject IQueryTextToSpeechService  _QueryTextToSpeechService
+@inject IVoiceBotService _VoiceBotService
+@inject LAHJA.ApiClient.Services.IT2TService _T2TService;
+
+
+<gradio-app control_page_title="true" embed="false" eager="true" style="display: flex; flex-direction: column; flex-grow: 1;background-color:none!important">
+    <div class="gradio-container gradio-container-4-41-0 svelte-wpkpf6 app" data-iframe-height="" style="min-height: initial; flex-grow: 1;">
+        <div class="main svelte-wpkpf6">
+            <div class="wrap svelte-1rjryqp" style="min-height: 100%;">
+                <div class="contain svelte-1rjryqp" style="flex-grow: 1;">
+                    <div id="component-2" class="svelte-vt1mxs gap" style="min-width: min(0px, 100%);">
+                        <div id="component-6" class="svelte-sa48pu unequal-height">
+                            <div id="component-7" class="svelte-vt1mxs gap panel" style="flex-grow: 1; min-width: min(320px, 100%);">
+                                <div id="component-8" class="svelte-vt1mxs gap" style="flex-grow: 1; min-width: min(320px, 100%);">
+                                    <div class="form svelte-sfqy0y" style="flex-grow: 0; min-width: min(0px, 100%);">
+                                        <div id="component-3" class="block svelte-12cmxck padded" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);background-color:none!important">
+                                            <label class="svelte-1f354aw container">
+                                                <span data-testid="block-info" class="svelte-1gfkn6j">Textbox</span>
+
+                                                <MudTextField T="string" Class="scroll-hide svelte-1f354aw" MaxLines="7" style="overflow-y: 
+                                                     scroll; " @bind-Value="@textSpeech" />
+                                                
+                                             @*    <textarea data-testid="textbox" class="scroll-hide svelte-1f354aw" dir="ltr" placeholder="" rows="1" style="overflow-y: scroll; height: 42px;">
+                                                        </textarea> *@
+                                            </label>
+                                        </div>
+
+
+
+
+
+
+
+
+
+                                        <div id="component-0" class="block svelte-12cmxck padded" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);background-color:!important">
+                                            <div class="wrap default full svelte-au1olv hide" style="position: absolute; padding: 0px;">
+                                            </div>
+                                            <div class="svelte-1sk0pyu container">
+                                                <span data-testid="block-info" class="svelte-1gfkn6j">اختر النموذج</span>
+                                                <MudSelect T="string" @bind-Value="SelectedDialect">
+                                                
+                                                
+
+                                                @foreach (var dialect in DataBuildPage.TextToDialect.AvailableDialects)
+                                                {
+                                                    <MudSelectItem Value="@dialect">@dialect</MudSelectItem>
+                                                }
+                                                </MudSelect>
+                                                      
+                                                    <div class="reference"></div>
+                                             
+                                            </div>
+                                        </div>
+
+
+
+                                    
+                                    </div>
+                                </div>
+                                <div id="component-10" class="svelte-sa48pu stretch">
+                                    <MudButton class="lg secondary  svelte-cmf5ev" id="component-11" OnClick="Clear"> Clear</MudButton>
+                                    <MudButton  Color="@AppColors.BASE_COLOR_ENUM"  OnClick="Onsubmit"> Submit</MudButton>
+                                </div>
+                            </div>
+                             <div id="component-13" class="svelte-vt1mxs gap panel" style="flex-grow: 1; min-width: min(320px, 100%);"> 
+                                 <div id="component-4" class="block  svelte-12cmxck" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);"><div class="wrap default full svelte-au1olv hide" style="position: absolute; padding: 0px;"></div> <label for="" data-testid="block-label" class="svelte-1b6s6s"><span class="svelte-1b6s6s"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg></span> output 0</label> <div class="empty svelte-1oiin9d small" aria-label="Empty value">
+                                <div class="icon svelte-1oiin9d"><svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music">
+                                    <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3">
+                                        </circle><circle cx="18" cy="16" r="3">
+                                        </circle></svg></div></div>
+                                        </div>
+                                        <div id="component-5" class="block  svelte-12cmxck" style="border-style: solid; overflow: hidden; min-width: min(160px, 100%); border-width: var(--block-border-width);">
+                                        <div class="wrap default full svelte-au1olv hide" style="position: absolute; padding: 0px;"></div>
+                                        <label for="" data-testid="block-label" class="svelte-1b6s6s"><span class="svelte-1b6s6s">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-music">
+                                                <path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3">
+
+                                                </circle><circle cx="18" cy="16" r="3"></circle></svg></span> output 1</label> 
+                                                <div class="empty svelte-1oiin9d small" aria-label="Empty value">
+                                                    <div class="icon svelte-1oiin9d">
+                                            <audio id="OutputPlayerId" controls></audio>
+
+                                                     </div></div></div>
+                                                    <div id="component-14" class="svelte-sa48pu stretch"> </div>
+                                                </div>
+                        </div>
+                    </div>
+                </div>
+
+
+               
+
+                 <SliderWasmdashai  /> 
+
+            </div>
+            <div  class="toast-wrap svelte-pu0yf1">
+
+               
+            </div>
+        </div>
+    </div>
+</gradio-app>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+ 
+ @code
+{
+    [Parameter]
+    public DataBuildServicePage DataBuildPage { get; set; }
+    [Parameter] public EventCallback<OnDataResult> OnSubmit { get; set; }
+    private string textSpeech = "";
+    private string SelectedDialect = "";
+    protected override void OnInitialized()
+    {
+        try
+        {
+            if (DataBuildPage == null)
+            {
+                DataBuildPage = new DataBuildServicePage()
+                    {
+                        TextToDialect = new TextToDialectStep(),
+                        TextToSpeech = new TextToSpeechStep()
+
+                    };
+
+
+            }
+        }
+        catch(Exception ex)
+        {
+
+        }
+
+    }
+
+    private async  void Clear()
+    {
+        try
+        {
+            textSpeech = "";
+            SelectedDialect = "";
+            StateHasChanged();
+        }
+        catch(Exception ex)
+        {
+
+        }
+    } 
+
+
+
+    private async Task OnSubmitVoiceBot(OnDataResult obj)
+    {
+        DataModelVoiceBot requestData = new DataModelVoiceBot
+            {
+
+                Text2Text = new DataModelText2Text
+                {
+                    Input = obj.Text,
+                },
+                Speech = new DataModelText2Speech
+                {
+                    AudioPlayerID = "OutputPlayerId",
+                }
+
+            };
+        string json = JsonSerializer.Serialize(requestData);
+        var response = await JSRuntime.InvokeAsync<string>("VoiceBot", json);
+        if (response != null)
+        {
+
+        }
+
+    }
+    private async Task onSubmitTextToSpeechAsync(string inputText)
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(inputText))
+            {
+
+
+                var requestData = new QueryRequestTextToSpeech { Data = inputText, TagId = "OutputPlayerId" };
+                // string json = JsonSerializer.Serialize(requestData);
+                // var response = await JSRuntime.InvokeAsync<string>("queryModelTextToSpeech", json);
+
+                var response = await _QueryTextToSpeechService.TextToSpeechAsync(requestData);
+                if (response != null)
+                {
+
+                }
+                else
+                {
+
+                }
+
+                StateHasChanged();
+
+            }
+            Clear();
+
+
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+    private async Task Onsubmit()
+    {
+        try
+        {
+
+
+            if (!string.IsNullOrEmpty(textSpeech))
+            {
+                var request = new QueryRequest
+                {
+
+                        QueryRequestTextToText = new QueryRequestTextToText { Text = textSpeech },
+                        QueryRequestTextToSpeech = new QueryRequestTextToSpeech {  TagId = "OutputPlayerId" }
+                };
+
+                var response = await _VoiceBotService.TextToSpeechAsync(request);
+                if (response.Succeeded)
+                {
+                   await Task.Delay(100);
+                }
+                else
+                {
+                    
+                }
+
+                // var response = await _T2TService.T2TClientJSAsync(new QueryRequestTextToText { Text = textSpeech });
+                // if (response.Succeeded)
+                // {
+
+                //     string text = response.Data.Result;
+                //     await onSubmitTextToSpeechAsync(text);
+                // }
+
+
+                // var response = await T2TService.T2TClientJSAsync(new QueryRequestTextToText { Text = textSpeech });
+                // if (response != null)
+                // {
+                //     await onSubmitTextToSpeechAsync(response);
+                // }
+
+                // OnSubmitVoiceBot(new OnDataResult { Text = textSpeech});
+                // DataModelVoiceBot requestData = new DataModelVoiceBot
+                //     {
+
+                //         Text2Text = new DataModelText2Text
+                //         {
+                //             Input = textSpeech,
+                //         },
+                //         Speech = new DataModelText2Speech
+                //         {
+                //             AudioPlayerID = "OutputPlayerId",
+                //         }
+
+                //     };
+        
+                // var requestData = new QueryRequestTextToSpeech { Data = textSpeech };
+                // string json = JsonSerializer.Serialize(requestData);
+                // var response = await JSRuntime.InvokeAsync<string>("queryModelTextToSpeech", json);
+                // if (response != null)
+                // {
+
+                // }
+
+            }
+            // if (OnSubmit.HasDelegate && !string.IsNullOrEmpty(textSpeech))
+            // {
+            //     await OnSubmit.InvokeAsync(new OnDataResult()
+            //         {
+            //             Text = textSpeech,
+            //             OperationType = "TextToDialect",
+            //             Sccess = false,
+            //             SelectLanguage = SelectedDialect,
+            //             TypeSend = "Send"
+            //         });
+            // }
+            // {
+             
+            //     await OnSubmit.InvokeAsync(obj);
+
+
+            // }
+            // await JSRuntime.InvokeVoidAsync("playAudioFromText",textSpeech);
+            Clear();
+
+
+        }
+        catch(Exception ex)
+        {
+
+        }
+    }
+
+
+ }
+ 

@@ -1,0 +1,96 @@
+﻿ 
+@using MudBlazor
+@inject NavigationManager Navigation;
+
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-8 ">
+    <MudTable Items="@Runs" Dense="true" Hover="true"
+           SelectedItem="@SelectedRun"
+              >
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Project</MudTh>
+        <MudTh>State</MudTh>
+        <MudTh>Created</MudTh>
+    </HeaderContent>
+    <RowTemplate >
+
+        <MudTd DataLabel="Name" >@context.Name</MudTd>
+        <MudTd DataLabel="Project">@context.Project</MudTd>
+        <MudTd DataLabel="State">
+            @if (context.State == "Finished")
+            {
+                    <MudChip Color="Color.Success" T="object" Size="Size.Small" OnClick="RowClickEvent">Finished</MudChip>
+            }
+            else if (context.State == "Killed")
+            {
+                    <MudChip Color="Color.Warning" T="object" Size="Size.Small" OnClick="RowClickEvent">Killed</MudChip>
+            }
+            else
+            {
+                    <MudChip Color="Color.Error" T="object" Size="Size.Small" OnClick="RowClickEvent">Failed</MudChip>
+            }
+        </MudTd>
+
+        <MudTd DataLabel="Created">@context.Created</MudTd>
+    </RowTemplate>
+</MudTable>
+</MudContainer>
+
+
+   
+@code {
+
+
+
+    private void RowClickEvent()
+    {
+        Navigation.NavigateTo("/ShowTriningInformation");
+    }
+
+
+
+    private Run _selectedRun;
+
+    public Run SelectedRun
+    {
+        get => _selectedRun;
+        set
+        {
+            if (_selectedRun != value)
+            {
+                _selectedRun = value;
+                RowClickEvent();
+                
+            }
+        }
+    }
+    
+
+
+    private void Onclick()
+    {
+        
+    }
+    public List<Run> Runs { get; set; } = new List<Run>
+    {
+        new Run { Name = "stilted-wind-153", Project = "vits_english_dialect_welsh_female", State = "Finished", Created = "6 days ago" },
+        new Run { Name = "fancy-brook-152", Project = "vits_english_dialect_welsh_female", State = "Finished", Created = "6 days ago" },
+        new Run { Name = "wandering-dew-151", Project = "vits_english_dialect_welsh_female", State = "Killed", Created = "6 days ago" }
+       // new Run { Name = "rich-monkey-150", Project = "vits_english_dialect_welsh_female", State = "Killed", Created = "6 days ago" },
+        //new Run { Name = "different-dawn-148", Project = "vits_english_dialect_welsh_female", State = "Finished", Created = "1 month ago" },
+       // new Run { Name = "ancient-pine-147", Project = "vits_english_dialect_welsh_female", State = "Killed", Created = "1 month ago" },
+       // new Run { Name = "lyric-sunset-146", Project = "vits_english_dialect_welsh_female", State = "Failed", Created = "1 month ago" },
+       // new Run { Name = "chocolate-sun-145", Project = "vits_english_dialect_welsh_female", State = "Failed", Created = "1 month ago" }
+    };
+
+    public class Run
+    {
+
+        public string Name { get; set; }
+        public string Project { get; set; }
+        public string State { get; set; }
+        public string Created { get; set; }
+    }
+}

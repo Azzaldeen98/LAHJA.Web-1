@@ -1,0 +1,113 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Category
+@using LAHJA.Data.UI.Components.Plan.Css
+@using LAHJA.Them
+@using LAHJA.UI.Components.ServiceCard
+@inject NavigationManager Navigation
+@inherits CardCategory<CategoryComponent>
+@inject ISnackbar Snackbar
+ @inject IDialogService DialogService
+
+<style>
+
+  /*   .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+    .card:hover {
+        transform: scale(3.7);
+    } */
+
+
+
+
+
+</style>
+
+  
+
+ @if (Params != null)
+{
+    <div Class="d-flex flex-wrap justify-content-around align-items-center" >
+
+    @foreach (var item in Params)
+    {
+
+            <MudCard  Class="w30 mt-2 RCardP  " Style="border-radius:20px !important" >
+                <MudCardHeader>
+                    <CardHeaderAvatar>
+                        <MudAvatar Color="@AppColors.BASE_COLOR_ENUM">I</MudAvatar>
+                    </CardHeaderAvatar>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.body1">@item.Name</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        <MudIconButton Icon="@Icons.Material.Filled.More" OnClick="OpenDialogAsyncS" Color="Color.Default" />
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <div Class="launch-service-panel" style="position:relative">
+                    <MudCardMedia Image="chatbot-03.png"  Height="250" />
+                    <div class="launch-bg-service-panel justify-content-center align-items-center">
+
+                        <MudButton Variant="Variant.Filled" Class="@AppTextStyle.TEXT_TRANSFORM_NORMAL" OnClick="Submit" Color="@AppColors.BASE_COLOR_ENUM">Launch</MudButton>
+                    </div>
+                </div>
+                <MudCardContent>
+                    <MudText Typo="Typo.body2">@item.Description</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudIconButton Icon="@Icons.Material.Filled.Favorite" Color="Color.Default" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Share" Color="Color.Default" />
+                    <MudRating SelectedValue="2" Color="@AppColors.BASE_COLOR_ENUM" />
+                </MudCardActions>
+            </MudCard>
+
+
+    }
+
+   
+   </div> 
+
+}
+
+
+
+
+
+
+@code 
+{
+
+
+
+
+    private async Task Submit()
+    {
+        try
+        {
+            Navigation.NavigateTo("/services");
+
+            // if (OnSubmit.HasDelegate)
+            // {
+            //     await OnSubmit.InvokeAsync(inputCategory);
+            // }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+    }
+
+    private Task OpenDialogAsyncS()
+    {
+
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+
+        return DialogService.ShowAsync<DialogUsageExample_Dialog>("Simple Dialog", options);
+    }
+}

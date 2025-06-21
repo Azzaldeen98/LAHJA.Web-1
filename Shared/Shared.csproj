@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\Plans\**" />
+    <EmbeddedResource Remove="Models\Plans\**" />
+    <None Remove="Models\Plans\**" />
+  </ItemGroup>
+
+
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="12.0.1" />
+		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+		<PackageReference Include="Castle.Core" Version="5.2.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.13.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.4" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+		<PackageReference Include="Scrutor" Version="6.0.1" />
+
+		
+	</ItemGroup>
+
+
+	<ItemGroup>
+	  <Folder Include="AutoGenerator\" />
+	  <Folder Include="Failures\Validation &amp; Client-Side\" />
+	  <Folder Include="Middleware\" />
+	</ItemGroup>
+
+</Project>

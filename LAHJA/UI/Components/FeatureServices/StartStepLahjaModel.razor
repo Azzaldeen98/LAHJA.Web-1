@@ -1,0 +1,124 @@
+﻿@using Domain.ShareData
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Them
+
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+<MudContainer   MaxWidth="MaxWidth.Large" Style="padding:3%">
+    <MudPaper Elevation="0" Class="pa-8" Style="border-radius: 16px; ">
+
+        <MudText Typo="Typo.body1"  >
+            @Title
+        </MudText>
+
+
+        <MudDivider Class="my-4" />
+        <MudCarousel TData="StartStepModel" Style="height: 300px;color:rgba(0, 200, 83, 1);">
+            @foreach (var step in startSteps)
+            {
+                <MudCarouselItem >
+                    <MudPaper Elevation="4" Class="pa-4" Style="border-radius: 8px;">
+                        <MudText Typo="Typo.body1"   GutterBottom="true" Align="Align.Center">
+                            @($"{step.StepNumber}: {step.Title}")
+                        </MudText>
+                        <MudText Typo="Typo.body2" Class="text-dark" Style="line-height: 1.6;" Align="Align.Center">
+                            @step.Description
+                        </MudText>
+                    </MudPaper>
+                </MudCarouselItem>
+            }
+        </MudCarousel>
+    </MudPaper>
+</MudContainer>
+
+@code 
+{
+
+
+
+    [Parameter] public bool TypeLanguage { get; set; } =false;
+    [Parameter] public List<StartStepModel> DataModelAr { get; set; } = null;
+    [Parameter] public List<StartStepModel> DataModelEn { get; set; } = null;
+
+
+    string Title="";
+    List<StartStepModel> startSteps;
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+
+
+
+    }
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+            TypeLanguage = true;
+            startSteps = startSteps2;
+             Title =   "How Start?";
+           
+
+        }
+        else
+        {
+
+            TypeLanguage = false;
+            startSteps = startSteps1;
+            Title = "كيف الابد؟ ";
+
+
+        }
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+
+
+    private List<StartStepModel> startSteps1 = new List<StartStepModel>
+    {
+        new StartStepModel(1, "حدد نوع الخدمة المطلوبة", "اختر بين تدريب نموذج جديد أو Fine Training على نموذج قائم."),
+        new StartStepModel(2, "تقديم البيانات الصوتية", "في حال اختيار Fine Training، قم بتقديم عينات صوتية لتحسين النموذج."),
+        new StartStepModel(3, "تخصيص النظام", "اختر بين التكامل مع الخوادم المحلية أو إعداد تطبيق يعمل في الخلفية."),
+        new StartStepModel(4, "التشغيل المحلي", "إذا كنت بحاجة إلى نسخة مخففة، يتم تزويدك بنموذج يعمل دون الاتصال بالإنترنت.")
+    };
+
+    private List<StartStepModel> startSteps2 = new List<StartStepModel>
+{
+    new StartStepModel(1, "Determine the type of required service", "Choose between training a new model or fine-tuning an existing one."),
+    new StartStepModel(2, "Provide audio data", "If fine-tuning is selected, provide audio samples to enhance the model."),
+    new StartStepModel(3, "Customize the system", "Choose between integration with local servers or setting up a background application."),
+    new StartStepModel(4, "Local operation", "If you need a lightweight version, you will be provided with a model that works offline.")
+};
+}

@@ -1,0 +1,45 @@
+﻿@using LAHJA.Data.UI.Components
+
+
+<style>
+    .custom-container-actintabel {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1px;
+/*         margin: 20px auto;
+ */    }
+ </style>
+@if (Params != null)
+{
+<div class="custom-container-actintabel">
+        @foreach (var action in Params)
+    {
+
+            if (action.IsMudChip){
+                <MudChip T="string" OnClick="@(()=>ChipClicked(action))" Icon="@action.Icon" Color="@action.Color"> 
+                    @action.Name</MudChip>
+            }
+            else
+            {
+
+                <MudIconButton Icon="@action.Icon" Color="@action.Color" OnClick="@(()=>ChipClicked(action))" />
+            }
+
+    }
+  
+</div>
+}
+
+@code{
+
+    [Parameter] public List<CardActionTabel>? Params { set; get; }
+    [Parameter] public Func<CardActionTabel, Task>? ChipClicked { get; set; }
+
+    // private async void OnChipClicked(CardActionTabel action)
+    // {
+    //     await ChipClicked?.InvokeAsync(action);
+
+
+    // }
+}

@@ -1,0 +1,524 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.ProFileModel
+@using LAHJA.Data.UI.Templates.Profile
+@using LAHJA.Them
+@using LAHJA.UI.Components.ProFile.USettings
+
+@inject NavigationManager Navigation;
+@inject TemplateProfile Template
+@inject IManageLanguageService _manageLanguageService
+
+<UserProfileForm IsUpdate="isUpdate" BuildData="_buildData" Language="@lg" SubmitSaveUpdate="UpdateProfileUserAsync" SubmitCancel="OnCancel" SubmitDeleteImage="OnDeleteImage" />
+
+
+
+@code
+{
+
+    private bool  isUpdate =false;
+    private string lg="ar";
+    private DataBuildUserProfile _buildData=new();
+
+
+    [Parameter] public string Language { get=>lg; set
+        {
+            if (value != null)
+            {
+                lg = value;
+                StateHasChanged();
+            }
+        } }
+
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            lg = await _manageLanguageService.GetLanguageAsync();
+            var result = await Template.GetProfileUserAsync();
+
+            if (result.Succeeded && result.Data != null)
+            {
+                _buildData = result.Data;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    private  Task OnDeleteImage(DataBuildUserProfile _buildData)
+    {
+        return Task.CompletedTask;
+    }
+
+    private async Task UpdateProfileUserAsync(DataBuildUserProfile _buildData)
+    {
+            var result = await Template.BuilderComponents.SubmitUpdateProfileUser(_buildData);
+            if (result.Succeeded)
+            {
+                // _buildData = result.Data;
+                // isUpdate = false;
+                Navigation.NavigateTo("dashboard/profile",true  );
+            }
+    }
+
+
+
+    // private async Task UploadFiles(IBrowserFile file)
+    // {
+    //     selectedImage = file;
+    //     fileName = file.Name;
+    //     string extension = Path.GetExtension(file.Name);
+    //     using var stream = file.OpenReadStream(10_000_000); // الحد الأقصى 10MB
+    //     using var memoryStream = new MemoryStream();
+    //     await stream.CopyToAsync(memoryStream);
+    //     buffer = memoryStream.ToArray();
+    //     imageSrcFirst = imageSrc;
+    //     imageSrc = await JS.InvokeAsync<string>("createObjectURL", buffer);
+    //     string mimeType = $"image/{extension}";
+    //     imageUri = new Uri($"data:{mimeType};base64,{imageSrc}");
+    //     StateHasChanged();
+
+    // }
+
+    private void OnCancel()
+    {
+        // if (!string.IsNullOrEmpty(_buildData.Image))
+        //     imageSrc = _buildData.Image;
+        // isUpdate = !isUpdate;
+        // StateHasChanged();
+    }
+    private void OnEdit()
+    {
+
+        // isUpdate=!isUpdate;
+        // StateHasChanged();
+    }
+
+    private void DeleteImage()
+    {
+        
+    }
+
+
+
+}
+
+
+
+@* <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+    <ActivatorContent>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.CloudUpload">
+            Upload Files
+        </MudButton>
+    </ActivatorContent>
+</MudFileUpload> *@
+
+
+
+@* <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+    <ActivatorContent>
+        <MudFab Color="Color.Success"
+                StartIcon="@Icons.Material.Filled.AttachFile" />
+    </ActivatorContent>
+</MudFileUpload> *@
+
+@* <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+    <ActivatorContent>
+        <MudIconButton Color="Color.Info"
+                       Icon="@Icons.Material.Filled.PhotoCamera">
+        </MudIconButton>
+    </ActivatorContent>
+</MudFileUpload> *@
+
+@* <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles" Disabled>
+    <ActivatorContent>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary">
+            Disabled Button
+        </MudButton>
+    </ActivatorContent>
+</MudFileUpload> *@
+
+
+
+@* <div class="container">
+	<div class="row">
+		<div class="col-12">
+			<!-- Page title -->
+			<div class="my-5">
+				<h3>My Profile</h3>
+				<hr>
+			</div>
+			<!-- Form START -->
+			<form class="file-upload">
+				<div class="row mb-5 gx-5">
+					<!-- Contact detail -->
+					<div class="col-xxl-8 mb-5 mb-xxl-0">
+						<div class="bg-secondary-soft px-4 py-5 rounded">
+							<div class="row g-3">
+								<h4 class="mb-4 mt-0">Contact detail</h4>
+								<!-- First Name -->
+								<div class="col-md-6">
+									<label class="form-label">First Name *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="First name" value="Scaralet">
+								</div>
+								<!-- Last name -->
+								<div class="col-md-6">
+									<label class="form-label">Last Name *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Last name" value="Doe">
+								</div>
+								<!-- Phone number -->
+								<div class="col-md-6">
+									<label class="form-label">Phone number *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Phone number" value="(333) 000 555">
+								</div>
+								<!-- Mobile number -->
+								<div class="col-md-6">
+									<label class="form-label">Mobile number *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Phone number" value="+91 9852 8855 252">
+								</div>
+								<!-- Email -->
+								<div class="col-md-6">
+									<label for="inputEmail4" class="form-label">Email *</label>
+									<input type="email" class="form-control" id="inputEmail4" value="examplehomerealty.com">
+								</div>
+								<!-- Skype -->
+								<div class="col-md-6">
+									<label class="form-label">Skype *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Phone number" value="Scaralet D">
+								</div>
+							</div> <!-- Row END -->
+						</div>
+					</div>
+					<!-- Upload profile -->
+					<div class="col-xxl-4">
+						<div class="bg-secondary-soft px-4 py-5 rounded">
+							<div class="row g-3">
+								<h4 class="mb-4 mt-0">Upload your profile photo</h4>
+								<div class="text-center">
+									<!-- Image upload -->
+									<div class="square position-relative display-2 mb-3">
+										<i class="fas fa-fw fa-user position-absolute top-50 start-50 translate-middle text-secondary"></i>
+									</div>
+									<!-- Button -->
+									<input type="file" id="customFile" name="file" hidden="">
+									<label class="btn btn-success-soft btn-block" for="customFile">Upload</label>
+									<button type="button" class="btn btn-danger-soft">Remove</button>
+									<!-- Content -->
+									<p class="text-muted mt-3 mb-0"><span class="me-1">Note:</span>Minimum size 300px x 300px</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div> <!-- Row END -->
+				<!-- Social media detail -->
+				<div class="row mb-5 gx-5">
+					<div class="col-xxl-6 mb-5 mb-xxl-0">
+						<div class="bg-secondary-soft px-4 py-5 rounded">
+							<div class="row g-3">
+								<h4 class="mb-4 mt-0">Social media detail</h4>
+								<!-- Facebook -->
+								<div class="col-md-6">
+									<label class="form-label"><i class="fab fa-fw fa-facebook me-2 text-facebook"></i>Facebook *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Facebook" value="http://www.facebook.com">
+								</div>
+								<!-- Twitter -->
+								<div class="col-md-6">
+									<label class="form-label"><i class="fab fa-fw fa-twitter text-twitter me-2"></i>Twitter *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Twitter" value="http://www.twitter.com">
+								</div>
+								<!-- Linkedin -->
+								<div class="col-md-6">
+									<label class="form-label"><i class="fab fa-fw fa-linkedin-in text-linkedin me-2"></i>Linkedin *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Linkedin" value="http://www.linkedin.com">
+								</div>
+								<!-- Instragram -->
+								<div class="col-md-6">
+									<label class="form-label"><i class="fab fa-fw fa-instagram text-instagram me-2"></i>Instagram *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Instragram" value="http://www.instragram.com">
+								</div>
+								<!-- Dribble -->
+								<div class="col-md-6">
+									<label class="form-label"><i class="fas fa-fw fa-basketball-ball text-dribbble me-2"></i>Dribble *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Dribble" value="http://www.dribble.com">
+								</div>
+								<!-- Pinterest -->
+								<div class="col-md-6">
+									<label class="form-label"><i class="fab fa-fw fa-pinterest text-pinterest"></i>Pinterest *</label>
+									<input type="text" class="form-control" placeholder="" aria-label="Pinterest" value="http://www.pinterest.com">
+								</div>
+							</div> <!-- Row END -->
+						</div>
+					</div>
+
+					<!-- change password -->
+					<div class="col-xxl-6">
+						<div class="bg-secondary-soft px-4 py-5 rounded">
+							<div class="row g-3">
+								<h4 class="my-4">Change Password</h4>
+								<!-- Old password -->
+								<div class="col-md-6">
+									<label for="exampleInputPassword1" class="form-label">Old password *</label>
+									<input type="password" class="form-control" id="exampleInputPassword1">
+								</div>
+								<!-- New password -->
+								<div class="col-md-6">
+									<label for="exampleInputPassword2" class="form-label">New password *</label>
+									<input type="password" class="form-control" id="exampleInputPassword2">
+								</div>
+								<!-- Confirm password -->
+								<div class="col-md-12">
+									<label for="exampleInputPassword3" class="form-label">Confirm Password *</label>
+									<input type="password" class="form-control" id="exampleInputPassword3">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div> <!-- Row END -->
+				<!-- button -->
+				<div class="gap-3 d-md-flex justify-content-md-end text-center">
+					<button type="button" class="btn btn-danger btn-lg">Delete profile</button>
+					<button type="button" class="btn btn-primary btn-lg">Update profile</button>
+				</div>
+			</form> <!-- Form END -->
+		</div>
+	</div>
+</div>
+
+
+ *@
+@*  <div class="card">
+                          <!-- Card Body -->
+                          <div class="card-body">
+                            <div class="d-flex align-items-center">
+                              <div class="position-relative">
+                                <img src="../assets/images/avatar/avatar-1.jpg" alt="" class="rounded-circle avatar-xl">
+                                <a href="#" class="position-absolute mt-2 ms-n3" data-bs-toggle="tooltip"
+                                  data-placement="top"  title="Verifed">
+                                  <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30">
+                                </a>
+                              </div>
+                              <div class="ms-4">
+                                <h4 class="mb-0">Jenny Wilson</h4>
+                                <p class="mb-1 fs-6">Front-end Developer, Designer</p>
+                                <span class="text-warning lh-1 d-flex align-baseline">
+                                  4.5<span class="fs-6 mx-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                      fill="currentColor" class="bi bi-star-fill text-warning" viewBox="0 0 16 16">
+                                      <path
+                                        d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                                    </svg>
+                                </span>Instructor Rating
+                                </span>
+                              </div>
+                            </div>
+                            <div class="border-top row mt-3 border-bottom mb-3 g-0">
+                              <div class="col">
+                                <div class="pe-1 ps-2 py-3">
+                                  <h5 class="mb-0">11,604</h5>
+                                  <span>Students</span>
+                                </div>
+                              </div>
+                              <div class="col border-start">
+                                <div class="pe-1 ps-3 py-3">
+                                  <h5 class="mb-0">32</h5>
+                                  <span>Courses</span>
+                                </div>
+                              </div>
+                              <div class="col border-start">
+                                <div class="pe-1 ps-3 py-3">
+                                  <h5 class="mb-0">12,230</h5>
+                                  <span>Reviews</span>
+                                </div>
+                              </div>
+                            </div>
+                            <p>I am an Innovation designer focussing on UX/UI based in Berlin. As a creative
+                              resident at Figma explored the city of the future and how new technologies.</p>
+                            <a href="#" class="btn btn-outline-secondary btn-sm">View
+                              Details</a>
+                          </div>
+                        </div>
+
+<div class="row align-items-center">
+   <!-- User Info -->
+   <div class="col-xl-12 col-lg-12 col-md-12 col-12">
+      <div class="pt-8 rounded-top-md" style="background: url(../assets/images/background/profile-bg.jpg) no-repeat; background-size: cover;"></div>
+      <div class="d-flex align-items-end justify-content-between bg-white px-4 pt-2 pb-4 rounded-none rounded-bottom-md shadow-sm">
+         <div class="d-flex align-items-center">
+            <div class="me-2 position-relative d-flex justify-content-end align-items-end mt-n5">
+               <img src="../assets/images/avatar/avatar-1.jpg" class="avatar-xl rounded-circle border border-4 border-white" alt="">
+               <a href="#" class="position-absolute mb-6 me-n2" data-bs-toggle="tooltip" data-placement="top" title="" data-original-title="Verified">
+               <img src="../assets/images/svg/checked-mark.svg" alt="" height="30" width="30">
+               </a>
+            </div>
+            <div class="lh-1">
+               <h2 class="mb-0">Jenny Wilson</h2>
+               <p class="mb-0 d-block">Jennywilson</p>
+            </div>
+         </div>
+         <div>
+            <a href="add-course.html" class="btn btn-primary btn-sm d-none d-md-block">Create New Course</a>
+         </div>
+      </div>
+   </div>
+</div>
+
+<div class="card rounded-4 card-bordered card-lift"><div class="p-3 d-flex flex-column gap-3">
+<!--img-->
+<a href="#!">
+<img src="../assets/images/mentor/mentor-img-1.jpg" alt="mentor 1" class="img-fluid w-100 rounded-4">
+</a>
+<!--content-->
+<div class="d-flex flex-column gap-4">
+<div class="d-flex flex-column gap-2">
+<div>
+<div class="d-flex align-items-center gap-2">
+<h3 class="mb-0">
+<a href="#!" class="text-reset">Akshay Sharma</a>
+</h3>
+<span>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-patch-check-fill text-success" viewBox="0 0 16 16">
+<path d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01zm.287 5.984-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7 8.793l2.646-2.647a.5.5 0 0 1 .708.708"></path>
+</svg>
+</span>
+</div>
+<span class="text-gray-800">Software Engineer</span>
+</div>
+
+<div class="d-flex align-items-center justify-content-between fs-6">
+<div>
+<span>Microsoft</span>
+<div class="vr mx-2 text-gray-200"></div>
+<span>5yrs Exp.</span>
+</div>
+<div class="d-flex gap-1 align-items-center lh-1">
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning" viewBox="0 0 16 16">
+<path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+</svg>
+
+<span class="fw-bold text-dark">5.0</span>
+<span>(12 Reviews)</span>
+</div>
+</div>
+</div>
+<div class="d-flex flex-row justify-content-between align-items-center">
+<div>
+<span>Starting from</span>
+<div class="d-flex flex-row gap-1 align-items-center">
+<h4 class="mb-0">$25.00</h4>
+<span class="fs-6">/ Month</span>
+</div>
+</div>
+<div>
+<a href="#!" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#signupModal">Book a Free Trial</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="card">
+  <!--img-->
+  <div class="rounded-top-3" style="background-image: url(../assets/images/mentor/mentor-single.png); background-position: center; background-size: cover; background-repeat: no-repeat; height: 228px"></div>
+  <div class="card-body p-md-5">
+    <div class="d-flex flex-column gap-5">
+      <!--img-->
+      <div class="mt-n8">
+        <img src="../assets/images/mentor/mentor-img-single.jpg" alt="mentor 1" class="img-fluid rounded-4 mt-n8">
+      </div>
+      <div class="d-flex flex-column gap-5">
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex flex-md-row flex-column justify-content-between gap-2">
+            <!--heading-->
+            <div>
+              <h1 class="mb-0">Jitu Chauhan</h1>
+              <!--content-->
+              <div class="d-flex flex-lg-row flex-column gap-2">
+                <small class="fw-medium text-gray-800">Software Engineer&nbsp;at&nbsp;Apple</small>
+                <small class="fw-medium text-success">7+ years in UX Design &amp; Brand Design.</small>
+              </div>
+            </div>
+            <!--button-->
+            <div class="d-flex flex-row gap-3 align-items-center">
+              <a href="#!" class="btn btn-outline-white">
+                <span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill me-1" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314"></path>
+                  </svg>
+                </span>
+                Save
+              </a>
+              <a href="#!" class="btn btn-outline-white">Ask questions</a>
+            </div>
+          </div>
+          <div class="d-flex flex-md-row flex-column gap-md-4 gap-2">
+            <div class="d-flex flex-row gap-2 align-items-center lh-1">
+              <!--icon-->
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-star-fill text-warning align-baseline" viewBox="0 0 16 16">
+                  <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                </svg>
+              </span>
+              <span>
+                <!--text-->
+                <span class="text-gray-800 fw-bold">5.0</span>
+                (16&nbsp;Reviews)
+              </span>
+            </div>
+            <div class="d-flex flex-row gap-2 align-items-center lh-1">
+              <!--icon-->
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-people-fill text-primary align-baseline" viewBox="0 0 16 16">
+                  <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"></path>
+                </svg>
+              </span>
+              <!--text-->
+              <span>
+                <span class="text-gray-800 fw-bold">40+</span>
+                Mentees
+              </span>
+            </div>
+            <div class="d-flex flex-row gap-2 align-items-center lh-1">
+              <!--icon-->
+              <span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-geo-alt-fill text-danger" viewBox="0 0 16 16">
+                  <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"></path>
+                </svg>
+              </span>
+              <!--text-->
+              <span>Gujarat,India</span>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <!--heading-->
+          <h3 class="mb-0">Skills</h3>
+
+          <div class="gap-2 d-flex flex-wrap">
+            <a href="#!" class="btn btn-tag btn-sm">Frontend</a>
+            <a href="#!" class="btn btn-tag btn-sm">HTML</a>
+            <a href="#!" class="btn btn-tag btn-sm">CSS</a>
+            <a href="#!" class="btn btn-tag btn-sm">React</a>
+            <a href="#!" class="btn btn-tag btn-sm">Javascript</a>
+            <a href="#!" class="btn btn-tag btn-sm">Vuejs</a>
+            <a href="#!" class="btn btn-tag btn-sm">Next.js</a>
+          </div>
+        </div>
+        <div>
+          <span class="badge rounded-pill text-success-emphasis bg-success-subtle border border-success align-items-center">
+            <span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-reply-fill me-1 align-text-top" viewBox="0 0 16 16">
+                <path d="M5.921 11.9 1.353 8.62a.72.72 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z"></path>
+              </svg>
+            </span>
+            Quick Responder
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> *@

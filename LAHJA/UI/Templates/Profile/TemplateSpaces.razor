@@ -1,0 +1,244 @@
+﻿@* @page "/settings/spaces/{*subscriptionId}" *@
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Space
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using LAHJA.UI.Components.ProFile.Settings
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile Template
+
+
+
+
+@if (Template != null )
+{
+    if (isLoading)
+    {
+        <CustomPageSkeleton IsDisplay="isLoading" />
+    }
+    else if (dataBuild!=null)
+    {
+
+          <Spaces DataBuild="dataBuild" Language="@lg" IsLoading="isLoading" SubmitCreateSpace="Template.BuilderComponents.SubmitCreateSpace" />
+    }
+}
+
+
+@code {
+
+
+    private bool isLoading = true;
+    private  DataAndEventBuildTabelCard<DataBuildSpace> dataAndEvent = null;
+    private string lg ;
+    private string _subscriptionId;
+    private List<CardStateCount<string>>? cardStates = null;
+    private GroupActionTabels groupAction = new GroupActionTabels();
+    private List<DataBuildSpace> dataBuild = new();
+
+    [Parameter] public string subscriptionId{ 
+        set
+        {
+            if (value != null)
+            {
+                _subscriptionId = value;
+                // Task.CompletedTask.ContinueWith(_ => loadedData());
+            }
+        }
+        get => _subscriptionId;
+    }
+
+    protected override Task OnInitializedAsync()
+    {
+        lg = CultureInfo.CurrentUICulture.Name;
+
+        return Task.CompletedTask;
+    }
+    private async Task loadedData()
+    {
+
+        if (!string.IsNullOrEmpty(_subscriptionId))
+        {
+            var res = await Template.GetDataBuildSpaces(_subscriptionId);
+            if (res.Succeeded)
+            {
+                dataBuild = res.Data;
+            }
+        }
+
+        dataAndEvent = new()
+            {
+                DataBuild = dataBuild,
+                LabelColumns = ColomsTrans[lg].ToList(),
+                Events = new()
+            // {
+            //     OnCreateClicked = OnSubmitCreateSpace
+            // }
+            };
+        if (dataBuild != null)
+        {
+            cardStates = new()
+                {
+
+                    new()
+                    {
+                        Value=dataBuild.Where(x=>x.IsGlobal).Count().ToString(),
+                        Label="Global"
+
+                    },
+
+                     new()
+                    {
+                         Value=dataBuild.Where(x=>x.IsGlobal==false).Count().ToString(),
+                        Label="UnGlobal"
+                    },
+                    new()
+                    {
+                        Value=dataBuild.Where(x=>x.IsGpu).Count().ToString(),
+                        Label="Gpu"
+
+                    },
+
+                     new()
+                    {
+                         Value=dataBuild.Where(x=>x.IsGpu==false).Count().ToString(),
+                        Label="NotGpu"
+                    }
+                };
+        }
+        groupAction.Actions = new()
+        {
+            new()
+            {
+                Icon=@Icons.Material.Filled.AddCircle
+                ,
+                Tag="create"
+                ,
+                Name="انشاء"
+            },
+            new()
+            {
+                Icon=@Icons.Material.Filled.Delete
+                ,
+                IsMudChip=false,
+                Tag="delete"
+            }
+        };
+        groupAction.ChipClicked += OnChipClicked;
+        isLoading = false;
+        StateHasChanged();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await loadedData();
+
+        }
+
+
+    }
+
+
+  
+
+
+    // private async Task OnSubmitCreateSpace(DataBuildSpace action)
+    // {
+    //     if (Template.BuilderComponents.SubmitCreateSpace != null)
+    //     {
+    //         var response = await Template.BuilderComponents.SubmitCreateSpace(action);
+
+    //         if (response.Succeeded)
+    //         {
+                
+    //         }
+    //     }
+      
+
+    // }
+
+
+    private Task OnChipClicked(CardActionTabel action)
+    {
+        if (action.Tag == "delete")
+        {
+            Snackbar.Add("fgffg", Severity.Error);
+
+        }
+        else if (action.Tag == "create")
+        {
+            OpenDialog();
+        }
+
+        return Task.CompletedTask;
+
+    }
+
+    private void OpenDialog()
+    {
+
+
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+
+        var parameters = new DialogParameters<DialogContent>
+        {
+
+            { x =>x.DataBuild1,null },
+
+            {x => x.DataBuildCheck,null},
+            {x=>x.SrcIframe,"https://lahja-core.onrender.com/createspace"}
+        };
+
+        DialogService.Show<DialogContent>("", parameters, options);
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, string>> TranslationsLST = new()
+        {
+            ["en"] = new()
+            {
+                ["Text1"] = "create your spaces",
+                ["Text2"] = "AI لهجة",
+                ["Description"] = "LAHJA platform provides a smart way to communicate with AI in your own dialect.",
+                ["ButtonLink"] = "Create Space"
+            },
+            ["ar"] = new()
+            {
+                ["Text1"] = "انشى مساحاتك ",
+                ["Text2"] = "لهجة AI",
+                ["Description"] = "توفر  منصة لهجة  طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.",
+                ["ButtonLink"] = "انشاء مساحة "
+            }
+        };
+
+
+    Dictionary<string, string[]> ColomsTrans = new Dictionary<string, string[]>
+        {
+            { "en", new string[] { "ID", "Name", "Description", "RAM", "CPU Cores", "Disk Space", "GPU", "Global", "Bandwidth" } },
+            { "ar", new string[] { "المعرف", "الاسم", "الوصف", "الذاكرة العشوائية", "أنوية المعالج", "مساحة القرص", "وحدة معالجة الرسوميات", "عالمي", "عرض النطاق الترددي" } }
+        };
+    private List<DataBuildSpace> dataList = new List<DataBuildSpace>
+    {
+    new DataBuildSpace
+    {
+    Id = "1", Name = "Reactor 1", Description = "A powerful reactor", Ram = 16, CpuCores = 8, DiskSpace = 512, IsGpu = true, IsGlobal = true, Bandwidth = 100
+    },
+    new DataBuildSpace
+    {
+             Id = "2", Name = "Reactor 2", Description = "A powerful reactor", Ram = 16, CpuCores = 8, DiskSpace = 512, IsGpu = true, IsGlobal = true, Bandwidth = 100
+    },
+
+    };
+
+
+
+
+
+}

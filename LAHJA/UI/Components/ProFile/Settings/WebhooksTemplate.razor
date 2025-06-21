@@ -1,0 +1,154 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Space
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+
+<TabelDashCard T="DataBuildSpace" DataAndEventBuildTabel="dataAndEvent"
+               StateCounts="cardStates"
+               ActionTabels="groupAction"
+               BarTabel="TranslationsLST" />
+
+@code {
+
+
+    DataAndEventBuildTabelCard<DataBuildSpace> dataAndEvent = null;
+    private string lg = "ar";
+    protected override void OnInitialized()
+    {
+
+
+
+        dataAndEvent = new()
+            {
+                DataBuild = new(),
+                LabelColumns = ColomsTrans[lg].ToList(),
+
+                Events = new()
+            };
+
+        cardStates = new()
+        {
+
+            new()
+            {
+                Value="6",
+                Label="Active"
+
+            },
+
+             new()
+            {
+                 Value="1",
+                Label="UnActive"
+            }
+            ,
+
+
+        };
+        groupAction.Actions = new()
+        {
+            new()
+            {
+                Icon=@Icons.Material.Filled.AddCircle
+                ,
+                Tag="create"
+                ,
+                Name="انشاء"
+            },
+            new()
+            {
+                Icon=@Icons.Material.Filled.Delete
+                ,
+                IsMudChip=false,
+                Tag="delete"
+            }
+        };
+        groupAction.ChipClicked += OnChipClicked;
+    }
+
+
+    List<CardStateCount<string>>? cardStates = null;
+
+    GroupActionTabels groupAction = new GroupActionTabels();
+
+    private Task OnChipClicked(CardActionTabel action)
+    {
+        if (action.Tag == "delete")
+        {
+            Snackbar.Add("fgffg", Severity.Error);
+
+        }
+        else if (action.Tag == "create")
+        {
+            OpenDialog();
+        }
+
+        return Task.CompletedTask;
+
+    }
+
+    private void OpenDialog()
+    {
+
+
+
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+
+        var parameters = new DialogParameters<DialogContent>
+        {
+
+            { x =>x.DataBuild1,null },
+
+            {x => x.DataBuildCheck,null},
+            {x=>x.SrcIframe,"https://lahja-core.onrender.com/createspace"}
+        };
+
+        DialogService.Show<DialogContent>("", parameters, options);
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, string>> TranslationsLST = new()
+        {
+            ["en"] = new()
+            {
+                ["Text1"] = "create your spaces",
+                ["Text2"] = "AI لهجة",
+                ["Description"] = "LAHJA platform provides a smart way to communicate with AI in your own dialect.",
+                ["ButtonLink"] = "Create Space"
+            },
+            ["ar"] = new()
+            {
+                ["Text1"] = "انشى مساحاتك ",
+                ["Text2"] = "لهجة AI",
+                ["Description"] = "توفر  منصة لهجة  طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.",
+                ["ButtonLink"] = "انشاء مساحة "
+            }
+        };
+
+
+    Dictionary<string, string[]> ColomsTrans = new Dictionary<string, string[]>
+        {
+            { "en", new string[] { "ID", "Name", "Description", "RAM", "CPU Cores", "Disk Space", "GPU", "Global", "Bandwidth" } },
+            { "ar", new string[] { "المعرف", "الاسم", "الوصف", "الذاكرة العشوائية", "أنوية المعالج", "مساحة القرص", "وحدة معالجة الرسوميات", "عالمي", "عرض النطاق الترددي" } }
+        };
+    private List<DataBuildSpace> dataList = new List<DataBuildSpace>
+    {
+    new DataBuildSpace
+    {
+    Id = "1", Name = "Reactor 1", Description = "A powerful reactor", Ram = 16, CpuCores = 8, DiskSpace = 512, IsGpu = true, IsGlobal = true, Bandwidth = 100
+    },
+    new DataBuildSpace
+    {
+             Id = "2", Name = "Reactor 2", Description = "A powerful reactor", Ram = 16, CpuCores = 8, DiskSpace = 512, IsGpu = true, IsGlobal = true, Bandwidth = 100
+    },
+
+    };
+
+
+
+
+
+}

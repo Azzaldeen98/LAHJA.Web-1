@@ -1,0 +1,39 @@
+﻿@inject NavigationManager Navigation
+
+        <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="200px" />
+        <MudCardContent>
+            <MudSkeleton Width="30%" Height="42px;" />
+            <MudSkeleton Width="80%" />
+            <MudSkeleton Width="100%" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+            <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+        </MudCardActions>
+        <MudOverlay Visible="true" DarkBackground="true" Absolute="true">
+            <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+        </MudOverlay> 
+
+
+@code {
+
+    private bool isVisible = true;
+    private DialogOptions dialogOptions = new() { CloseButton = true };
+
+    [Parameter] public bool ViewProgress{
+        get => _viewProgress; set { _viewProgress = value; }
+    }
+    bool _viewProgress = true;
+  
+    protected override async Task OnInitializedAsync()
+    {
+      await  Task.Delay(2000);
+    }
+ 
+
+
+    private void onCloseDialog()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

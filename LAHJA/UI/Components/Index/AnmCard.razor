@@ -1,0 +1,205 @@
+﻿@using Domain.ShareData
+@using LAHJA.Helpers.Services
+@using LAHJA.Them
+ @inject LanguageService languageService
+ @inject IManageLanguageService _manageLanguageService
+
+
+<style>
+    /* Main container for alignment and fade-in effect */
+    .col-lg-7.ms-auto.hover-opacity-fade {
+        transition: opacity 0.3s ease-in-out;
+        opacity: 1;
+    }
+
+        .col-lg-7.ms-auto.hover-opacity-fade:hover {
+            opacity: 0.8;
+        }
+
+    /* Styling for each service item */
+    .hover-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #ddd;
+        position: relative;
+        transition: background-color 0.3s ease;
+    }
+
+        .hover-item:hover {
+            background-color: #333; /* Background color change on hover */
+        }
+
+        /* Icon image styling */
+        .hover-item img {
+            width: 40px; /* Adjust icon size */
+            height: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .hover-item:hover img {
+            transform: scale(1.1); /* Slight zoom effect on hover */
+        }
+
+        /* Service title styling */
+        .hover-item h6 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+
+        .hover-item:hover h6 {
+            color: #fff; /* Text color change to white on hover */
+        }
+
+    /* Icon link styling */
+    .icon-link {
+        display: flex;
+        align-items: center;
+        font-size: 1.2rem;
+        color: #333;
+        transition: color 0.3s ease;
+    }
+
+    /* Arrow styling */
+    .icon-link-hover::before {
+        content: "→";
+        display: inline-block;
+        opacity: 0;
+        transform: translateX(-10px) scale(1); /* Initial position and size */
+        font-size: 1rem; /* Initial size */
+        transition: opacity 0.3s ease, transform 0.3s ease, color 0.3s ease;
+        color: #333; /* Initial color */
+    }
+
+    .hover-item:hover .icon-link-hover::before {
+        opacity: 1;
+        transform: translateX(0) scale(1.3); /* Increase size on hover */
+        color: #fff; /* Arrow color change to white on hover */
+    }
+
+    /* زر رئيسي بتأثير التمرير */
+    .btn.icon-link {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #6c757d; /* لون الحدود الثانوي */
+        color: #6c757d; /* لون النص */
+        font-size: 1rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+        .btn.icon-link:hover {
+            background-color: #6c757d; /* تغيير الخلفية عند التمرير */
+            color: #fff; /* لون النص يصبح أبيض عند التمرير */
+            border-color: #6c757d;
+        }
+
+        /* إعداد السهم وإضافة تأثير التمرير */
+        .btn.icon-link i {
+            font-size: 1.2rem; /* حجم السهم */
+            margin-left: 0.5rem; /* مسافة بين النص والسهم */
+            transition: transform 0.3s ease, color 0.3s ease; /* تأثير التحريك */
+            color: inherit; /* يتبع لون النص */
+        }
+
+        .btn.icon-link:hover i {
+            transform: translateX(5px); /* تحريك السهم عند التمرير */
+            color: #fff; /* تغيير لون السهم إلى أبيض عند التمرير */
+        }
+
+</style>
+
+
+ <div class="position-relative" style="position:relative;">
+    <div class="container position-relative pt-5 pt-sm-8" data-bs-theme="dark">
+        <div class="inner-container text-center mt-8">
+            <h4>
+                @translations[CurrentLanguage]["TechnologiesTitle"] 
+            </h4>
+            <ul class="list-inline d-flex justify-content-center flex-wrap gap-4 my-5 my-lg-6">
+                @foreach (var logo in Logos)
+                {
+                    <li class="list-inline-item me-0">
+                        <a href="@logo.Link" class="icon-xl btn-transition bg-white border border-white border-opacity-10 d-flex justify-content-center align-items-center rounded-2" style="--bs-bg-opacity:0.05">
+                            <img src="@logo.ImagePath" class="h-40px" alt="icon">
+                        </a>
+                    </li>
+                }
+            </ul>
+            <MudButton Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM">
+                @translations[CurrentLanguage]["CapabilitiesButton"] 
+                <i class="bi bi-arrow-right"></i>
+            </MudButton>
+        </div>
+    </div>
+</div> 
+   
+@code{
+
+    public List<LogoItem> Logos { get; set; } = new List<LogoItem>
+    {
+        new LogoItem { ImagePath = "assets/08.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/04.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/12.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/09.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/05.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/03.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/02.svg", Link = "#" },
+        new LogoItem { ImagePath = "assets/10.svg", Link = "#" }
+    };
+    public class LogoItem
+    {
+        public string ImagePath { get; set; }
+        public string Link { get; set; }
+    }
+
+    private Dictionary<string, Dictionary<string, string>> translations = new()
+        {
+            ["en"] = new Dictionary<string, string>
+            {
+                { "TechnologiesTitle" , "AI technologies and tools we utilize"},
+                { "CapabilitiesButton" , "Uncover our AI capabilities" },
+            },
+            ["ar"] = new Dictionary<string, string>
+            {
+                {"TechnologiesTitle", "التقنيات والأدوات التي نستخدمها" },
+                {"CapabilitiesButton", "اكتشف قدرات الذكاء الاصطناعي الخاصة بنا" },
+            }
+        };
+
+
+
+    private string CurrentLanguage = "en";
+    private string GetTranslation(string key)
+    {
+ 
+        var trm = translations[CurrentLanguage].ContainsKey(key) ? translations[CurrentLanguage][key] : key;
+            return trm;
+    }  
+    protected override void OnInitialized()
+    {
+      
+        languageService.OnLanguageChanged += UpdateContent;
+    }
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            CurrentLanguage = await _manageLanguageService.GetLanguageAsync();
+            InvokeAsync(StateHasChanged);
+        }
+
+    }
+    protected async void UpdateContent(string currentLangCode)
+    {
+        CurrentLanguage = currentLangCode;
+        InvokeAsync(StateHasChanged);
+    }
+
+}

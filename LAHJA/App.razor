@@ -1,0 +1,85 @@
+﻿@using LAHJA.UI.Templates.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+@inject CustomAuthenticationStateProvider AuthStateProvider
+@inject LAHJA.Data.UI.Templates.Auth.TemplateAuth templateAuth
+
+@* <!DOCTYPE html>
+<html lang="en">
+
+ <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <base href="/" />
+     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+     <link rel="stylesheet" href="app.css" />
+     <link rel="stylesheet" href="LAHJA.styles.css" />
+     <link rel="icon" type="image/png" href="favicon.png" />
+     <HeadOutlet />
+ </head>
+
+<body>
+    <Routes />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+
+</html>
+ *@
+<head>
+ @*    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" /> *@
+     <link rel="stylesheet" href="/css/style1.css" /> 
+@*     <link rel="stylesheet" href="LAHJA.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" /> *@
+ @*     <HeadOutlet /> *@
+</head>
+@* <Router AppAssembly="@typeof(App).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p role="alert">Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router> *@
+
+
+    <CascadingAuthenticationState>
+    <CustomErrorBoundary>
+         <Router AppAssembly="@typeof(App).Assembly">
+            <Found Context="routeData">
+
+                    <AuthorizeRouteView  RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                        <NotAuthorized>
+                             <TemplateAuth IsToLoginMode="true" />
+                        </NotAuthorized>
+                    </AuthorizeRouteView>
+                    <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+
+              
+
+            </Found>
+            <NotFound>
+                <PageTitle>Not found</PageTitle>
+                <LayoutView Layout="@typeof(MainLayout)">
+                    <p role="alert">Sorry, there is nothing at this address.</p>
+                </LayoutView>
+            </NotFound>
+        </Router>
+    </CustomErrorBoundary>
+    </CascadingAuthenticationState>
+
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthStateProvider.InitializeAsync();
+        }
+    }
+}

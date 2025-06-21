@@ -1,0 +1,29 @@
+﻿@if (IsDisplay)
+{
+    <MudSkeleton Class="my-3" SkeletonType="SkeletonType.Text" Animation="Animation.Wave" Height="10px" />
+    <div  class="d-flex justify-content-around flex-row  align-items-center">
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="30px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Pulse" Height="30px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="30px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Pulse" Height="30px" /></div>
+    </div>
+    <MudSkeleton Class="my-3" SkeletonType="SkeletonType.Text" Animation="Animation.Wave" Height="10px"/>
+    <div class="d-flex justify-content-around flex-row  align-items-center">
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="60px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Pulse" Height="60px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="60px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Pulse" Height="60px" /></div>
+    </div>
+    <div class="d-flex mt-2 justify-content-around flex-row  align-items-center">
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="60px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Pulse" Height="60px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="60px" /></div>
+        <div class="w24"><MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Pulse" Height="60px" /></div>
+    </div>
+    <MudSkeleton Class="my-3" SkeletonType="SkeletonType.Text" Animation="Animation.Wave" Height="10px" />
+}
+@code{
+
+    [Parameter] public bool IsDisplay { get; set; }
+}
+

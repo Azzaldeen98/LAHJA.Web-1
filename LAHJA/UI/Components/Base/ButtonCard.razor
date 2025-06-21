@@ -1,0 +1,27 @@
+﻿@*@code {
+    [Parameter] public ButtonType CardType { get; set; }
+    [Parameter] public IButtonCard ButtonCard { get; set; }
+}
+
+    @if (CardType == ButtonType.Button)
+    {
+        <Button @onclick="ButtonCard.OnClick"> @ButtonCard.ButtonText </Button>
+    }
+    else if (CardType == ButtonType.Fab)
+    {
+        <MudFab @onclick="FabCard.OnClick"></MudFab>
+    }
+    else if (CardType == ButtonType.IconButton)
+    {
+        <MudIconButton @onclick="IconButtonCard.OnClick"></MudIconButton>
+    }
+    else if (CardType == ButtonType.ToggleIconButton)
+    {
+        <MudIconButton @onclick="ToggleIconButtonCard.OnClick" />
+    }
+    else if (CardType == ButtonType.ScrollToTop)
+    {
+        <button @onclick="ScrollToTopCard.OnClick">Scroll to Top</button>
+    }
+
+*@

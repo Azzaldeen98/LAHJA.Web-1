@@ -1,0 +1,53 @@
+﻿
+
+@using LAHJA.Them
+
+
+<MudDialog class="d-flex align-center justify-content-center flex-column" style="width:40% !important">
+    <DialogContent>
+        <MudText Typo="Typo.h6">@title</MudText>
+        <MudText Typo="Typo.body1">@body</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="onConfirm" class="mx-5 " Color="@AppColors.BASE_COLOR_ENUM">OK</MudButton>
+        <MudButton OnClick="onCancel" class="mx-5 " Color="Color.Secondary">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>
+
+ @* <MudDialog @bind-Visible="_visible">
+     <DialogContent>
+         <MudText>Hi There, I'm an inline dialog!</MudText>
+         <MudButton Variant="Variant.Filled" Color="Color.Tertiary" OnClick="OpenNested">Open Nested</MudButton>
+         @*Nested inline dialog
+        
+     </DialogContent>
+     <DialogActions>
+         <MudButton Color="Color.Primary" OnClick="Close">Close</MudButton>
+     </DialogActions>
+ </MudDialog>
+ *@
+
+
+    @code {
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public string Title { get => title; set { title = value; } }
+    [Parameter] public string Message { get => body; set { body = value; } }
+
+
+     private string title { get; set; }
+     private string body { get; set; }
+
+    private void onCancel()
+    {
+        MudDialog.Close(DialogResult.Cancel());
+
+    }
+
+
+    private void onConfirm()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+}

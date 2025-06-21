@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player</title>
+</head>
+<body>
+    <audio id="audioPlayer" controls>
+        <!-- <source  type="audio/wav"> -->
+        Your browser does not support the audio element.
+    </audio>
+</body>
+</html>
+<script >
+    fetch("https://wasmdashai-runtasking.hf.space/c/file=/tmp/gradio/25e5318ad17c5af35a2c592e3ff9c5e23cfb7a9f3f02321d20f81ff8f1c9434e/audio.wav")
+    .then(response => {
+        if (!response.ok) throw new Error("Failed to fetch audio data");
+        return response.blob();
+    })
+    .then(blob => {
+        const audioUrl = URL.createObjectURL(blob);
+        const audioElement = document.getElementById("audioPlayer");
+        audioElement.src = audioUrl;
+        audioElement.play();
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+
+</script>

@@ -1,0 +1,149 @@
+﻿@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using LAHAJ.Loading
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.UI.Components.Auth
+@using LAHJA.UI.Components.General.InputField
+@using Microsoft.Extensions.Options
+@using global::Shared.Wrapper
+@using LAHJA.Them
+@inject IJSRuntime JSRuntime
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+
+
+@inherits CardAuth<DataBuildAuthBase>
+
+
+@*  <Loading IsLoading="isLoading" />  *@
+
+ <ReCaptchaComponent /> 
+
+
+
+
+<MudForm style="" id="Auth-Demo-form" @ref="form" onsubmit="onSubmitReCAPTCHA(event)"  @bind-IsValid="@success" @bind-Errors="@errors">
+
+    @if (!IsLogin)
+    {
+        <MudTextField T="string" Disabled="false" Required="true" Label="FirstName" RequiredError="First Name is required!" @bind-Value="@firstName" />
+        <MudTextField T="string" Disabled="false" Required="true" Label="LastName" RequiredError="Last Name is required!" @bind-Value="@lastName" />
+        <MudTextField T="string" Disabled="false" Required="true" Label="PhoneNumber" RequiredError="Phone Number is required!" @bind-Value="@phoneNumber" />
+    }
+
+
+   @* <EmailField  Class="my-5" FullWidth Label="Email" Required="true"  Value="@email" /> *@
+    <MudTextField T="string" Label="Email" HelperText="Enter your Emil" 
+                  InputType="InputType.Email"
+                 Required="true"
+                  RequiredError="Email is valid!" @bind-Value="@email" />
+
+    <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @ref="pwField1"
+    InputType="InputType.Password"
+    Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" Required="true"
+    RequiredError="Password is required!" @bind-Value="@password" />
+
+    @if (!IsLogin)
+    {
+        <MudTextField T="string"
+        Label="Password" HelperText="Repeat the password" InputType="InputType.Password"
+        Validation="@(new Func<string, string>(PasswordMatch))" />
+    }
+
+    <div class="row mb-3">
+        <div class="offset-sm-4 col-sm-6">
+            <div id="html_element"></div>
+        </div>
+    </div>
+    <br />
+    <div class="d-flex align-center justify-space-between">
+        <MudCheckBox T="bool" Required="true" RequiredError="You must agree" Label="I agree!" />
+        <MudButton id="submitButton" Variant="Variant.Filled" Color="@AppColors.BASE_COLOR_ENUM" OnClick="Submit" Disabled="@(!success)" Class="ml-auto">@(IsLogin ? "Login" : "Register")</MudButton>
+    </div>
+
+
+    @if (IsLogin)
+    {
+        <div class="d-flex align-center justify-space-between">
+            <MudButton OnClick="onClickForgetPassword" Color="@AppColors.BASE_COLOR_ENUM">Forgot Password?</MudButton>
+        </div>
+    }
+       <div class="d-flex align-center justify-space-between">
+         @* Re send Confirm email *@
+        <MudButton OnClick="onSubmitResendConfirmEmail" class="@AppTextStyle.TEXT_TRANSFORM_NORMAL" Color="@AppColors.BASE_COLOR_ENUM">Re Send Confirm Email</MudButton>
+    </div>
+
+    @if (errors != null && errors.Count() > 0)
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-3">
+            <ul>
+                @foreach (var error in errors)
+                {
+                    <li>@error</li>
+                }
+            </ul>
+        </MudAlert>
+    }
+
+
+</MudForm>
+
+
+
+
+@code{
+
+    bool isProcessing=false;
+    bool isLoading=false;
+
+
+
+    async Task Submit(){
+
+        DataBuildAuthBase data;
+            if (IsLogin)
+            {
+                data=new DataBuildAuthBase()
+                {
+                        Email = email,
+                        Password = password
+
+                };
+            }
+            else
+            {
+
+                data = new DataBuildAuthBase()
+                {
+                        FirstName = firstName,
+                        LastName = lastName,
+                        Email = email,
+                        Password = password,
+                        ConfirmPassword = repeatPassword,
+                        PhoneNumber = phoneNumber
+
+                };
+            }
+            data.IsLogin = IsLogin;
+
+            if (OnSubmit.HasDelegate)
+            {
+                await OnSubmit.InvokeAsync(data);
+            }
+        
+
+        isProcessing = false;
+        // await Task.Delay(1000);
+        // isLoading = false;
+
+        // StateHasChanged();
+
+}
+
+
+
+   
+
+
+    }
+

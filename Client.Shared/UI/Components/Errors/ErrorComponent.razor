@@ -1,0 +1,107 @@
+﻿@using MudBlazor
+@inherits LayoutComponentBase
+
+<style>
+    .floating {
+        animation: float 6s ease-in-out infinite;
+    }
+
+    .pulse {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .delay-1 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-2 {
+        animation-delay: 0.4s;
+    }
+
+    .delay-3 {
+        animation-delay: 0.6s;
+    }
+
+    .delay-4 {
+        animation-delay: 0.8s;
+    }
+
+    .glow {
+        box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    }
+
+    .bg-gradient-error {
+        background: linear-gradient(135deg, #f43f5e 0%, #8b5cf6 100%);
+    }
+</style>
+
+<MudPaper Class="d-flex flex-column align-center justify-center min-h-screen p-4" Style="background-color: #f3f4f6; font-family: 'Segoe UI', sans-serif;">
+    <MudPaper Elevation="6" Class="max-w-4xl w-100 rounded-xl overflow-hidden" Style="transition: transform 0.5s;">
+
+        <!-- Error Header -->
+        <MudPaper Class="p-8 text-white text-center position-relative" Style="background: linear-gradient(135deg, #f43f5e 0%, #8b5cf6 100%);">
+            <MudIcon Icon="@Icons.Material.Filled.Warning" Size="Size.Large" Class="mb-4" Style="font-size: 3rem; background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 50%; backdrop-filter: blur(5px); animation: float 6s ease-in-out infinite;" />
+
+            <MudText Typo="Typo.h4" Class="mb-2">عذرًا! حدث خطأ غير متوقع</MudText>
+            <MudText Typo="Typo.h6" Class="mb-4" Style="opacity: 0.9">نحن نعمل على إصلاح المشكلة في أسرع وقت ممكن</MudText>
+        </MudPaper>
+
+        <!-- Content Section -->
+        <MudContainer  Class="p-8">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudText Typo="Typo.h6" Class="mb-2 text-blue">ماذا حدث؟</MudText>
+                    <MudText Class="mb-4 text-secondary">
+                        واجه النظام خطأ غير متوقع أثناء معالجة طلبك. قد يكون هذا بسبب مشكلة مؤقتة في الخادم أو خطأ في البرمجة.
+                    </MudText>
+
+                    <MudText Typo="Typo.h6" Class="mb-2 text-yellow">ما يمكنك فعله</MudText>
+                    <MudList Dense="true" T="string">
+                        <MudListItem><MudIcon Icon="@Icons.Material.Filled.Refresh" Class="mr-2 text-blue" /> حاول تحديث الصفحة بعد قليل</MudListItem>
+                        <MudListItem><MudIcon Icon="@Icons.Material.Filled.Home" Class="mr-2 text-green" /> العودة إلى <MudLink Href="/">الصفحة الرئيسية</MudLink></MudListItem>
+                        <MudListItem><MudIcon Icon="@Icons.Material.Filled.History" Class="mr-2 text-purple" /> استخدم زر الرجوع في المتصفح</MudListItem>
+                    </MudList>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudPaper Class="bg-grey-lighten-4 p-6 border rounded-xl">
+                        <MudText Typo="Typo.h6" Align="Align.Center">هل تحتاج مساعدة؟</MudText>
+                        <MudText Typo="Typo.body2" Align="Align.Center" Class="mb-4">فريق الدعم لدينا جاهز لمساعدتك</MudText>
+
+                        <MudStack Spacing="2">
+                            <MudButton Color="Color.Primary" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Headset" FullWidth>التواصل مع الدعم الفني</MudButton>
+                            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.Email" FullWidth>إرسال بريد إلكتروني</MudButton>
+                            <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.BugReport" FullWidth>الإبلاغ عن المشكلة</MudButton>
+                        </MudStack>
+
+                        <MudDivider Class="my-4" />
+
+                        <MudText Typo="Typo.subtitle2" Align="Align.Center">أو تواصل معنا عبر</MudText>
+                        <MudStack Direction="Row" Justify="Justify.Center" Spacing="2" Class="mt-2">
+                            <MudIconButton Icon="@Icons.Custom.Brands.Facebook" Color="Color.Primary" />
+                            <MudIconButton Icon="@Icons.Custom.Brands.Twitter" Style="color:#1DA1F2" />
+                            <MudIconButton Icon="@Icons.Custom.Brands.YouTube" Style="color:#FF0000" />
+                            <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Style="color:#333" />
+                        </MudStack>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+
+        <!-- Footer -->
+        <MudDivider />
+        <MudText Align="Align.Center" Class="py-3 text-secondary text-sm">رمز الخطأ: #ERR-@_randomErrorCode</MudText>
+    </MudPaper>
+
+    <MudText Align="Align.Center" Class="mt-4 text-secondary">© 2025 . جميع الحقوق محفوظة.</MudText>
+</MudPaper>
+
+@code {
+    private int _randomErrorCode = new Random().Next(1000, 9999);
+}
+
+

@@ -1,0 +1,399 @@
+﻿ @page "/ServiceInforMationModel"
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.UI.Components.SoundShow
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid Class="mt-4">
+
+        @*  <MudItem xs="12" md="7">
+        <MudPaper Class="p-3">
+        <MudText Typo="Typo.h6">Table of Contents</MudText>
+        <MudDivider Class="mb-2" />
+
+
+
+        <MudText Typo="Typo.h6" Class="mt-3" Id="ModelSummary">Model Summary</MudText>
+        <MudText Typo="Typo.body2">
+        ModernBERT is a modernized bidirectional encoder-only Transformer model (BERT-style) pre-trained on 2 trillion tokens of English and code data with a native context length of up to 8,192 tokens.
+        ModernBERT leverages recent architectural improvements such as Rotary Positional Embeddings (RoPE) for long-context support.
+        </MudText>
+
+
+        <MudText Typo="Typo.h6" Class="mt-3">Inference Examples</MudText>
+        <MudPaper Class="p-3">
+        <MudText Typo="Typo.body2">
+        Fill-Mask inference and other capabilities are available. See detailed usage below.
+        </MudText>
+        </MudPaper>
+
+
+        <MudText Typo="Typo.h6" Class="mt-3">Model Tree</MudText>
+        <MudExpansionPanels>
+        <MudExpansionPanel Text="Adapters">
+        <MudText Typo="Typo.body2">10 models available for adapters.</MudText>
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="Finetunes">
+        <MudText Typo="Typo.body2">47 models available for fine-tuning.</MudText>
+        </MudExpansionPanel>
+        <MudExpansionPanel Text="Quantizations">
+        <MudText Typo="Typo.body2">1 model available for quantization.</MudText>
+        </MudExpansionPanel>
+        </MudExpansionPanels>
+
+
+        <MudText Typo="Typo.h6" Class="mt-3">Downloads Trend</MudText>
+
+        </MudPaper>
+        </MudItem> *@
+
+
+        <MudItem xs="12" md="7">
+            <MudPaper Class="p-3">
+                <MudText Typo="Typo.h6">@Param.TableOfContents.Title</MudText>
+                <MudDivider Class="mb-2" />
+
+                <MudText Typo="Typo.h6" Class="mt-3" Id="ModelSummary">@Param.ModelSummary.Title</MudText>
+                <MudText Typo="Typo.body2">@Param.ModelSummary.Description</MudText>
+
+                <MudText Typo="Typo.h6" Class="mt-3">أمثلة الاستدلال</MudText>
+                <MudPaper Class="p-3">
+                    <MudText Typo="Typo.body2">@Param.InferenceExamples.Description</MudText>
+                </MudPaper>
+
+                <MudText Typo="Typo.h6" Class="mt-3">Model Tree</MudText>
+                <MudExpansionPanels>
+                    @foreach (var item in Param.ModelTree)
+                    {
+                        <MudExpansionPanel Text="@item.Title">
+                            <MudText Typo="Typo.body2">@item.Description</MudText>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+
+                <MudText Typo="Typo.h6" Class="mt-3">@Param.DownloadsTrend.Title</MudText>
+            </MudPaper>
+        </MudItem>
+
+
+
+        <MudItem xs="12" md="5">
+
+            <MudDivider Class="mb-3" />
+
+            <MudGrid>
+                <MudItem>
+
+                    <main style="
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+            margin-top: 6%;
+        ">
+                        <SliderComponent />
+
+                    </main>
+
+                </MudItem>
+
+            </MudGrid>
+
+
+
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+@code
+{
+
+
+
+
+
+
+
+
+
+
+    [Parameter]
+    public bool IsEnglish { get; set; } = false;
+
+    [Parameter]
+    public ContentServiceInformationModelPige? Param { get; set; } = new ContentServiceInformationModelPige();
+
+    public class ContentServiceInformationModelPige
+    {
+        public ContentItem TableOfContents { get; set; }
+        public ContentItem ModelSummary { get; set; }
+        public ContentItem InferenceExamples { get; set; }
+        public List<ContentItem> ModelTree { get; set; }
+        public ContentItem DownloadsTrend { get; set; }
+    }
+
+
+
+
+
+
+    ContentServiceInformationModelPige obj = new ContentServiceInformationModelPige();
+    protected override void OnInitialized()
+    {
+
+        if (IsEnglish)
+        {
+            Param = LoadEnglishContent();
+        }
+        else
+        {
+            Param = LoadArabicContent();
+        }
+        StateHasChanged();
+
+    }
+
+
+
+    private ContentServiceInformationModelPige LoadEnglishContent()
+    {
+
+
+        obj = new ContentServiceInformationModelPige()
+            {
+
+
+
+
+
+                TableOfContents = new ContentItem
+                {
+                    Title = "Table of Contents",
+                    Description = "A summary of the document structure."
+                },
+
+                ModelSummary = new ContentItem
+                {
+                    Title = "Model Summary",
+                    Description = "ModernBERT is a modernized bidirectional encoder-only Transformer model (BERT-style) pre-trained on 2 trillion tokens of English and code data with a native context length of up to 8,192 tokens. ModernBERT leverages recent architectural improvements such as Rotary Positional Embeddings (RoPE) for long-context support."
+                },
+
+                InferenceExamples = new ContentItem
+                {
+                    Description = "Fill-Mask inference and other capabilities are available. See detailed usage below."
+                },
+
+                ModelTree = new List<ContentItem>
+        {
+            new ContentItem { Title = "Adapters", Description = "10 models available for adapters." },
+            new ContentItem { Title = "Finetunes", Description = "47 models available for fine-tuning." },
+            new ContentItem { Title = "Quantizations", Description = "1 model available for quantization." }
+        },
+
+                DownloadsTrend = new ContentItem
+                {
+                    Title = "Downloads Trend",
+                    Description = "Statistics on model downloads."
+                }
+
+
+
+
+            };
+        return obj;
+
+    }
+
+    private ContentServiceInformationModelPige LoadArabicContent()
+    {
+
+
+
+
+        obj = new ContentServiceInformationModelPige()
+            {
+
+                TableOfContents = new ContentItem
+                {
+                    Title = "جدول المحتويات",
+                    Description = "ملخص هيكل المستند."
+                },
+
+                ModelSummary = new ContentItem
+                {
+                    Title = "ملخص النموذج",
+                    Description = "ModernBERT هو نموذج Transformer حديث معتمد على التشفير المزدوج تم تدريبه مسبقًا على 2 تريليون من الرموز الإنجليزية وبيانات البرمجة بحد سياق أصلي يصل إلى 8,192 رمزًا. يستفيد ModernBERT من تحسينات معمارية حديثة مثل التضمينات الموضعية الدوارة (RoPE) لدعم السياقات الطويلة."
+                },
+
+                InferenceExamples = new ContentItem
+                {
+                    Description = "التنبؤ بملء القناع والقدرات الأخرى متوفرة. انظر الاستخدام التفصيلي أدناه."
+                },
+
+                ModelTree = new List<ContentItem>
+        {
+            new ContentItem { Title = "المهايئات", Description = "10 نماذج متاحة للمهايئات." },
+            new ContentItem { Title = "النماذج المعدلة", Description = "47 نموذجًا متاحًا للتعديل." },
+            new ContentItem { Title = "التكميم", Description = "1 نموذج متاح للتكميم." }
+        },
+
+                DownloadsTrend = new ContentItem
+                {
+                    Title = "اتجاهات التنزيل",
+                    Description = "إحصائيات عن تنزيل النموذج."
+                }
+            };
+        return obj;
+    }
+
+    public class ContentItem
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
+
+
+
+
+
+
+ }
+
+
+
+
+
+@code
+{
+
+    [Parameter]
+
+
+    public DataBuildServicePage DataBuildPage { get; set; }
+
+}
+
+
+
+
+@*  @page "/ServiceInforMationModel"
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.UI.Components.SoundShow
+@using MudBlazor
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+    <MudGrid Class="mt-4">
+       
+        <MudItem xs="12" md="7">
+            <MudPaper Class="p-3">
+                <MudText Typo="Typo.h6">Table of Contents</MudText>
+                <MudDivider Class="mb-2" />
+              
+
+
+                <MudText Typo="Typo.h6" Class="mt-3" Id="ModelSummary">Model Summary</MudText>
+                <MudText Typo="Typo.body2">
+                    ModernBERT is a modernized bidirectional encoder-only Transformer model (BERT-style) pre-trained on 2 trillion tokens of English and code data with a native context length of up to 8,192 tokens.
+                    ModernBERT leverages recent architectural improvements such as Rotary Positional Embeddings (RoPE) for long-context support.
+                </MudText>
+
+
+                <MudText Typo="Typo.h6" Class="mt-3">Inference Examples</MudText>
+                <MudPaper Class="p-3">
+                    <MudText Typo="Typo.body2">
+                        Fill-Mask inference and other capabilities are available. See detailed usage below.
+                    </MudText>
+                </MudPaper>
+
+
+                <MudText Typo="Typo.h6" Class="mt-3">Model Tree</MudText>
+                <MudExpansionPanels>
+                    <MudExpansionPanel Text="Adapters">
+                        <MudText Typo="Typo.body2">10 models available for adapters.</MudText>
+                    </MudExpansionPanel>
+                    <MudExpansionPanel Text="Finetunes">
+                        <MudText Typo="Typo.body2">47 models available for fine-tuning.</MudText>
+                    </MudExpansionPanel>
+                    <MudExpansionPanel Text="Quantizations">
+                        <MudText Typo="Typo.body2">1 model available for quantization.</MudText>
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+
+
+                <MudText Typo="Typo.h6" Class="mt-3">Downloads Trend</MudText>
+
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="5">
+            <MudText Typo="Typo.h4" GutterBottom>Model InterFace</MudText>
+            <MudDivider Class="mb-3" />
+ 
+            <MudGrid>
+                <MudItem>
+                    <main style="
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			flex-direction: column;
+			flex-grow: 1;
+            margin-top: 6%;
+        ">
+                        <SliderComponent />
+
+                    </main>
+
+                </MudItem>
+
+            </MudGrid>
+
+
+ 
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+ 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code
+{
+
+    [Parameter]
+
+
+    public DataBuildServicePage DataBuildPage { get; set; }
+
+}
+ *@

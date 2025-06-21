@@ -1,0 +1,246 @@
+﻿@* @using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Billing.BillingHeader
+@using LAHJA.Them
+@inherits CardBilling<HeaderComponent>
+
+
+
+
+<MudContainer>
+ <MudPaper Style="padding:3%">
+
+
+    <MudText Typo="Typo.body1">Billing Summary</MudText>
+    <MudGrid Justify="Justify.SpaceBetween">
+        <MudItem xs="12" md="6" lg="6">
+            <MudText Typo="Typo.body2" Class="font-weight-bold">Your Next Payment</MudText>
+            <MudText Typo="Typo.body2" Color="@AppColors.BASE_COLOR_ENUM" Class="mt-1 mb-2">
+                SAR @Param.NextPaymentAmount
+            </MudText>
+
+        </MudItem>
+
+
+
+        <MudItem xs="12" md="6" lg="6">
+            <MudText Typo="Typo.body2"  >
+                @Param.TitleLink
+                <MudIcon Icon="@Icons.Material.Filled.ArrowForward" Color="@AppColors.BASE_COLOR_ENUM" Class="ml-1" />
+            </MudText>
+
+
+            <MudLink Href="#">Default</MudLink>
+            <MudLink Href="#" Underline="Underline.Hover">Always</MudLink>
+            <MudLink Href="#" Underline="Underline.None">None</MudLink>
+        </MudItem>
+        </MudGrid>
+
+    </MudPaper>
+ 
+
+</MudContainer>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@code
+{
+    [Parameter]
+    public   HeaderComponent? Paramm { get; set; }
+
+    private HeaderComponent Param = new HeaderComponent()
+        {
+            TitleLink = "Payment information",
+            UsageLink = "HeaderComponent",
+            NextPaymentAmount = "$0.00",
+            PageName = "HeaderComponent",
+            Tags = new Dictionary<string, string>()
+        {
+            {"HeaderComponent","#" },
+            {"View payment history","#"},
+            {"Switch to yearly billing","#"}
+        }
+        };
+}
+
+
+
+
+ *@
+
+
+ @using Domain.ShareData
+@using LAHJA.Them
+
+@using LAHJA.Helpers.Services
+@inject LanguageService languageService
+@inject IManageLanguageService _manageLanguageService
+
+
+
+
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge">
+      
+    <MudText Typo="Typo.body1">
+        @((!IsArabic ? "إليك ملخص المعلومات الاشتراك " : "Here's a summary of your account Billings."))
+    </MudText>
+
+    <MudGrid Class="mt-4" Justify="Justify.SpaceBetween">
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard>
+                <MudCardContent Class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Custom.Uncategorized.Radioactive"
+                             Color="ColorCheck" Size="Size.Small" Class="mr-2" />
+                    <div>
+                        <MudText Typo="Typo.body2">@((!IsArabic ? "الفواتير " : "Total bills"))</MudText>
+                        <MudText Typo="Typo.body2">4</MudText>
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard>
+                <MudCardContent Class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Message" Color="ColorCheck" Size="Size.Small" Class="mr-2" />
+                    <div>
+                        <MudText Typo="Typo.body2">@((!IsArabic ? "الاشعارات " : "Message"))</MudText>
+                        <MudText Typo="Typo.body2">35.5M</MudText>
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+
+
+
+        <MudItem xs="12" sm="6" md="3">
+            <MudCard>
+
+                <MudCardContent Class="d-flex align-center">
+                    <MudIcon Icon="@Icons.Custom.Uncategorized.Radioactive" Color="ColorCheck" Size="Size.Small" Class="mr-2" />
+                    <div>
+                        <MudText Typo="Typo.body2">@((!IsArabic ? "متوسط الوقت" : "Avg. Time"))</MudText>
+                        <MudText Typo="Typo.body2">2:55 hrs</MudText>
+                    </div>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+
+
+
+      
+    </MudGrid>
+</MudContainer>
+
+
+
+
+@code {
+
+    [Parameter]
+    public Color ColorCheck { get; set; } = AppColors.BASE_COLOR_ENUM;
+    [Parameter]
+    public bool IsArabic { get; set; } 
+
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            var currentLanguage = await _manageLanguageService.GetLanguageAsync();
+            changeLanguage(currentLanguage);
+
+        }
+
+
+
+
+    }
+
+
+    private async void changeLanguage(string language)
+    {
+
+        if (language == "en")
+        {
+            IsArabic = true;
+           
+        }
+        else
+        {
+            IsArabic = false;
+            
+
+
+
+        }
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+
+            languageService.OnLanguageChanged += changeLanguage;
+            changeLanguage("ar");
+
+        }
+        catch
+        {
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+}

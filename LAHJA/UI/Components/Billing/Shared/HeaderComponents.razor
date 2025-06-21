@@ -1,0 +1,56 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Billing.BillingHeader
+@inherits CardBilling<HeaderComponent>
+
+
+
+
+<MudCard>
+    <MudCardContent>
+        <MudText Typo="Typo.h6" Class="mb-4">Billing summary</MudText>
+        <MudGrid>
+            <MudItem xs="6">
+                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">Your next payment</MudText>
+                <MudText Typo="Typo.h4" Class="mt-2 mb-1">@Param.NextPaymentAmount</MudText>
+                <MudText Typo="Typo.body2">
+                    This amount does not include the spend on usage of metered service.
+                    View your <MudLink Href="/bBillingSummary" Target="_blank">usage this month</MudLink> below.
+                </MudText>
+            </MudItem>
+            <MudItem xs="6">
+                <MudText Typo="Typo.subtitle1" Class="font-weight-bold">
+                    @Param.TitleLink <MudIcon Icon="@Icons.Material.Filled.ArrowForward" />
+                </MudText>
+                <MudList T="object" Class="mt-2">
+                    @foreach (var link in Param.Tags)
+                    {
+                        <MudListItem>
+                            <MudLink Href="@link.Value" Target="_blank">@link.Key</MudLink>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudItem>
+        </MudGrid>
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [Parameter]
+    public   HeaderComponent? Paramm { get; set; }
+
+    private HeaderComponent Param = new HeaderComponent()
+        {
+            TitleLink = "Payment information",
+            UsageLink = "HeaderComponent",
+            NextPaymentAmount = "$0.00",
+            PageName = "HeaderComponent",
+            Tags = new Dictionary<string, string>()
+        {
+            {"HeaderComponent","#" },
+            {"View payment history","#"},
+            {"Switch to yearly billing","#"}
+        }
+        };
+}
+

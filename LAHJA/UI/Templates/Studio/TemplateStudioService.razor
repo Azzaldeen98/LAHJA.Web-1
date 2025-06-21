@@ -1,0 +1,51 @@
+﻿@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.SessionTokenAuth
+@using LAHJA.Data.UI.Templates.AuthSession
+@using LAHJA.Helpers
+@using LAHJA.UI.Components.StudioLahjaAi
+@using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize]
+@inject TemplateAuthSession templateAuthSession
+
+
+@code{
+
+    [Parameter] public string ServiceId{ get; set; }
+    
+    private string srcIframe;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (!string.IsNullOrEmpty(ServiceId))
+            {
+                if (templateAuthSession.BuilderComponents.GetSessionsAccessTokens != null)
+                {
+                    var response=  await templateAuthSession.BuilderComponents.GetSessionsAccessTokens();
+
+                    if (response.Succeeded)
+                    {
+                        foreach(var token in response.Data)
+                        {
+                            if(token!=null && token.ServiceId == ServiceId)
+                            {
+                                var res = await templateAuthSession.BuilderComponents.SubmitCreateSessionToken(new DataBuildSessionTokenAuth { ServiceId = ServiceId });
+                                if (res.Succeeded)
+                                {
+                                    srcIframe = Helper.GetServiceSrcFrame(res.Data.UrlCore, res.Data.SessionToken);
+                                }
+                            }
+                        }
+                        // if (!string.IsNullOrEmpty(response.))
+                        // {
+                            
+                        // }
+                    }
+                }
+            }
+        }
+      
+    }
+}

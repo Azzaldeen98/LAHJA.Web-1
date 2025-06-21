@@ -1,0 +1,34 @@
+﻿@using LAHJA.Data.UI.Components
+@code {
+    [Parameter]
+    public List<ModelAIDisplayCard>? DataBuild { get; set; } = new()
+    {
+        new()
+        {
+              Name = "Wan-AI/Wan2.1-T2V-14B",
+            ImageUrl = "/modelicon.webp",
+            LinkUrl = "/Wan-AI/Wan2.1-T2V-14B",
+            Category = "Text-to-Video",
+            UpdatedAt = DateTime.UtcNow.AddDays(-4),
+            Downloads = 142000,
+            Likes = 662
+        },
+         new()
+        {
+              Name = "Wan-AI/Wan2.1-T2V-14B",
+            ImageUrl = "/modelicon.webp",
+            LinkUrl = "/Wan-AI/Wan2.1-T2V-14B",
+            Category = "Text-to-Video",
+            UpdatedAt = DateTime.UtcNow.AddDays(-4),
+            Downloads = 142000,
+            Likes = 662
+        }
+    };
+
+}
+
+@foreach (var item in DataBuild)
+{
+
+    <MainModelCard DataBuild="@item" />
+}

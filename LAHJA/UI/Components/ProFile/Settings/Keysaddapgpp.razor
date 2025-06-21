@@ -1,0 +1,21 @@
+﻿<section class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+	<div class="mb-6">
+		<div class="flex justify-between">
+			<h3 class="flex flex-row items-center text-xl font-bold">
+				Add a PGP key
+			</h3>
+		</div>
+	</div>
+	<div class="SVELTE_HYDRATER contents" data-target="CryptoKeyAddForm" data-props="{&quot;csrf&quot;:&quot;eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ5NzY0MDM0MDcsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJmYjJkY2VhY2RkYjQ4NmFhYmJiOWUzOWQxYzNjM2YzNjFhNWY3M2I2Y2Q2NjZhN2U2YTM0ZmNkNzAwNzZlYTU5In0=&quot;,&quot;keyType&quot;:&quot;pgp&quot;,&quot;submitUrl&quot;:&quot;/settings/keys/pgp/add&quot;}">
+		<form class="mb-8 flex flex-col space-y-5" method="post" action="/settings/keys/pgp/add">
+			<input type="hidden" name="csrf" value="eyJkYXRhIjp7ImV4cGlyYXRpb24iOjE3MzQ5NzY0MDM0MDcsInVzZXJJZCI6IjY3NThiYzJmMmVlMGI2ZTExODU3ZDBlMiJ9LCJzaWduYXR1cmUiOiJmYjJkY2VhY2RkYjQ4NmFhYmJiOWUzOWQxYzNjM2YzNjFhNWY3M2I2Y2Q2NjZhN2U2YTM0ZmNkNzAwNzZlYTU5In0="> <label class="md:pr-36">
+				Key name
+				<input type="text" class="form-input" name="keyName" placeholder="Key name" required="">
+			</label> 
+			<label class="md:pr-36">
+				PGP Public key
+				<textarea class="form-input" placeholder="Starts with -----BEGIN PGP PUBLIC KEY BLOCK-----" name="key" rows="20" required=""></textarea>
+			</label>  <div><button class="btn-1 btn-1-lg" type="submit">Add key</button></div>
+		</form>
+	</div>
+</section>

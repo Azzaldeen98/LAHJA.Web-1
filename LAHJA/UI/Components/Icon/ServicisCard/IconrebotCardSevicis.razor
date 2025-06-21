@@ -1,0 +1,65 @@
+﻿@using LAHJA.Data.UI.Components.Base
+@* <div class="col-lg-4 mb-5 mb-lg-0">
+    <h2 class="mb-3 mb-lg-4">AI solutions for every business</h2>
+    <p class="mb-3 mb-lg-4">Discover our AI services designed to optimize operations, enhance decisions, and drive growth.</p>
+    <a href="services-list.html" class="btn btn-primary">Explore all services</a>
+</div> *@
+
+@*نص تحت يد الربوت  *@
+
+
+@if (Params != null)
+{
+    <div class="col-lg-4 mb-5 mb-lg-0">
+
+        @* عرض الاسم إذا كان موجودًا *@
+        @if (Params.IsName)
+        {
+
+            <h2 class="mb-3 mb-lg-4"> @Params.Name</h2>
+        }
+
+        @* عرض باقي التفاصيل هنا *@
+        @if (!string.IsNullOrEmpty(Params.ClassItems))
+        {
+            <p class="class-items">@Params.ClassItems</p>
+
+        }
+
+        @* رابط للخدمة *@
+@*         <a href="service-single.html" class="icon-link icon-link-hover text-body stretched-link ms-auto"><i class="bi bi-arrow-right fs-5"></i> </a>
+ *@        <a href="services-list.html" class="btn btn-primary">
+     @Params.ButtonLink
+     </a>
+
+    </div>
+}
+else
+{
+    <p>No data available</p>
+}
+
+@code {
+    [Parameter] public CardTextAndIcon? Params { get; set; }
+
+    // إذا كنت بحاجة إلى منطق إضافي، يمكنك إضافته هنا
+    protected override void OnInitialized()
+    {
+
+        // إعطاء قيمة افتراضية لـ Params إذا كانت null
+        Params ??= new CardTextAndIcon
+            {
+                Name = "AI solutions for every business",
+                IsName = true,
+
+                Icon = new CardIcon
+                {
+                    Src = "https://example.com/icon.png",  // أضف رابط الأيقونة هنا
+                    ClassIcon = ""  // الفئة الخاصة بالأيقونة (يمكنك تغييرها حسب الحاجة)
+                },
+                ClassItems = "Discover our AI services designed to optimize operations, enhance decisions, and drive growth.",
+
+                   ButtonLink = "Explore all services",
+            };
+    }
+}

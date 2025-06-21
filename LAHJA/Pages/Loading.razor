@@ -1,0 +1,71 @@
+﻿@page "/Loading"
+@inject NavigationManager Navigation;
+@namespace LAHAJ.Loading
+@using LAHJA.Them
+@using MudBlazor
+
+ @* <div class="loading-overlay" style="@(IsLoading ? "display: flex;" : "display: none;")">
+     <MudContainer Class="d-flex flex-column justify-center align-center" Style="height: 100vh;width:100%; background-color: rgba(255, 255, 255, 0.8);">
+         <MudProgressCircular Indeterminate="true" Color="Color.Primary" Size="Size.Large" Thickness="4" />
+         <MudText Typo="Typo.h6" Class="mt-4" Align="Align.Center" Color="Color.Secondary">
+             @LoadingMessage
+         </MudText>
+     </MudContainer>
+ </div> *@
+
+@if (isLoading)
+{
+    <MudCard Class="position-relative" Style="height: inherit !important; width:inherit !important;  ">
+        <!-- عناصر Skeleton -->
+  @*       <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="100%" />
+        <MudCardContent>
+            <MudSkeleton Width="30%" Height="42px;" />
+            <MudSkeleton Width="80%" />
+            <MudSkeleton Width="100%" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+            <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+        </MudCardActions> *@
+
+        <!-- Overlay للتحميل -->
+        <MudOverlay Visible="true" DarkBackground="true" Class="full-screen-overlay loading-overlay">
+            <!-- المحتوى في المنتصف -->
+            <MudStack Class="align-items-center justify-center" Spacing="2" Style="height: inherit; width: inherit;">
+
+
+                <div id="logo-icon-animate-id" class="icon-xxl text-center shadow-primary rounded-circle flex-shrink-0 ripple-anim" style="line-height: 6.8rem;">
+
+                    <MudIcon Size="Size.Large"
+                    Style="direction: ltr !important; margin: 8px !important;"
+                    Color="@AppColors.BASE_COLOR_ENUM"
+                    Icon="@Icons.Material.Filled.BlurOn"
+                    Title="API" />
+                   
+                </div>
+
+                <div style="margin-top:50px">
+                    <MudText Typo="Typo.h5" Color="@AppColors.BASE_COLOR_ENUM">@LoadingMessage</MudText>
+
+                </div>
+                @* <MudProgressCircular Color="Color.Secondary" Indeterminate="true" /> *@
+            </MudStack>
+          
+        </MudOverlay>
+    </MudCard>
+}
+
+@code {
+
+    private bool isLoading = true;
+
+    [Parameter] public bool IsLoading { get => isLoading; set=>isLoading = value;}
+
+
+    [Parameter] public string LoadingMessage { get; set; } = "";
+
+    protected override async void OnInitialized()
+    {
+        await Task.Delay(2000);
+    }
+}

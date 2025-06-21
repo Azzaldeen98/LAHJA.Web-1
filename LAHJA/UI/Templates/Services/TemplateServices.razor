@@ -1,0 +1,62 @@
+﻿
+
+@using LAHJA.Data.UI.Components.ServiceCard
+@using LAHJA.Data.UI.Models.ModelAi
+@using LAHJA.Data.UI.Templates.ModelAi
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.StudioLahjaAi
+@inject TemplateModelAi Template
+@inject IManageLanguageService ManageLanguageService
+
+ 
+<Main2CardService DataBuildModelsAi="dataBuildModelAi" DataBuildModelSettings="dataBuildModelSettings" ApplyFilterByLanguageDialectType="OnFilterByLanguageDialectType" />
+
+@* <Main2CardService2   /> *@
+
+
+@code
+{
+
+    private ModelPropertyValues dataBuildModelSettings;
+    private List<ModelAiResponse> dataBuildModelAi;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var lg = await ManageLanguageService.GetLanguageAsync();
+            if (Template.BuilderComponents.GetModelsAi != null)
+            {
+                var response = await Template.BuilderComponents.GetSettingModelAi(new DataBuildModelAi { Language = lg });
+                if (response.Succeeded)
+                {
+                    dataBuildModelSettings = response.Data;
+                    StateHasChanged();
+                }   
+
+                var resModels = await Template.BuilderComponents.GetModelsAi();
+                if (resModels.Succeeded)
+                {
+                    dataBuildModelAi = resModels.Data?.ToList()?? new();
+                    StateHasChanged();
+                }
+            }
+
+        }
+    }
+
+    private async Task<List<ModelAiResponse>> OnFilterByLanguageDialectType(DataBuildModelAi filter)
+    {
+
+        if (Template.BuilderComponents.GetModelsByLanguageDialectType != null)
+        {
+            var resp= await Template.BuilderComponents.GetModelsByLanguageDialectType(filter);
+            if (resp.Succeeded && resp.Data != null)
+                return resp.Data.ToList();
+        }
+
+        return new List<ModelAiResponse>();
+    }
+
+}

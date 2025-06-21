@@ -1,0 +1,84 @@
+﻿@using LAHJA.Them
+<MudButton Class="@(AppTextStyle.TEXT_TRANSFORM_NORMAL+" "+@styleClass)" Disabled="@isProcessing" OnClick="HandleClick" Variant="Variant.Filled" Color="@buttonColor">
+    @if (isProcessing)
+    {
+        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+        <MudText Class="ms-2 text-white">@processingText</MudText>
+    }
+    else
+    {
+        <MudText Class="p-0 text-white">@buttonText</MudText>
+    }
+</MudButton>
+
+@code {
+
+    private string styleClass = "w-100 p-0";
+
+    [Parameter]
+    public string StyleClass
+    {
+        get => StyleClass;
+        set => StyleClass = value;
+    }
+
+
+    private bool isProcessing = false;
+
+    [Parameter]
+    public bool IsProcessing
+    {
+        get => isProcessing;
+        set => isProcessing = value;
+    }
+
+    private string buttonText = "Click Me";
+    [Parameter]
+    public string Text
+    {
+        get => buttonText;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                buttonText = value;
+                StateHasChanged();
+            }    
+        }
+    }
+
+    private string processingText = "Processing...";
+    [Parameter]
+    public string ProcessingText
+    {
+        get => processingText;
+        set => processingText = value;
+    }
+
+    private Color buttonColor = @AppColors.BASE_COLOR_ENUM;
+    [Parameter]
+    public Color Color
+    {
+        get => buttonColor;
+        set => buttonColor = value;
+    }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private async Task HandleClick()
+    {
+        if (!IsProcessing)
+        {
+            IsProcessing = true;
+            if (OnClick.HasDelegate)
+            {
+                await OnClick.InvokeAsync(null); 
+            }
+            IsProcessing = false;
+        }
+    }
+}
+
+   
+

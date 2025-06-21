@@ -1,0 +1,128 @@
+﻿
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Payment.CreditCard
+@using LAHJA.Data.UI.Templates.CreditCard
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.ProFile.Settings
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@using Microsoft.AspNetCore.Authorization
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@inject LAHJA.Data.UI.Templates.CreditCard.TemplateCreditCard Template
+
+@attribute [Authorize]
+
+
+@if (Template != null && buildData!=null)
+{
+
+
+    <CreditCards 
+        IsLoading="isLoading"
+        BuildData="buildData"
+        SubmitSelectedActiveCard="onSubmitActiveCreditCard"
+        SubmitCreateCard="OnSubmitCreateCard"
+        SubmitUpdateCard="OnSubmitUpdateCard"
+        SubmitDeleteCard="OnSubmitDeleteCard" />
+
+
+
+}else @if (isLoading)
+{
+    <CustomPageSkeleton IsDisplay="isLoading" />
+}
+
+
+@code {
+
+
+    private string lg;
+    private bool isLoading = true;
+
+    private List<CardDetails> buildData = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        lg = CultureInfo.CurrentUICulture.Name;
+        await loadedData();
+
+    }
+
+    // [Parameter] public string subscriptionId { set; get; }
+    private async Task loadedData()
+    {
+        try
+        {
+            var creditsResult = await Template.GetCreditCardDetails();
+
+            if (creditsResult.Succeeded && creditsResult.Data != null && creditsResult.Data.Count() > 0)
+            {
+                buildData = creditsResult.Data;
+
+            }
+            else
+            {
+                buildData = new List<CardDetails> { new CardDetails { CardNumber = "454353455", HolderName = "Azzaldeen", CardType = "MasterCard",
+                ExpirationDate = "27/02", IsSelected = true, CVC = "721" } };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+
+            isLoading = false;
+            StateHasChanged();
+        }
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            // await loadedData();
+        }
+
+    }
+
+
+
+    private async Task onSubmitActiveCreditCard(CardDetails card)
+    {
+        if (Template.BuilderComponents.SubmitActiveCreditCard != null && card != null)
+            await Template.BuilderComponents.SubmitActiveCreditCard(new DataBuildCreditCardBase { CreditCard = card });
+    }
+
+
+    private async Task OnSubmitCreateCard(CardDetails data)
+    {
+        if (Template.BuilderComponents.SubmitCreateCreditCardDetails != null)
+        {
+            await Template.BuilderComponents.SubmitCreateCreditCardDetails(new DataBuildCreditCardBase { CreditCard = data });
+        }
+    }
+    private async Task OnSubmitUpdateCard(CardDetails data)
+    {
+        if (Template.BuilderComponents.SubmitUpdateCreditCardDetails != null)
+        {
+            await Template.BuilderComponents.SubmitUpdateCreditCardDetails(new DataBuildCreditCardBase { CreditCard = data });
+        }
+    }
+    private async Task OnSubmitDeleteCard(CardDetails data)
+    {
+        if (Template.BuilderComponents.SubmitDeleteCreditCardDetails != null)
+        {
+            await Template.BuilderComponents.SubmitDeleteCreditCardDetails(new DataBuildCreditCardBase { CreditCard = data });
+        }
+    }
+
+
+
+
+
+}

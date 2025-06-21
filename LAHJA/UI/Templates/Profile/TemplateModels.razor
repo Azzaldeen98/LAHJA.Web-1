@@ -1,0 +1,251 @@
+﻿
+@using AutoMapper
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.ProFile.Settings
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile Template
+@using LAHJA.Data.UI.Components
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IMapper mapper  
+@inherits BaseInitializationComponent
+
+
+@if (Template != null && dataAndEvent!=null)
+{
+    @* <TabelDashCard  *@
+    @*     T="DataBuildUserModelAi"  *@
+    @*     DataAndEventBuildTabel="dataAndEvent" *@
+    @*     StateCounts="cardStates" *@
+    @*     ActionTabels="groupAction" *@
+    @*     IsLoading="isLoading" *@
+    @*     BarTabel="TranslationsLST" /> *@
+
+    <TabelGridDashCard T="DataBuildUserModelAi"
+        Items="dataAndEvent?.DataBuild"
+        SelectOnRowClick="true"
+        RowClick="@OnRowClicked"
+        LabelColumns="@translations_label_columns[lg]"
+        StateCounts="cardStates"
+
+        EditClicked="@OnRowEditClicked"
+        ActionTabels="groupAction"
+        IsLoading="isLoading"
+        BarTabel="TranslationsLST" />
+}
+
+
+
+@code {
+
+    private bool hasClickedRow = false;
+    private List<CardStateCount<string>>? cardStates = new();
+    private GroupActionTabels groupAction = new GroupActionTabels();
+    private DataAndEventBuildTabelCard<DataBuildUserModelAi> dataAndEvent = new();
+
+    private bool isLoading = true;
+
+    [Parameter] public string subscriptionId { set; get; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        // lg = CultureInfo.CurrentUICulture.Name;
+        await loadedData();
+
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+
+    //          await loadedData();
+
+    //     }
+
+
+    // }
+
+    private void OnRowEditClicked(DataBuildUserModelAi item)
+    {
+        if (item != null)
+            Snackbar.Add($"Edit: {item.Name}", Severity.Error);
+    }
+    private void OnRowClicked(DataGridRowClickEventArgs<DataBuildUserModelAi> row)
+    {
+        if (row != null && row?.Item!=null)
+            Snackbar.Add(row.Item.Name, Severity.Info);
+    }
+
+    private async Task loadedData()
+    {
+        try
+        {
+            var _dataBuild = await Template.GetDataBuildModelAis();
+            dataAndEvent = new()
+                {
+                    DataBuild = _dataBuild,
+                //   LabelColumns = ColomsTrans[lg].ToList(),
+                    Events = new()
+                };
+
+            if (_dataBuild != null)
+            {
+                cardStates = new()
+                {
+
+                    new()
+                    {
+                        Value=_dataBuild.Where(x=>x.IsStandard==true).Count().ToString(),
+                        Label=TranslationsLST[lg]["Standard"]
+
+                    },
+
+                     new()
+                    {
+                         Value=_dataBuild.Where(x=>x.IsStandard==false).Count().ToString(),
+                        Label=TranslationsLST[lg]["UnStandard"]
+                    },
+
+                };
+            }
+
+            groupAction.Actions = new()
+            {
+                new()
+                {
+                    Icon=@Icons.Material.Filled.AddCircle
+                    ,
+                    Tag="create", 
+                    Name=TranslationsLST[lg]["Create"]
+                },
+
+            };
+            groupAction.ChipClicked += OnChipClicked;
+        }
+        catch (Exception e) { }
+        finally
+        {
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+
+    private Task OnChipClicked(CardActionTabel action)
+    {
+        if (action.Tag == "delete")
+        {
+            Snackbar.Add("fgffg", Severity.Error);
+
+        }
+        else if (action.Tag == "create")
+        {
+            OpenDialog();
+        }
+
+        return Task.CompletedTask;
+
+    }
+
+    private async Task OpenDialog()
+    {
+
+        if (!hasClickedRow)
+        {
+            hasClickedRow = true;
+
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+
+            var parameters = new DialogParameters<DialogContent>
+        {
+
+            { x =>x.DataBuild1,null },
+
+            {x => x.DataBuildCheck,null},
+            {x=>x.SrcIframe,"https://lahja-core.onrender.com/createspace"}
+        };
+
+            var dialogReference=DialogService.Show<DialogContent>("", parameters, options);
+
+            try
+            {
+                ///TODO
+                var result = await dialogReference.Result;
+                hasClickedRow = false;
+            }
+            catch (Exception)
+            {
+                hasClickedRow = false;
+            }
+        }
+    }
+
+    private static readonly Dictionary<string, Dictionary<string, string>> TranslationsLST = new()
+        {
+            ["en"] = new()
+            {
+                ["Text1"] = "create your spaces",
+                ["Text2"] = "AI لهجة",
+                ["Description"] = "LAHJA platform provides a smart way to communicate with AI in your own dialect.",
+                ["ButtonLink"] = "Create Model",
+                ["Standard"] = "Models Standard",
+                ["UnStandard"] = "Models UnStandard",
+                ["Create"] = "Create"
+            },
+            ["ar"] = new()
+            {
+                ["Text1"] = "اخنر  نماذج الذكاء الاصطناعي" ,
+                ["Text2"] = "لهجة AI",
+                ["Description"] = "توفر  منصة لهجة  طريقة ذكية للتواصل مع الذكاء الاصطناعي بلهجتك الخاصة.",
+                ["ButtonLink"] = "انشاء نموذج ",
+                ["Standard"] = "النماذج القياسية",
+                ["UnStandard"] = "النماذج غير القياسية",
+                ["Create"] = "انشاء"
+            }
+        };
+
+
+
+    Dictionary<string, Dictionary<string, string>> translations_label_columns = new()
+    {
+        { "ar", new ()
+            {
+                { "Id", "المعرف" },
+                { "Name", "الاسم" },
+                { "Category", "الفئة" },
+                { "Language", "اللغة" },
+                { "IsStandard", "قياسي" },
+                { "Gender", "الجنس" },
+                { "Dialect", "اللهجة" },
+                { "Type", "النوع" }
+            }
+        },
+        { "en", new()
+            {
+                { "Id", "Id" },
+                { "Name", "Name" },
+                { "Category", "Category" },
+                { "Language", "Language" },
+                { "IsStandard", "Is Standard" },
+                { "Gender", "Gender" },
+                { "Dialect", "Dialect" },
+                { "Type", "Type" }
+            }
+        }
+    };
+
+
+
+
+}

@@ -1,0 +1,41 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+
+<script>
+    //V3
+    //src="https://www.google.com/recaptcha/api.js"
+</script>
+<script>
+    //V3
+    // function onSubmit(token) {
+    //     document.getElementById("Auth-Demo-form").submit();
+    // }
+</script>
+
+<script type="text/javascript">
+    var onloadCallback = function () {
+        grecaptcha.render('html_element', {
+            'sitekey': '6Ld41JsqAAAAAEvJSBeM48mCbu3ndltGRi7u06gU'
+        });
+    };
+
+
+
+    function onSubmitReCAPTCHA(event) {
+
+        var token = grecaptcha.getResponse();
+
+        if (!token) {
+         //   event.preventDefault(); // منع إرسال النموذج إذا لم يتم التحقق بنجاح
+            return null;
+        }
+
+        return token+"";
+
+    }
+
+
+</script>
+
+<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer> </script>
+

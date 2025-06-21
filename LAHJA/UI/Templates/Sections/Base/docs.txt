@@ -1,0 +1,61 @@
+﻿/Presentation
+    ├── /HeaderSection
+        ├── Logo
+        ├── NavigationMenu
+        ├── SearchBar
+        └── UserAuthentication
+
+    └── /FooterSection
+        ├── ContactInformation
+        ├── SocialMediaLinks
+        ├── QuickLinks
+        └── LegalInformation
+
+
+/Presentation
+├── /HeroSection
+├── Headline
+├── Tagline
+├── CallToAction
+└── BackgroundMedia
+├── /FeaturesSection
+├── FeatureList
+├── IconsAndText
+└── MultiDeviceDisplay
+├── /TestimonialSection
+├── CustomerQuotes
+├── Ratings
+└── DynamicLayout
+├── /BlogSection
+├── LatestArticles
+├── Pagination
+└── LinkToBlog
+├── /ContactSection
+├── ContactForm
+├── SocialMediaLinks
+└── Map
+├── /PricingSection
+├── PricingPlans
+├── FreeTrial
+└── CTA
+├── /FAQSection
+├── QuestionsAndAnswers
+├── SearchFunction
+└── CollapsibleItems
+├── /GallerySection
+├── ImageGallery
+├── VideoGallery
+└── InteractiveGallery
+├── /TestimonialSection
+├── VideoTestimonials
+├── TextTestimonials
+└── CarouselLayout
+├── /CallToActionSection
+├── StrongCTA
+└── SimpleDesign
+└── /FooterSection
+├── QuickLinks
+├── SocialMediaLinks
+├── ContactInformation
+└── LegalSection
+

@@ -1,0 +1,93 @@
+﻿@using Domain.ShareData
+@using Domain.ShareData.Base
+@using LAHAJ.Loading
+@using LAHJA.ContextServices
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Data.UI.Components.Subscription
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.Helpers.Services
+@using LAHJA.UI.Components.General.Skeleton
+@using LAHJA.UI.Components.Plan
+@using LAHJA.UI.Components.ProFile.Settings
+@using LAHJA.UI.Components.Subscription
+@inject LAHJA.Data.UI.Templates.Subscription.TemplateSubscription Template
+@inject LAHJA.Data.UI.Templates.Plans.TemplatePlans TemplatePlan
+
+@inherits AppUtilityComponent
+
+
+@if (isLoading)
+{
+	<LoadingComponent />
+
+}
+else
+{
+	<MainSubscription 
+		BuildSubscriptionData="buildSubscriptionData" 
+		BuildPlanData="buildPlanData" 
+		SubmitDeleteSubscription="Template.BuilderComponents.SubmitDelete" />
+}
+
+
+@code {
+
+
+	[Parameter] public string PlanId { get; set; } = "";
+	[Parameter] public string SubscriptionId { get; set; } = "";
+	private bool isLoading =true;
+
+	private DataBuildUserSubscriptionInfo buildSubscriptionData;
+	private PlanViewModel buildPlanData;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		await loadingSubscriptionAsync();
+		await loadingPlanAsync();
+		isLoading = false;
+		StateHasChanged();
+	}
+
+	private async Task loadingSubscriptionAsync()
+	{
+		if (Template.BuilderComponents.SubmitGetSubscription != null && !string.IsNullOrEmpty(SubscriptionId))
+		{
+			var result = await Template.BuilderComponents.SubmitGetSubscription(new FilterResponseData { Id = SubscriptionId });
+
+			if (result.Succeeded)
+			{
+				buildSubscriptionData = result.Data;
+
+			}
+
+		}
+	}
+	private async Task loadingPlanAsync()
+	{
+		if (TemplatePlan != null && !string.IsNullOrEmpty(PlanId))
+		{
+			var result = await TemplatePlan.BuilderComponents.GetPlanById(new DataBuildPlansBase { PlanId = PlanId, Lg = lg });
+
+			if (result.Succeeded)
+			{
+				buildPlanData = result.Data;
+
+			}
+
+		}
+	}
+
+
+	// protected override async Task OnAfterRenderAsync(bool firstRender)
+	// {
+
+	// 	if (firstRender)
+	// 	{ }
+
+
+	// }
+	
+
+} 

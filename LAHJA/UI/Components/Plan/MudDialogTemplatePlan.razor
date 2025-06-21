@@ -1,0 +1,93 @@
+﻿ 
+@using LAHJA.Data.UI.Components.Base
+@using LAHJA.Data.UI.Components.Plan
+@inject ISnackbar Snackbar
+ 
+ 
+ 
+ 
+
+   
+   
+
+        <MudDialog>
+
+            <DialogContent>
+        <MudGrid Class="plan-grid" Justify="Justify.SpaceAround">
+
+
+            @foreach (var item in Items)
+            {
+                <MudItem xs="12" sm="6" md="4">
+
+                    <TemplatePlan Params="@item" OnSubmit="Submit" />
+
+
+
+                </MudItem>
+            }
+
+        </MudGrid>
+               
+           </DialogContent>
+    <DialogActions>
+
+
+        <MudButton OnClick="Cancel" Variant="Variant.Outlined" Color="Color.Primary">Cancel</MudButton>
+ 
+    </DialogActions>
+
+    </MudDialog>
+        
+      
+          
+      
+
+ 
+@code
+{
+
+    
+    public string Error { get; set; } = "No Data";
+    [CascadingParameter]
+    private MudDialogInstance? MudDialog { get; set; }
+    
+    // [Parameter]
+    // public CssMainPlan CssMain { get; set; } = new CssMainPlan();
+    [Parameter]
+    public InputTypePlan InputTypeComponts { get; set; } = InputTypePlan.List;
+    [Parameter]
+    public DisplayModePlan DisplayMode { get; set; }
+    [Parameter]
+    public PlanViewModel SingleItem { get; set; } = null;
+
+    [Parameter]
+    public IEnumerable<PlanViewModel> Items { get; set; } = null;
+    [Parameter]
+    public EventCallback<PlanViewModel> OnSubmit { get; set; }
+
+
+
+
+
+    private void Cancel() => MudDialog.Cancel();
+    private async void Submit(PlanViewModel input)
+    {
+        try
+        {
+              
+
+
+
+            MudDialog.Close(DialogResult.Ok(input));
+
+
+           
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+            StateHasChanged();
+        }
+    }
+}

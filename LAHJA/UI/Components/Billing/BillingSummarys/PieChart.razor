@@ -1,0 +1,165 @@
+﻿ 
+@using ApexCharts
+@using LAHJA.Data.UI.Billing
+
+
+@if (Param == null)
+
+{
+
+
+    <MudAlert Severity="Severity.Error">@Error</MudAlert>
+}
+else
+{
+
+
+
+
+ 
+
+
+
+
+
+ 
+
+
+
+        
+            <ApexChart TItem="PieChartModel"
+                       Title="Sample Data">
+                <ApexPointSeries TItem="PieChartModel"
+                                 Items="Param"
+                                 Name="Net Profit"
+                                 SeriesType="SeriesType.Pie"
+                                 XValue="e => e.Category"
+                                 YValue="e => (decimal)e.RemainingNumber / e.TotalNumber * 100" />
+            </ApexChart>
+    
+
+
+
+
+ 
+
+ 
+
+}
+
+
+   
+
+   
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+@code
+{
+
+
+
+
+
+
+
+    private string Error = "";
+
+    [Parameter]
+
+    public List<PieChartModel>? Param { get; set; } = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    List<PieChartModel> Params1 = null;
+
+
+
+
+
+
+
+
+    protected override async void OnInitialized()
+
+    {
+
+
+
+
+
+
+
+        Params1 = new List<PieChartModel>
+     {
+
+         new PieChartModel { Category = "Request Max", TotalNumber = 100, RemainingNumber = 10 },
+         new PieChartModel { Category = "Scope Indroid", TotalNumber = 30, RemainingNumber = 20 },
+         new PieChartModel { Category = "Scope Web", TotalNumber = 30, RemainingNumber = 10 },
+         new PieChartModel { Category = "Scope Report", TotalNumber = 20, RemainingNumber = 10 }
+     };
+        Param = Params1;
+
+        StateHasChanged();
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+}

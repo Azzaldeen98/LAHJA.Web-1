@@ -1,0 +1,61 @@
+﻿@using LAHJA.Them
+
+
+<MudButton Class="w-100 my-2" Variant="Variant.Outlined" Color="Color.Secondary" OnClick="HandleClick">@Trans(lang)</MudButton>
+
+@code {
+
+    private string lang = "ar";
+    private Dictionary<string, string> label = new()
+    {
+        {"ar","إلغاء" } ,  
+        {"en","Cancel" }   
+    };
+
+    [Parameter]
+    public string Lang
+    {
+        get => lang;
+        set
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                lang = value;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private Color buttonColor = @AppColors.BASE_COLOR_ENUM;
+
+    [Parameter]
+    public Color Color
+    {
+        get => buttonColor;
+        set => buttonColor = value;
+    }
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+
+    private string Trans(string lang)
+    {
+        return label.ContainsKey(lang)? label[lang]:"Cancel";
+
+    }
+    private async Task HandleClick()
+    {
+
+        if (OnClick.HasDelegate)
+        {
+            await OnClick.InvokeAsync(null); 
+        }
+
+
+    }
+
+
+}
+
+   
+

@@ -1,0 +1,102 @@
+﻿@* @page "/settings/spaces/{*subscriptionId}" *@
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models
+@using LAHJA.Data.UI.Models.SessionTokenAuth
+@using LAHJA.UI.Components.ServiceCard
+@using LAHJA.UI.Components.TabelCard
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using LAHJA.UI.Components.ProFile.Settings
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+@inject LAHJA.Data.UI.Templates.Profile.TemplateProfile Template
+@inject LAHJA.Data.UI.Templates.Services.TemplateServices templateService
+
+
+
+
+@if (Template != null )
+{
+    <AccessTokensTemplate 
+        DataBuild="dataBuild"
+        IsLoading="isLoading"
+        Services="services"
+        SubmitCreateSessionToken="Template.BuilderComponents.SubmitCreateSessionToken"
+        SubmitValidate="Template.BuilderComponents.SubmitValidateSessionToken" 
+        SubmitDelete="Template.BuilderComponents.SubmitDeleteSessionAccessToken" 
+        SubmitResume="Template.BuilderComponents.SubmitResumeSessionToken" 
+        SubmitPause="Template.BuilderComponents.SubmitPauseSessionToken" />
+}
+
+
+@code {
+
+    private List<DataBuildServiceInfo> services = new();
+    private string lg = "ar";
+    private bool isLoading = true;
+    [Parameter] public string subscriptionId{ set; get; }
+    [Parameter] public string spaceId{ set; get; }
+
+    private List<SessionTokenAuth> dataBuild = new List<SessionTokenAuth>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (templateService.BuilderComponents.SubmitGetAll != null)
+        {
+            var response = await templateService.BuilderComponents.SubmitGetAll(null);
+            if (response.Succeeded)
+            {
+                services = response.Data;
+                StateHasChanged();
+            }
+        }
+      
+
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+
+            await getAllAsync();
+        }
+
+
+    }
+
+    private async Task getAllAsync()
+    {
+        try
+        {
+
+            if (Template.BuilderComponents.GetSessionsAccessTokens != null)
+            {
+                var response = await Template.BuilderComponents.GetSessionsAccessTokens();
+                if (response.Succeeded && response.Data != null)
+                {
+                    dataBuild = response.Data;
+
+                }
+
+            }
+
+
+        }
+        catch (Exception e)
+        {
+
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+
+
+
+
+}

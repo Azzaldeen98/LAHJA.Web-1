@@ -1,0 +1,50 @@
+﻿
+
+@using LAHJA.Data.UI.Components.Plan
+@inject NavigationManager Navigation
+    
+
+<MudExpansionPanels   Elevation="0">
+    <MudExpansionPanel Text="Current plan">
+
+
+
+        <LAHJA.UI.Components.Plan.MainPlan DataBuilds="Params" IsDialog="false" IsAuth="true" />
+
+    </MudExpansionPanel>
+    </MudExpansionPanels>
+
+
+ 
+
+
+@code
+{
+
+
+
+
+    [Parameter]
+
+    public bool IsAuth { get; set; }=true;
+
+
+    [Parameter]
+
+
+
+    public List<PlanViewModel> Params { get; set; }
+
+
+
+    //private List<PlanViewModel> PlanViewModels;
+
+    protected override async void OnInitialized()
+
+    {
+        //planInfos = DataManager.GetAllPlanInfos();
+        StateHasChanged();
+
+    }
+    
+}

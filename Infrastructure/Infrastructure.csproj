@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
+    <PackageReference Include="IdentityModel" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AutoGenerator\AutoGenerator.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <ProjectReference Include="..\Shared\Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Core\ApiClient\" />
+    <Folder Include="DataSource\ApiClient\RequestEvent\" />
+    <Folder Include="DataSource\ApiClient\User\" />
+    <Folder Include="DataSource\ApiClient\Request\" />
+    <Folder Include="DataSource\ApiClient\Roles\" />
+    <Folder Include="DataSource\ApiClient\ServiceMethod\" />
+    <Folder Include="Models\RequestEvent\Request\" />
+    <Folder Include="Models\RequestEvent\Response\" />
+    <Folder Include="Models\Roles\Request\" />
+    <Folder Include="Models\Roles\Response\" />
+    <Folder Include="Models\ServiceMethod\Request\" />
+    <Folder Include="Models\ServiceMethod\Response\" />
+    <Folder Include="Models\User\Request\" />
+    <Folder Include="Models\User\Response\" />
+    <Folder Include="Repository\Base\" />
+    <Folder Include="Repository\ModelGateway\" />
+    <Folder Include="Repository\RequestEvent\" />
+    <Folder Include="Repository\Roles\" />
+    <Folder Include="Repository\ServiceMethod\" />
+    <Folder Include="Repository\User\" />
+  </ItemGroup>
+
+</Project>

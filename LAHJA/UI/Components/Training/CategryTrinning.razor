@@ -1,0 +1,77 @@
+﻿
+
+
+
+
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4" Style="padding:4%!important">
+    <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4"  >
+    <MudGrid>
+       
+        <MudItem xs="12" sm="4">
+            <MudCard Class="pa-4" Style="background-color:rgba(0, 200, 83, 1);">
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="mb-2">@((IsArabic ? " تدريب النموذج " : "Trainning Model "))</MudText>
+                    <MudText Typo="Typo.body1">
+                        @((IsArabic ? "يمكن تدريب النموذج في  عده من من  " : "A single Model    massage."))
+                    </MudText>
+                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-2">$110</MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+      
+        <MudItem xs="12" sm="4">
+            <MudCard Class="pa-4">
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="mb-2">@((IsArabic ? "الباقة الشاملة" : "Ultimate Package"))</MudText>
+                    <MudChip Color="Color.Warning" Class="mb-1" T="string">
+                        @((IsArabic ? "الأكثر شيوعًا" : "Popular"))
+                    </MudChip>
+                    <MudText Typo="Typo.body1">
+                        @((IsArabic ? "حزمة خاصة تحتوي على 5 أو 10 جلسات تدليك." : "A special package of 5 or 10 massages of ultimate bliss."))
+                    </MudText>
+                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="mt-2">$190</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Success" FullWidth="true">
+                        @((IsArabic ? "احصل على القسيمة" : "GET VOUCHER"))
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+
+
+    
+        <MudItem xs="12" sm="4">
+            <MudCard Class="pa-4">
+                <MudCardContent>
+                    <MudText Typo="Typo.h5" Class="mb-2">@((IsArabic ? "احجز جلستك" : "Book your massage"))</MudText>
+                    <MudText Typo="Typo.body1">
+                        @((IsArabic ? "لديك قسيمة؟ احجز جلستك هنا." : "Received a gift voucher? Book your massage here."))
+                    </MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Success" FullWidth="true">
+                        @((IsArabic ? "احجز الآن" : "GET VOUCHER"))
+                    </MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
+
+</MudContainer>
+
+
+@code {
+   
+    private bool IsArabic = false;
+
+    
+    private void ToggleLanguage()
+    {
+        IsArabic = !IsArabic;
+    }
+}

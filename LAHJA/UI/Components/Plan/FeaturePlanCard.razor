@@ -1,0 +1,160 @@
+﻿@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Them
+
+
+
+
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+
+@if (@Param != null)
+
+{
+    <MudTooltip Text="@Param.Value" style="padding:2% !important" Color="@AppColors.BASE_COLOR_ENUM" Placement="Placement.Bottom">
+
+        <MudText Typo="Typo.body2" style="padding:0% !important;margin:0% !important;font-size:12px !important;">
+            <MudIcon Icon="@Icon" Color="@(Param.Active?AppColors.BASE_COLOR_ENUM:Color.Error)" />
+
+                @Param.Key: @string.Join(",", Param.Value)
+
+                @if (!IsAuth && !Param.IsFixed && _allowUpdate)
+                {
+
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" Color="Color.Primary" @onclick="DeleteAsync" />
+                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Edit" Color="Color.Primary" @onclick="EditAsync" />
+                }
+
+            </MudText>
+    </MudTooltip>
+
+}
+else
+{
+    <MudAlert Severity="Severity.Error">@Error</MudAlert>
+}
+
+@code
+{
+    [Parameter] public bool AllowUpdate { get => _allowUpdate; set => _allowUpdate = value; }
+
+    [Parameter] public string Icon { get; set; } = Icons.Material.Sharp.Check;
+
+    [Parameter] public bool IsAuth { get; set; } = true;
+
+    [Parameter] public PlanFeatureViewModel? Param { get; set; }
+
+    [Parameter] public EventCallback<PlanFeatureViewModel> OnClickSelect { get; set; }
+
+    [Parameter] public EventCallback<PlanFeatureViewModel> OnClickDelete { get; set; }
+
+    [Parameter] public EventCallback<PlanFeatureViewModel> OnClickEdit { get; set; }
+
+    [Parameter] public string IdCategry { get; set; }
+
+
+    private bool _allowUpdate = false;
+
+    private string Error { get; set; } = "No Data";
+
+    private decimal totalPrice;
+
+
+
+
+    protected override void OnInitialized()
+    {
+
+        if (Param != null)
+        {
+            Param.Active = !(Param.Value == "no" || Param.Value == "لا");
+            Icon = Param.Active ? @Icons.Material.Sharp.Check : @Icons.Material.Sharp.Cancel;
+        }
+
+    }
+
+
+
+    private async Task EditAsync()
+    {
+        try
+        {
+
+            var parameters = new DialogParameters<MudDialogEditNumberFeture>
+        {
+
+            { x => x.ButtonText, "Edit" },
+            { x => x.Color, @AppColors.BASE_COLOR_ENUM },
+            {x => x.Params,Param}
+        };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+
+
+            var dialog = await DialogService.ShowAsync<MudDialogEditNumberFeture>("Edit", parameters, options);
+
+
+
+            var result = await dialog.Result;
+
+
+
+            if (!result.Canceled)
+
+            {
+
+                Param = (PlanFeatureViewModel)result.Data;
+
+                if (OnClickEdit.HasDelegate)
+                {
+                    await OnClickEdit.InvokeAsync(Param);
+                }
+
+
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+
+    }
+    private async Task DeleteAsync()
+    {
+        try
+        {
+
+            var parameters = new DialogParameters<MudDialogEditNumberFeture>
+        {
+            { x => x.ContentText, "Do you really want to delete these records? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error },
+            {x => x.Params,Param}
+        };
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+            var dialog = await DialogService.ShowAsync<MudDialogEditNumberFeture>("Delete", parameters, options);
+
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                if (OnClickDelete.HasDelegate)
+                {
+                    await OnClickDelete.InvokeAsync(Param);
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+
+
+    }
+}

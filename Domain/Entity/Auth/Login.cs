@@ -1,0 +1,27 @@
+﻿using AutoGenerator.Config.Attributes;
+using AutoGenerator.Enums;
+using Shared.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Domain.Entity
+{
+
+    [AutomateMapperWith(LayersModels.DTO, "LoginRequest")]
+    [AutomateMapperWith(LayersModels.VM, "DataBuildAuthBase", "LoginRequest")]
+    public class Login : ITDso
+    {
+
+        [DataType(DataType.EmailAddress)]
+        public required string Email { get; set; }
+   
+        [DataType(DataType.Password)]
+        public required string Password { get; set; }
+
+    }
+
+}

@@ -1,0 +1,43 @@
+﻿@using Domain.Entities.Subscriptions.Response
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Components.Plan
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.UI.Components.Payment
+@using LAHJA.UI.Components.ProFile.USettings
+
+
+
+
+<MudGrid Class="d-flex align-items-start w-100" >
+
+    @if (BuildSubscriptionData != null)
+    {
+        <MudItem md="6" sm="12">
+            <SubscriptionCard DataBuild="BuildSubscriptionData" />
+        </MudItem>
+    }
+
+    @if (BuildPlanData != null)
+    {
+        <MudItem md="6" sm="12">
+            <UpgradePlan BuildData="BuildPlanData" HasPreviousSubscription="true" SubmitCancelPreviousSubscription="onDeleteSubscription" />
+        </MudItem>
+    }
+
+</MudGrid>
+
+@code {
+
+
+    [Parameter] public DataBuildUserSubscriptionInfo? BuildSubscriptionData { get; set; }
+    [Parameter] public PlanViewModel? BuildPlanData { get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitDeleteSubscription { get; set; }
+
+    private void onDeleteSubscription(string subscriptionId)
+    {
+        if (SubmitDeleteSubscription.HasDelegate)
+        {
+            SubmitDeleteSubscription.InvokeAsync(new DataBuildUserSubscriptionInfo{ Id=subscriptionId});
+        }
+    }
+}

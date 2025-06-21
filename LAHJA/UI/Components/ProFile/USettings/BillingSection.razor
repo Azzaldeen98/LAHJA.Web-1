@@ -1,0 +1,134 @@
+﻿@using LAHJA.Data.UI.Components.Payment.DataBuildBillingBase
+@using LAHJA.UI.Components.Billing.Shared
+@using LAHJA.UI.Components.ProFile.Settings
+@using MudBlazor
+@inject LAHJA.Data.UI.Templates.Billing.TemplateBilling templateBilling
+
+
+<MudPaper Class="pt-6 border-gray-100 md:col-span-8 lg:col-span-9 xl:col-span-9 md:px-4 py-4">
+    <MudContainer>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <MudText Typo="Typo.h6" Class="flex flex-row items-center">
+                    @Translate("Billing")
+                </MudText>
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="border-b border-gray-100 via-white to-white dark:via-gray-950 dark:to-gray-950 md:bg-gradient-to-r"/>
+@* 
+        <MudTabs>
+            <MudTabPanel Text="@Translate("Overview")"> <h1>Overview</h1> </MudTabPanel>
+            <MudTabPanel Text="@Translate("PaymentInformation")"><h1>PaymentInformation</h1> </MudTabPanel>
+            <MudTabPanel Text="@Translate("PROSubscription")"> <h1>PROSubscription</h1></MudTabPanel>
+        </MudTabs> *@
+
+     
+
+        <MudTabs Outlined="true" Position="@Position" Rounded="true" 
+                 ApplyEffectsToContainer="true" Class="mt-8" PanelClass="pa-6"  ActivePanelIndex="0">
+            <MudTabPanel  Text="@Translate("Overview")">
+               <BillingOverview/>
+            </MudTabPanel>
+            <MudTabPanel Text="@Translate("PaymentInformation")">
+                <BillingMethodsSection ReadOnly="false" BuildData="billingData" />
+            </MudTabPanel>
+          
+        </MudTabs>
+
+       
+    </MudContainer>
+</MudPaper>
+
+
+@code{
+
+    private Dictionary<string, string> translations;
+    private string CurrentLanguage="ar";
+    private DataBuildBillingBase billingData;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && templateBilling!=null)
+        {
+            var res = await templateBilling.GetBillingDetails();
+            if (res.Succeeded)
+            {
+                billingData = res.Data;
+            }
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadTranslations();
+    }
+
+    private string Translate(string key)
+    {
+        return translations.ContainsKey(key) ? translations[key] : key;
+    }
+    private void LoadTranslations()
+    {
+        if (CurrentLanguage == "ar")
+        {
+            translations = new Dictionary<string, string>
+            {
+                { "Billing", "الفوترة" },
+                { "Overview", "نظرة عامة" },
+                { "PaymentInformation", "معلومات الدفع" },
+                { "PROSubscription", "الاشتراك PRO" },
+                { "UsageQuota", "حصة الاستخدام" },
+                { "SubscribeToPRO", "اشترك في PRO" },
+                { "HigherLimits", "للحصول على حدود أعلى" },
+                { "PublicRepositoriesStorage", "تخزين المستودعات العامة" },
+                { "Bytes", "بايت" },
+                { "ConfirmEmail", "أكد عنوان بريدك الإلكتروني لاستخدام خدماتنا المدفوعة" }
+            };
+        }
+        else
+        {
+            translations = new Dictionary<string, string>
+            {
+                { "Billing", "Billing" },
+                { "Overview", "Overview" },
+                { "PaymentInformation", "Payment Information" },
+                { "PROSubscription", "PRO Subscription" },
+                { "UsageQuota", "Usage Quota" },
+                { "SubscribeToPRO", "Subscribe to PRO" },
+                { "HigherLimits", "For higher limits" },
+                { "PublicRepositoriesStorage", "Public repositories storage" },
+                { "Bytes", "Bytes" },
+                { "ConfirmEmail", "Confirm your email to use our paid services" }
+            };
+        }
+    }
+
+
+    public Position Position { get; set; } = Position.Top;
+
+    private void OnSelectedValue(Position value)
+    {
+            switch (value)
+            {
+                case Position.Top:
+                    Position = Position.Top;
+                    break;
+                case Position.Start:
+                    Position = Position.Start;
+                    break;
+                case Position.Left:
+                    Position = Position.Left;
+                    break;
+                case Position.Right:
+                    Position = Position.Right;
+                    break;
+                case Position.End:
+                    Position = Position.End;
+                    break;
+                case Position.Bottom:
+                    Position = Position.Bottom;
+                    break;
+            }
+        }
+}

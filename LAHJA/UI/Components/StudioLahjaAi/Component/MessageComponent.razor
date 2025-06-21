@@ -1,0 +1,45 @@
+﻿@using LAHJA.Data.UI.Models.Studio
+@using LAHJA.Them
+@using static LAHJA.UI.Components.StudioLahjaAi.ChatT2Text
+
+@if (Message!=null)
+{
+
+<div class="chat-bubble py-0 my-1">
+
+        <MudCard Class="px-3 py-0 d-flex flex-row justify-content-around align-items-center" Style="@("background-color:"+Message.BubbleColor)">
+
+        <MudText Class="mb-1" style="font-size:12px !important; font-weight:normal !important">
+                @Message.DisplayedContent
+        </MudText>
+            @if (Message.IsProcessing)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+            }
+            else if (Message.IsSpeaking)
+            {
+                <MudImage Src="icons/audio_wave.gif" Width="50"  Height="20"  />
+            }
+            else 
+            {
+                <MudIconButton class="mx-2" Size="Size.Medium" style="height:30px" Icon="@Icons.Material.Filled.SurroundSound" Color="@AppColors.BASE_COLOR_ENUM" OnClick="@messageToSpeech" Edge="Edge.End" />
+            }
+        
+    </MudCard>
+</div>
+}
+
+@code {
+    [Parameter] public EventCallback<ChatMessage> MessageToSpeech { get; set; }
+    [Parameter] public ChatMessage Message { get; set; }
+    // [Parameter] public string BubbleColor { get; set; }
+    // [Parameter] public bool IsProcessing { get; set; } = false;
+
+    private async void messageToSpeech()
+    {
+        if (MessageToSpeech.HasDelegate)
+        {
+            await MessageToSpeech.InvokeAsync(Message);
+        }
+    }
+}

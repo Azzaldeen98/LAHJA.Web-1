@@ -1,0 +1,1286 @@
+﻿@using LAHJA.Them
+
+ 
+<style>
+
+    .vertical-list
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* الفاصل بين العناصر */
+    }
+
+</style>
+
+
+
+
+        <MudPaper  Style="overflow:hidden; position:relative;height:100%">
+        <MudDrawerContainer Class="mud-height-full">
+            <MudList T="string" Dense="true" Class="d-flex   flex-grow-1 py-0 mb-3">
+
+
+
+            <MudCheckBox />
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" />
+            <MudIconButton Icon="@Icons.Material.Filled.MoreVert" />
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" />
+
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="ToggleMenu"  />
+
+
+        </MudList>
+        <MudDivider />
+                <MudDrawer @bind-Open="@_open" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+                    <MudNavMenu>
+            @*             @foreach (var dropZone in body)
+                        {
+
+                            <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => SelectMenuItem(item))" Icon="@dropZone.Icon">@dropZone.Text</MudNavLink>
+
+                        } *@
+
+            @foreach (var item in MenuItems)
+            {
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => SelectMenuItem(item))" Icon="@Icons.Material.Filled.Home">@item.Name</MudNavLink>
+            }
+                    </MudNavMenu>
+                </MudDrawer>
+
+
+<MudMainContent>
+        <MudPaper Class="pa-4">
+            @if (SelectedComponent != null)
+            {
+                @SelectedComponent
+            }
+            else
+            {
+                <MudText Typo="Typo.h6">Select an item from the menu to display content</MudText>
+            }
+        </MudPaper>
+    </MudMainContent>
+
+                @if (@itemtab == "Start")
+                {
+            <T2Speech />
+            <T2Text />
+                    <StartStudio />
+                    @if (_openEnd)
+                    {
+                        ToggleEndDrawer();
+                    }
+
+                }
+                else if (@itemtab == "Social")
+                {
+
+
+                    <T2Speech />
+                    @if (!_openEnd)
+                    {
+                        ToggleEndDrawer();
+                    }
+
+
+
+                }
+                else if (@itemtab == "Forums")
+                {
+                    <T2Text />
+
+                    @if (!_openEnd)
+                    {
+                        ToggleEndDrawer();
+                    }
+                }
+                else if (@itemtab == "ChatText")
+                {
+                    <ChatT2Text />
+
+
+
+
+                    @if (!_openEnd)
+                    {
+                        ToggleEndDrawer();
+                    }
+
+
+
+
+
+                }
+                else if (@itemtab == "Stream Realtime")
+                {
+                    <T2SpeechLive />
+
+
+                    @if (!_openEnd)
+                    {
+                        ToggleEndDrawer();
+                    }
+
+
+                }
+                else if (itemtab == "ChangeLog")
+                {
+
+                    <LogChangeModelCompoent />
+
+
+                } 
+
+
+         <MudDrawer @bind-Open="@_openEnd" Fixed="false" Anchor="Anchor.End" Elevation="0" Variant="@DrawerVariant.Temporary">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h6">@(TypeLanguage ? "Settings" : "الاعدادت ")" </MudText>
+
+                <MudButton StartIcon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="ToggleEndDrawer" Style="margin:4px!important" />
+            </MudDrawerHeader>
+            <MudNavMenu>
+                <MudList T="object" Class="vertical">
+
+
+
+
+                    <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Type  Langagaue Model" : "الغات ")">
+                        <NestedList>
+
+                            <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+                                @foreach (var item in ListLangauge)
+                                {
+
+
+                                    <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+                                }
+
+
+
+
+                            </MudRadioGroup>
+                        </NestedList>
+                    </MudListItem>
+
+
+
+
+                </MudList>
+
+                @if (itemtab == "ChatText")
+
+                {
+
+
+                    <MudList T="object" Class="vertical">
+
+                        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Type Audio" : "انواع الاصوات ")">
+                            <NestedList>
+                                <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+                                    @foreach (var item in TypeSound)
+                                    {
+
+                                        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+                                    }
+
+                                </MudRadioGroup>
+                            </NestedList>
+                        </MudListItem>
+
+
+                    </MudList>
+
+
+
+
+
+                }
+
+
+
+
+
+
+                <MudList T="object" Class="vertical">
+
+
+
+                    <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Model" : "النماذج ")">
+                        <NestedList>
+                            <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+                                @foreach (var item in ListModelReleases)
+                                {
+
+                                    <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+                                }
+
+                            </MudRadioGroup>
+                        </NestedList>
+                    </MudListItem>
+
+
+
+                </MudList>
+
+                <MudList T="object">
+                    <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Available dialects" : "الهجات ")">
+                        <NestedList>
+                            <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+                                @foreach (var item in TypeLahja)
+                                {
+
+                                    <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+                                }
+
+
+
+
+                            </MudRadioGroup>
+                        </NestedList>
+                    </MudListItem>
+
+
+                </MudList>
+
+                <MudList T="object" Class="vertical">
+
+
+
+
+                    <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Tool" : "الادوات ")">
+                        <NestedList>
+                            <MudButton>Get Token </MudButton>
+
+                        </NestedList>
+                        <NestedList>
+                            <MudSwitch Color="Color.Primary">"Speed  Sound</MudSwitch>
+
+                        </NestedList>
+                    </MudListItem>
+
+                </MudList>
+            </MudNavMenu>
+        </MudDrawer>
+ 
+
+
+    </MudDrawerContainer>
+        </MudPaper>
+
+      
+       
+ 
+
+
+
+@code
+{
+  
+//     private void ToggleDrawer()
+//     {
+//         _open = !_open;
+//     }
+//     private bool IsMenuOpen = false;
+
+//     // Menu Items
+//     private List<MenuItem> MenuItems = new List<MenuItem>
+//     {
+//         new MenuItem { Name = "T2Speech", Component = typeof(T2Speech) },
+//         new MenuItem { Name = "T2Text", Component = typeof(T2Text) },
+//         new MenuItem { Name = "StartStudio", Component = typeof(StartStudio) }
+//     };
+
+//     // Selected Component
+//     private RenderFragment? SelectedComponent;
+
+//     private void ToggleMenu()
+//     {
+//         IsMenuOpen = !IsMenuOpen;
+//     }
+
+//     private void SelectMenuItem(MenuItem item)
+//     {
+//         SelectedComponent = RenderFragmentHelper.RenderComponent(item.Component);
+//         IsMenuOpen = false; // Close the menu on mobile
+//     }
+
+//     // Helper to dynamically render components
+//     public class RenderFragmentHelper
+//     {
+//         public static RenderFragment RenderComponent(Type componentType) =>
+//             builder =>
+//             {
+//                 builder.OpenComponent(0, componentType);
+//                 builder.CloseComponent();
+//             };
+//     }
+
+//     // Menu Item Class
+//     public class MenuItem
+//     {
+//         public string Name { get; set; }
+//         public Type Component { get; set; }
+//     }
+// }
+    
+
+// @code {
+
+
+
+
+//     private bool _open = false;
+//     public string itemtab="Start";
+//     private bool _openStart =false;
+//     private bool _openEnd = false;
+//     private CategoryData CheckedRadioTypeSound;
+//     private CategoryData CheckedRadioTypeLangague;
+//     private CategoryData CheckedRadioTypeLahagaModel;
+
+
+
+
+//     [Parameter]
+//     public bool TypeLanguage { get; set; } = false;
+
+
+
+
+//     List<CategoryData> header;
+//     List<CategoryData> body;
+
+//     List<CategoryData> TypeSound;
+//     List<CategoryData> TypeLahja;
+
+
+
+
+
+
+//     private void ToggleStartDrawer()
+//     {
+//         _openStart = !_openStart;
+//     }
+
+//     private void ToggleEndDrawer()
+//     {
+//         _openEnd = !_openEnd;
+//          StateHasChanged();
+//     } 
+
+
+//     private void onclick(CategoryData item)
+//     {
+//         itemtab= item.Identifier;
+//         ToggleEndDrawer();
+//         StateHasChanged();
+//     }
+//     protected override void OnInitialized()
+//     {
+
+//         if (TypeLanguage)
+//         {
+            
+
+
+//             body = Categories;
+         
+//             TypeSound = TypeSoundEnglish;
+//             TypeLahja = TypeLahjaEnglish;
+//         }
+//         else
+//         {
+            
+//             body = Categoriesarbic;
+//             TypeSound = TypeSoundArabic;
+//             TypeLahja = TypeLahjaArabic;
+//         }
+
+
+
+
+//         ToggleStartDrawer();
+//           StateHasChanged();
+
+
+//     }
+
+
+//     public class CategoryData
+//     {
+//         public string Identifier { get; set; }
+//         public string Text { get; set; }
+//         public string Icon { get; set; }
+//     }
+
+
+//     private List<CategoryData> Categoriesarbic = new()
+// {
+
+
+//     new CategoryData { Identifier = "Start", Text = "تطبيقات البداية", Icon = Icons.Material.Filled.Apps },
+//     new CategoryData { Identifier = "Forums", Text = "نص إلى نص", Icon = Icons.Material.Filled.TextDecrease },
+//     new CategoryData { Identifier = "Social", Text = "نص إلى كلام", Icon = Icons.Material.Filled.Speaker },
+//     new CategoryData { Identifier = "Stream Realtime", Text = "نص إلى كلام مباشر", Icon = Icons.Material.Filled.Living },
+//     new CategoryData { Identifier = "ChatText", Text = "دردشة نصية", Icon = Icons.Material.Filled.Chat },
+
+
+// };
+
+
+//     private void itemClickMenu(CategoryData item)
+//     {
+         
+
+//     }
+
+//     private List<CategoryData>ListModelReleases = new()
+//     {
+
+//         new CategoryData { Identifier = "Model number1", Text = "Lahja 2.0 Text", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "Model number2", Text = "Lahja 2.1", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "Model number3", Text = "Lahja 2.3", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "Model number5", Text = "Lahja 2.5", Icon = Icons.Material.Filled.Group }
+
+//     };
+
+//  private List<CategoryData> ListLangauge = new()
+//     {
+
+
+
+//         new CategoryData { Identifier = "Arabic", Text = "Arabic", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "English", Text = "English", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "china", Text = "china", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "Egpit", Text = "Egpit", Icon = Icons.Material.Filled.Group }
+
+//     };
+
+
+//     private List<CategoryData> Categories = new()
+//  {
+//      new CategoryData { Identifier = "Start", Text = "Starter Apps", Icon = Icons.Material.Filled.Group },
+//      new CategoryData { Identifier = "Forums", Text = "Text To Text", Icon = Icons.Material.Filled.Group },
+//      new CategoryData { Identifier = "Social", Text = "Text To Speech ", Icon = Icons.Material.Filled.Forum },    
+//      new CategoryData { Identifier = "Stream Realtime", Text = "Text TO Speech Live", Icon = Icons.Material.Filled.Forum },
+//      new CategoryData { Identifier = "ChatText", Text = "Chat Text", Icon = Icons.Material.Filled.Forum },
+
+//  };
+
+
+
+     
+//     private List<CategoryData> TypeSoundEnglish = new()
+//     {
+
+//         new CategoryData { Identifier = "M", Text = "Male  ", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "F", Text = "Famle  ", Icon = Icons.Material.Filled.Group }
+
+
+//     };
+
+//     private List<CategoryData> TypeSoundArabic = new()
+// {
+//     new CategoryData { Identifier = "M", Text = "صوت ذكر", Icon = Icons.Material.Filled.Group },
+//     new CategoryData { Identifier = "F", Text = "صوت أنثى", Icon = Icons.Material.Filled.Group }
+// };
+
+//     private List<CategoryData> TypeLahjaArabic = new()
+//     {
+
+// new CategoryData { Identifier = "NA", Text = "اللهجة النجدية", Icon = Icons.Material.Filled.Group },
+// new CategoryData { Identifier = "HA", Text = "اللهجة الحجازية", Icon = Icons.Material.Filled.Group },
+// new CategoryData { Identifier = "SH", Text = "اللهجة الجنوبية", Icon = Icons.Material.Filled.Group },
+// new CategoryData { Identifier = "EA", Text = "اللهجة الشرقية", Icon = Icons.Material.Filled.Group },
+
+
+//     };
+
+//     private List<CategoryData> TypeLahjaEnglish = new()
+//     {
+//         new CategoryData { Identifier = "NA", Text = "Najdi  ", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "HA", Text = "Hejazi  ", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "SH", Text = "Southern  ", Icon = Icons.Material.Filled.Group },
+//         new CategoryData { Identifier = "EA", Text = "Eastern  ", Icon = Icons.Material.Filled.Group },
+
+//     };
+
+}
+
+@* @using LAHJA.Them
+
+
+<style>
+
+    .vertical-list
+    {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* الفاصل بين العناصر */
+    }
+
+</style>
+
+
+<MudLayout>
+    <MudAppBar Color="Color.Primary">
+        <MudText Typo="Typo.h6" Class="ml-2">Responsive Sidebar Example</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" OnClick="ToggleMenu" Class="d-md-none" />
+    </MudAppBar>
+
+    <MudDrawer Anchor="Anchor.Right" Open="@IsMenuOpen" ClipMode="DrawerClipMode.Never" Variant="DrawerVariant.Responsive">
+        <MudList T="object">
+            @foreach (var item in MenuItems)
+            {
+                <MudListItem OnClick="@(() => SelectMenuItem(item))">
+                    <MudText Typo="Typo.body1">@item.Name</MudText>
+                </MudListItem>
+            }
+        </MudList>
+    </MudDrawer>
+
+    <MudMainContent>
+        <MudPaper Class="pa-4">
+            @if (SelectedComponent != null)
+            {
+                @SelectedComponent
+            }
+            else
+            {
+                <MudText Typo="Typo.h6">Select an item from the menu to display content</MudText>
+            }
+        </MudPaper>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool IsMenuOpen = false;
+
+    // Menu Items
+    private List<MenuItem> MenuItems = new List<MenuItem>
+    {
+        new MenuItem { Name = "T2Speech", Component = typeof(T2Speech) },
+        new MenuItem { Name = "T2Text", Component = typeof(T2Text) },
+        new MenuItem { Name = "StartStudio", Component = typeof(StartStudio) }
+    };
+
+
+    private RenderFragment? SelectedComponent;
+
+    private void ToggleMenu()
+    {
+        IsMenuOpen = !IsMenuOpen;
+    }
+
+    private void SelectMenuItem(MenuItem item)
+    {
+        SelectedComponent = RenderFragmentHelper.RenderComponent(item.Component);
+        IsMenuOpen = false;
+    }
+
+
+    public class RenderFragmentHelper
+    {
+        public static RenderFragment RenderComponent(Type componentType) =>
+            builder =>
+            {
+                builder.OpenComponent(0, componentType);
+                builder.CloseComponent();
+            };
+    }
+
+
+    public class MenuItem
+    {
+        public string Name { get; set; }
+        public Type Component { get; set; }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+ *@
+
+
+
+
+ @using LAHJA.Them
+
+
+<style>
+
+    .vertical-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* الفاصل بين العناصر */
+    }
+
+</style>
+
+
+
+<MudPaper Style="overflow:hidden; position:relative;height:100%">
+    <MudDrawerContainer Class="mud-height-full" Style="position:relative;">
+        <!-- Top Action Bar -->
+        <MudList T="string" Dense="true" Class="d-flex flex-grow-1 py-0 mb-3">
+            <MudCheckBox />
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" />
+            <MudIconButton Icon="@Icons.Material.Filled.MoreVert" />
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" />
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" OnClick="ToggleSettingsMenu" />
+        </MudList>
+        <MudDivider />
+
+        <!-- Left Drawer Menu -->
+        <MudDrawer @bind-Open="@IsMenuOpen" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+            <MudNavMenu>
+                @foreach (var item in MenuItems)
+                {
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => SelectMenuItem(item))" Icon="@Icons.Material.Filled.Home">@item.Name</MudNavLink>
+                }
+            </MudNavMenu>
+        </MudDrawer>
+
+        <!-- Main Content Area -->
+        <MudMainContent>
+
+            <MudDrawer @bind-Open="@IsSettingsMenuVisible" Fixed="false" Anchor="Anchor.End"
+                       Elevation="0" Variant="@DrawerVariant.Temporary">
+                <MudDrawerHeader>
+                    <MudText Typo="Typo.h6">Settings</MudText>
+                </MudDrawerHeader>
+                <MudNavMenu>
+                    @foreach (var setting in SettingsItems)
+                    {
+                        <MudNavLink OnClick="@(() => SelectSetting(setting))">@setting.Name</MudNavLink>
+                    }
+                </MudNavMenu>
+            </MudDrawer>
+
+            <MudPaper Class="pa-4">
+
+
+                @if (SelectedComponent != null)
+                {
+                    @SelectedComponent
+                }
+                else
+                {
+                    <MudText Typo="Typo.h6">Select an item from the menu to display content</MudText>
+                }
+            </MudPaper>
+        </MudMainContent>
+
+
+
+        @*   <div class="d-flex justify-center align-center mud-height-full">
+        <MudButton Color="Color.Inherit" OnClick="@ToggleEndDrawer" StartIcon="@(Icons.Material.Filled.East)" Class="mx-2">Toggle start</MudButton>
+
+        </div> *@
+        <!-- Right Drawer for Settings -->
+        @*  <MudDrawer Open="@IsSettingsMenuVisible" Anchor="Anchor.Right" Fixed="false" Elevation="1" Variant="@DrawerVariant.Temporary"
+        Style="position:absolute; top:50; right:0; height:100%; width:300px; z-index:10;">
+        <MudNavMenu>
+        @foreach (var setting in SettingsItems)
+        {
+        <MudNavLink OnClick="@(() => SelectSetting(setting))">@setting.Name</MudNavLink>
+        }
+        </MudNavMenu>
+        </MudDrawer>
+
+        <!-- Floating Settings Button -->
+        <MudIconButton Class="position-fixed" Style="top:16px; right:16px;"
+        Icon="@Icons.Material.Filled.Settings"
+        Color="Color.Primary"
+        OnClick="ToggleSettingsMenu" /> *@
+
+    </MudDrawerContainer>
+</MudPaper>
+
+@code {
+    private bool IsMenuOpen = false; // Left menu visibility
+    private bool IsSettingsMenuVisible = false; // Settings menu visibility
+
+    // Menu Items
+    private List<MenuItem> MenuItems = new List<MenuItem>
+    {
+        new MenuItem { Name = "T2Speech", Component = typeof(T2Speech) },
+        new MenuItem { Name = "T2Text", Component = typeof(T2Text) },
+        new MenuItem { Name = "StartStudio", Component = typeof(StartStudio) }
+    };
+
+    // Settings Items
+    private List<SettingItem> SettingsItems = new List<SettingItem>
+    {
+        new SettingItem { Name = "Account Settings" },
+        new SettingItem { Name = "Privacy" },
+        new SettingItem { Name = "Notifications" }
+    };
+
+    // Selected Component
+    private RenderFragment? SelectedComponent;
+
+    private void ToggleMenu()
+    {
+        IsMenuOpen = !IsMenuOpen;
+    }
+
+    private void SelectMenuItem(MenuItem item)
+    {
+        SelectedComponent = RenderFragmentHelper.RenderComponent(item.Component);
+        IsMenuOpen = false; // Close the menu on mobile
+
+    }
+
+    private void ToggleSettingsMenu()
+    {
+        IsSettingsMenuVisible = !IsSettingsMenuVisible;
+        StateHasChanged();
+    }
+
+    private void SelectSetting(SettingItem setting)
+    {
+        IsSettingsMenuVisible = false; // Close settings menu after selection
+                                       // SelectedComponent = builder =>
+                                       // {
+                                       //     builder.OpenElement(0, "div");
+                                       //     builder.AddContent(1, $"You selected: {setting.Name}");
+                                       //     builder.CloseElement();
+                                       // };
+        StateHasChanged();
+    }
+
+    // Helper to dynamically render components
+    public class RenderFragmentHelper
+    {
+        public static RenderFragment RenderComponent(Type componentType) =>
+            builder =>
+            {
+                builder.OpenComponent(0, componentType);
+                builder.CloseComponent();
+            };
+    }
+
+    // Menu Item Class
+    public class MenuItem
+    {
+        public string Name { get; set; }
+        public Type Component { get; set; }
+    }
+
+    // Setting Item Class
+    public class SettingItem
+    {
+        public string Name { get; set; }
+    }
+}
+
+@* <MudPaper Style="overflow:hidden; position:relative;height:100%">
+    <MudDrawerContainer Class="mud-height-full">
+        <MudList T="string" Dense="true" Class="d-flex   flex-grow-1 py-0 mb-3">
+
+
+
+            <MudCheckBox />
+            <MudIconButton Icon="@Icons.Material.Filled.Refresh" />
+            <MudIconButton Icon="@Icons.Material.Filled.MoreVert" />
+            <MudSpacer />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" />
+            <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" />
+
+
+
+        </MudList>
+        <MudDivider />
+        <MudDrawer @bind-Open="@_open" Fixed="false" Elevation="1" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true">
+            <MudNavMenu>
+
+                @foreach (var item in MenuItems)
+                {
+                    <MudNavLink Match="NavLinkMatch.All" OnClick="@(() => SelectMenuItem(item))" Icon="@Icons.Material.Filled.Home">@item.Name</MudNavLink>
+                }
+            </MudNavMenu>
+        </MudDrawer>
+
+
+        <MudMainContent>
+            <MudPaper Class="pa-4">
+                @if (SelectedComponent != null)
+                {
+                    @SelectedComponent
+                }
+                else
+                {
+                    <MudText Typo="Typo.h6">Select an item from the menu to display content</MudText>
+                }
+            </MudPaper>
+        </MudMainContent>
+    </MudDrawerContainer>
+</MudPaper> *@
+        
+        @if (@itemtab == "Start")
+        {
+        <T2Speech />
+        <T2Text />
+        <StartStudio />
+        @if (_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+        }
+        else if (@itemtab == "Social")
+        {
+
+
+        <T2Speech />
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+
+
+        }
+        else if (@itemtab == "Forums")
+        {
+        <T2Text />
+
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+        }
+        else if (@itemtab == "ChatText")
+        {
+        <ChatT2Text />
+
+
+
+
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+
+
+
+
+        }
+        else if (@itemtab == "Stream Realtime")
+        {
+        <T2SpeechLive />
+
+
+        @if (!_openEnd)
+        {
+        ToggleEndDrawer();
+        }
+
+
+        }
+        else if (itemtab == "ChangeLog")
+        {
+
+        <LogChangeModelCompoent />
+
+
+        } 
+
+
+          <MudDrawer @bind-Open="@_openEnd" Fixed="false" Anchor="Anchor.End" Elevation="0" Variant="@DrawerVariant.Temporary">
+        <MudDrawerHeader>
+        <MudText Typo="Typo.h6">@(TypeLanguage ? "Settings" : "الاعدادت ")" </MudText>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="ToggleEndDrawer" Style="margin:4px!important" />
+        </MudDrawerHeader>
+        <MudNavMenu>
+        <MudList T="object" Class="vertical">
+
+
+
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Type  Langagaue Model" : "الغات ")">
+        <NestedList>
+
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in ListLangauge)
+        {
+
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+
+
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+
+
+        </MudList>
+
+        @if (itemtab == "ChatText")
+
+        {
+
+
+        <MudList T="object" Class="vertical">
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Type Audio" : "انواع الاصوات ")">
+        <NestedList>
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in TypeSound)
+        {
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+        </MudList>
+
+
+
+
+
+        }
+
+
+
+
+
+
+        <MudList T="object" Class="vertical">
+
+
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Model" : "النماذج ")">
+        <NestedList>
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in ListModelReleases)
+        {
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+
+        </MudList>
+
+        <MudList T="object">
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Available dialects" : "الهجات ")">
+        <NestedList>
+        <MudRadioGroup @bind-Value="CheckedRadioTypeLangague">
+        @foreach (var item in TypeLahja)
+        {
+
+        <MudRadio T="CategoryData" Value="@item">@item.Text</MudRadio>
+
+        }
+
+
+
+
+        </MudRadioGroup>
+        </NestedList>
+        </MudListItem>
+
+
+        </MudList>
+
+        <MudList T="object" Class="vertical">
+
+
+
+
+        <MudListItem Icon="@Icons.Material.Filled.Inbox" Text="@(TypeLanguage ? "Tool" : "الادوات ")">
+        <NestedList>
+        <MudButton>Get Token </MudButton>
+
+        </NestedList>
+        <NestedList>
+        <MudSwitch Color="Color.Primary">"Speed  Sound</MudSwitch>
+
+        </NestedList>
+        </MudListItem>
+
+        </MudList>
+        </MudNavMenu>
+        </MudDrawer>
+        
+
+
+
+
+
+
+
+
+
+
+@* @code
+{
+
+
+    private bool IsMenuOpen = false;
+
+    // Menu Items
+    private List<MenuItem> MenuItems = new List<MenuItem>
+    {
+        new MenuItem { Name = "T2Speech", Component = typeof(T2Speech) },
+        new MenuItem { Name = "T2Text", Component = typeof(T2Text) },
+        new MenuItem { Name = "StartStudio", Component = typeof(StartStudio) }
+    };
+
+    // Selected Component
+    private RenderFragment? SelectedComponent;
+
+    private void ToggleMenu()
+    {
+        IsMenuOpen = !IsMenuOpen;
+    }
+
+    private void SelectMenuItem(MenuItem item)
+    {
+        SelectedComponent = RenderFragmentHelper.RenderComponent(item.Component);
+        IsMenuOpen = false; // Close the menu on mobile
+    }
+
+    // Helper to dynamically render components
+    public class RenderFragmentHelper
+    {
+        public static RenderFragment RenderComponent(Type componentType) =>
+            builder =>
+            {
+                builder.OpenComponent(0, componentType);
+                builder.CloseComponent();
+            };
+    }
+
+    // Menu Item Class
+    public class MenuItem
+    {
+        public string Name { get; set; }
+        public Type Component { get; set; }
+    }
+} *@
+
+
+@code {
+
+
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+
+    private bool _open = false;
+    public string itemtab = "Start";
+    private bool _openStart = false;
+    private bool _openEnd = false;
+    private CategoryData CheckedRadioTypeSound;
+    private CategoryData CheckedRadioTypeLangague;
+    private CategoryData CheckedRadioTypeLahagaModel;
+
+
+
+
+    [Parameter]
+    public bool TypeLanguage { get; set; } = false;
+
+
+
+
+    List<CategoryData> header;
+    List<CategoryData> body;
+
+    List<CategoryData> TypeSound;
+    List<CategoryData> TypeLahja;
+
+
+
+
+
+
+    private void ToggleStartDrawer()
+    {
+        _openStart = !_openStart;
+    }
+
+    private void ToggleEndDrawer()
+    {
+        _openEnd = !_openEnd;
+        StateHasChanged();
+    }
+
+
+    private void onclick(CategoryData item)
+    {
+        itemtab = item.Identifier;
+        ToggleEndDrawer();
+        StateHasChanged();
+    }
+    protected override void OnInitialized()
+    {
+
+        if (TypeLanguage)
+        {
+
+
+
+            body = Categories;
+
+            TypeSound = TypeSoundEnglish;
+            TypeLahja = TypeLahjaEnglish;
+        }
+        else
+        {
+
+            body = Categoriesarbic;
+            TypeSound = TypeSoundArabic;
+            TypeLahja = TypeLahjaArabic;
+        }
+
+
+
+
+        ToggleStartDrawer();
+        StateHasChanged();
+
+
+    }
+
+
+    public class CategoryData
+    {
+        public string Identifier { get; set; }
+        public string Text { get; set; }
+        public string Icon { get; set; }
+    }
+
+
+    private List<CategoryData> Categoriesarbic = new()
+{
+
+
+    new CategoryData { Identifier = "Start", Text = "تطبيقات البداية", Icon = Icons.Material.Filled.Apps },
+    new CategoryData { Identifier = "Forums", Text = "نص إلى نص", Icon = Icons.Material.Filled.TextDecrease },
+    new CategoryData { Identifier = "Social", Text = "نص إلى كلام", Icon = Icons.Material.Filled.Speaker },
+    new CategoryData { Identifier = "Stream Realtime", Text = "نص إلى كلام مباشر", Icon = Icons.Material.Filled.Living },
+    new CategoryData { Identifier = "ChatText", Text = "دردشة نصية", Icon = Icons.Material.Filled.Chat },
+
+
+};
+
+
+    private void itemClickMenu(CategoryData item)
+    {
+
+
+    }
+
+    private List<CategoryData> ListModelReleases = new()
+    {
+
+        new CategoryData { Identifier = "Model number1", Text = "Lahja 2.0 Text", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "Model number2", Text = "Lahja 2.1", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "Model number3", Text = "Lahja 2.3", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "Model number5", Text = "Lahja 2.5", Icon = Icons.Material.Filled.Group }
+
+    };
+
+    private List<CategoryData> ListLangauge = new()
+    {
+
+
+
+        new CategoryData { Identifier = "Arabic", Text = "Arabic", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "English", Text = "English", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "china", Text = "china", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "Egpit", Text = "Egpit", Icon = Icons.Material.Filled.Group }
+
+    };
+
+
+    private List<CategoryData> Categories = new()
+ {
+     new CategoryData { Identifier = "Start", Text = "Starter Apps", Icon = Icons.Material.Filled.Group },
+     new CategoryData { Identifier = "Forums", Text = "Text To Text", Icon = Icons.Material.Filled.Group },
+     new CategoryData { Identifier = "Social", Text = "Text To Speech ", Icon = Icons.Material.Filled.Forum },
+     new CategoryData { Identifier = "Stream Realtime", Text = "Text TO Speech Live", Icon = Icons.Material.Filled.Forum },
+     new CategoryData { Identifier = "ChatText", Text = "Chat Text", Icon = Icons.Material.Filled.Forum },
+
+ };
+
+
+
+
+    private List<CategoryData> TypeSoundEnglish = new()
+    {
+
+        new CategoryData { Identifier = "M", Text = "Male  ", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "F", Text = "Famle  ", Icon = Icons.Material.Filled.Group }
+
+
+    };
+
+    private List<CategoryData> TypeSoundArabic = new()
+{
+    new CategoryData { Identifier = "M", Text = "صوت ذكر", Icon = Icons.Material.Filled.Group },
+    new CategoryData { Identifier = "F", Text = "صوت أنثى", Icon = Icons.Material.Filled.Group }
+};
+
+    private List<CategoryData> TypeLahjaArabic = new()
+    {
+
+new CategoryData { Identifier = "NA", Text = "اللهجة النجدية", Icon = Icons.Material.Filled.Group },
+new CategoryData { Identifier = "HA", Text = "اللهجة الحجازية", Icon = Icons.Material.Filled.Group },
+new CategoryData { Identifier = "SH", Text = "اللهجة الجنوبية", Icon = Icons.Material.Filled.Group },
+new CategoryData { Identifier = "EA", Text = "اللهجة الشرقية", Icon = Icons.Material.Filled.Group },
+
+
+    };
+
+    private List<CategoryData> TypeLahjaEnglish = new()
+    {
+        new CategoryData { Identifier = "NA", Text = "Najdi  ", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "HA", Text = "Hejazi  ", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "SH", Text = "Southern  ", Icon = Icons.Material.Filled.Group },
+        new CategoryData { Identifier = "EA", Text = "Eastern  ", Icon = Icons.Material.Filled.Group },
+
+    };
+
+}

@@ -1,0 +1,202 @@
+﻿@using ApexCharts
+@using LAHJA.Data.UI.Components.Statistics
+ 
+ 
+
+
+ 
+
+
+@if (Param == null)
+
+{
+
+    <MudAlert Severity="Severity.Error">@Error</MudAlert>
+}
+else
+{
+
+
+    <MudTable Items="Param" Dense="true" Hover="true">
+        <HeaderContent>
+            <MudTh>Category</MudTh>
+            <MudTh>Total Number</MudTh>
+            <MudTh>Remaining Number</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Category">@context.Category</MudTd>
+            <MudTd DataLabel="Total Number">@context.TotalNumber</MudTd>
+            <MudTd DataLabel="Remaining Number">@context.RemainingNumber</MudTd>
+        </RowTemplate>
+    </MudTable>
+
+
+    if (@FlagTypeChart)
+    {
+
+        <ApexChart TItem="PieChartModel"
+                   Title="Sample Data">
+            <ApexPointSeries TItem="PieChartModel"
+                             Items="Param"
+                             Name="Net Profit"
+                             SeriesType="SeriesType.Pie"
+                             XValue="e => e.Category"
+                             YValue="e => (decimal)e.RemainingNumber / e.TotalNumber * 100" />
+        </ApexChart>
+
+
+    }
+    else
+    {
+
+        <div style="width:200px!important">
+
+           
+
+        </div>
+        <ApexChart TItem="PieChartModel"
+                   Title="Sample Data">
+            <ApexPointSeries TItem="PieChartModel"
+                             Items="Param"
+                             Name="Net Profit"
+                             SeriesType="SeriesType.Pie"
+                             XValue="e => e.Category"
+                             YValue="e =>e.TotalNumber"
+                                         />
+
+        </ApexChart>
+
+    }
+
+
+    @*   </MudItem> *@
+
+
+
+
+
+
+    @*
+        <MudItem xs="12" sm="6" md="4">
+            <ApexChart TItem="PieChartModel"
+                       Title="Sample Data">
+                <ApexPointSeries TItem="PieChartModel"
+                                 Items="Param"
+                                 Name="Net Profit"
+                                 SeriesType="SeriesType.Pie"
+                                 XValue="e => e.Category"
+                                 YValue="e =>e.TotalNumber" />
+
+                             </ApexChart>
+        </MudItem>
+ *@
+
+
+
+
+
+
+
+
+
+}
+
+
+
+
+@code
+{
+
+    private List<double> data = new();
+    private List<string> labels = new();
+    private string Error = "";
+
+
+    [Parameter]
+    public List<PieChartModel> Param { get; set; } = null;
+
+    [Parameter]
+    public bool FlagTypeChart { get; set; } = true;
+   
+    private string GetColor()
+    {
+
+
+        return "#ffd500";
+        return null;
+    }
+     
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+    protected override async void OnInitialized()
+
+    {
+
+
+      
+        //await Task.Delay(50);
+       // InvokeAsync(StateHasChanged);
+        
+
+     //    Params1 = new List<PieChartModel>
+     // {
+
+     //     new PieChartModel { Id=1,Category = "Text To Text", TotalNumber = 200, RemainingNumber = 10 },
+     //     new PieChartModel {Id=2,Category = "Text To Speech ", TotalNumber = 30, RemainingNumber = 20 },
+     //     new PieChartModel {Id=3,Category = "Chat", TotalNumber = 30, RemainingNumber = 10 }
+     //     //new PieChartModel {Id=4, Category = "Scope Report", TotalNumber = 20, RemainingNumber = 10 }
+     // };
+
+
+      // Param = Params1;
+
+      
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
