@@ -1,22 +1,16 @@
-﻿using Microsoft.Extensions.Localization;
+﻿using Client.Shared.UI.Components.DialogBox;
 using MudBlazor;
-using Shared.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 
 namespace Client.Shared.UI.Services.DialogBox
 {
 
-    public class MudBlazorConfirmationDialogService : IConfirmationDialogService
+    public class ConfirmationDialogService : IConfirmationDialogService
     {
         private readonly IDialogService _dialogService;
 
-        public MudBlazorConfirmationDialogService(IDialogService dialogService)
+        public ConfirmationDialogService(IDialogService dialogService)
         {
             _dialogService = dialogService ?? throw new ArgumentNullException(nameof(dialogService));
         }
@@ -30,12 +24,12 @@ namespace Client.Shared.UI.Services.DialogBox
             MaxWidth maxWidth = MaxWidth.ExtraSmall)
         {
             var parameters = new DialogParameters
-        {
-            { "ContentText", message },
-            { "ButtonTrueText", confirmText },
-            { "ButtonFalseText", cancelText },
-            { "Color", color }
-        };
+            {
+                { "Message", message },
+                { "ButtonOKLabel", confirmText },
+                { "ButtonCancelLabel", cancelText },
+                { "PrimaryColor", color }
+            };
 
             var options = new DialogOptions
             {
@@ -43,12 +37,12 @@ namespace Client.Shared.UI.Services.DialogBox
                 MaxWidth = maxWidth
             };
 
-            //var dialog = _dialogService.Show<DialogBox>(title, parameters, options);
-            //var result = await dialog.Result;
+            var dialog = _dialogService.Show<ShareDialogBox>(title, parameters, options);
+            var result = await dialog.Result;
 
-            //return result.Canceled == false && result.Data is bool confirmed && confirmed;
+            return result.Canceled == false && result.Data is bool confirmed && confirmed;
 
-            return true;
+            //return true;
         }
 
         // اختياري: طريقة جاهزة لتأكيد الإلغاء يمكن تخصيصها من الخارج

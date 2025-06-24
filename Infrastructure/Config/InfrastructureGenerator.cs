@@ -59,8 +59,6 @@ namespace Infrastructure.Config
                 });
             }
         }
-
-
         public static async Task GeneratorRepositoriesForEntityModels()
         {
             await GeneratorInterfacesRepository();
@@ -73,7 +71,6 @@ namespace Infrastructure.Config
             // Wait for the method body rewriting to complete
 
         }
-
 
 
         //public static async Task EnsureAllRepositoryFilesExist()
@@ -113,12 +110,11 @@ namespace Infrastructure.Config
                     },
                 Usings = new List<string>
                     {
-                
                         "Shared.Interfaces",
                         "Shared.Wrapper",
                         "AutoGenerator.Config.Attributes",
                         "Domain.Entity",
-
+                        "AutoGenerator.Config.Attributes",
 
                      },
                 AdditionalCode = @"
@@ -228,7 +224,6 @@ namespace Infrastructure.Config
             //if(files!=null && files.Any())
             //    GenerateAllRepositoryTemplates(files[0]);
         }
-
         public static async Task GenerateAllApiClientTemplates(string sourceTemplateFilePath)
         {
            await AutoCodeGenerator.GenerateAllClassTemplate(new GenerationOptions
@@ -276,7 +271,6 @@ namespace Infrastructure.Config
 
             });
         }
-
         public static async Task GenerateAllRepositoryTemplates(string sourceTemplateFilePath)
         {
            await AutoCodeGenerator.GenerateAllClassTemplate(new GenerationOptions

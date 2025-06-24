@@ -1,11 +1,6 @@
 ﻿using AutoGenerator.Config.Attributes;
 using AutoGenerator.Enums;
 using Shared.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entity
 {
@@ -13,7 +8,9 @@ namespace Domain.Entity
     [AutoGenerate(GenerationTarget.Repository | GenerationTarget.UseCase| GenerationTarget.Service)]
     [SupportedMethods(SupportedMethods.RRPC | SupportedMethods.GetOne | SupportedMethods.GetCurrent | SupportedMethods.GetAll)]
     [AutomateMapper(SupportedMethods.GetAll | SupportedMethods.GetOne | SupportedMethods.GetCurrent, true)]
-
+    [MethodRoute(SupportedMethods.Pause, "PauseCollectionAsync")]
+    [MethodRoute(SupportedMethods.Resume,"ResumeCollection2Async")]
+    [MethodRoute(SupportedMethods.Cancel,"Cancel2Async")]
     public class Subscription: ITDso
     {
 

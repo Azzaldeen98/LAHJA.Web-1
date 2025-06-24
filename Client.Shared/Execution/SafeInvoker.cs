@@ -335,6 +335,7 @@ namespace Client.Shared.Execution
                     _logger.LogError($"⏱️ TimeoutExceptionApp: {timeoutEx.Message} | ErrorCode: {timeoutEx.ErrorCode}");
                     await _errorHandlingService.HandleTimeoutErrorAsync(timeoutEx);
                     return new ConnectionTimeoutFailure(timeoutEx.Message);
+               
                 case HostNotFoundException hostNotFoundEx:
                     _logger.LogError($"⏱️ TimeoutExceptionApp: {hostNotFoundEx.Message} | ErrorCode: {hostNotFoundEx.ErrorCode}");
                     await _errorHandlingService.HandleHostNotFoundErrorAsync(hostNotFoundEx);

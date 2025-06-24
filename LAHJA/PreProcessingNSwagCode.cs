@@ -18,6 +18,8 @@ namespace LAHJA
         static string pattern = "\\b(class\\s+|new\\s+|\\breturn\\s+|\\btypeof\\s*\\(\\s*|\\bas\\s+|\\bis\\s+|\\bpublic\\s+|\\bprivate\\s+|\\bprotected\\s+|\\binternal\\s+|\\bstatic\\s+|\\breadonly\\s+|\\bvar\\s+|\\bthis\\s+|List<|Dictionary<|HashSet<|\\bTask<|\\bIEnumerable<|\\bFunc<|\\bAction<|\\bTuple<|\\bNullable<)([A-Z][a-zA-Z0-9_<>]*)\\b\r\n";
         public static void ExtractNDtoClasses(string filePath = "NSwageCodePrism.txt")
         {
+
+
             var symbole = ": Prism.Mvvm.BindableBase"; // رمز البحث عن الكلاسات التي ترث Prism.Mvvm.BindableBase
 
             // قراءة جميع الأسطر من الملف

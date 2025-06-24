@@ -13,6 +13,7 @@ namespace Domain.Entity
     [AutomateMapper(SupportedMethods.GetAllWithPaged | SupportedMethods.GetById | SupportedMethods.CountAll,true)]
     [AutomateMapperWith(LayersModels.DTO, "PlanOutputVM", "PlanCreateVM" )]
     [AutomateMapperWith(LayersModels.VM, "PlanViewModel")]
+   
     [HasTranslate]
     public class Plan:  ITDso
     {

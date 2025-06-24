@@ -3,8 +3,13 @@
 @using Client.Shared.UI.Components
 @using Client.Shared.UI.Components.Auth
 @using Client.Shared.UI.Components.Errors
+@inject NavigationManager Navigation;
 
-<ErrorComponent />
+
+<ErrorComponent 
+    OnReportClick="OnReport"
+    Message="عذرًا! لايمكن الاتصال بالخادم المضيف" 
+    Declare="الرجاء التحقق من وجود اتصال بالانترنت او التحقق من  صحة عنوان الخادم المضيف" />
 
 @* <PageTitle>Error</PageTitle> *@
 
@@ -36,6 +41,9 @@
     private string? RequestId { get; set; }
     private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
+
     protected override void OnInitialized() =>
         RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+
+    private void OnReport() => Navigation.NavigateTo("/problemReport", forceLoad: false);
 }

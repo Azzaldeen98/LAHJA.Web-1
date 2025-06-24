@@ -10,7 +10,7 @@ namespace AutoGenerator.Config.Attributes
         {
             Methods = methods;
         }
-    }
+    } 
 
 
 }

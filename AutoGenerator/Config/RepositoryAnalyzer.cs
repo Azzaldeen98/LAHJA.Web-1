@@ -6,6 +6,7 @@ using AutoGenerator.Helper;
 
 namespace AutoGenerator.Config
 {
+    using AutoGenerator.Config.Attributes;
     using Microsoft.CodeAnalysis;
     using System;
     using System.IO;
@@ -34,6 +35,8 @@ namespace AutoGenerator.Config
             {
                 Console.WriteLine($"\n📌 تحليل الدالة: {method.Name}");
 
+          
+
                 var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
                 var parameters = method.GetParameters();
                 var (returnTypeStr, modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
@@ -43,8 +46,19 @@ namespace AutoGenerator.Config
 
                 var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType);
                 var returnCollectionType = GeneratorHelpers.ExtractCollectionTypeFromMethodReturnType(method.ReturnType);
-                var keywords = ExtractKeywords(method.Name);
 
+                ///TODO :  Read RouteToAttribute
+                var routeToAtt = method.CustomAttributes?.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
+                var keywords = new List<string>();
+                if (routeToAtt != null && routeToAtt.AttributeType!=null)
+                {
+                    keywords.Add(routeToAtt.AttributeType.Name);
+                }
+                else
+                {
+                    keywords = ExtractKeywords(method.Name);
+                }
+                    
                 if (dsoParam == null)
                 {
                     var bodyCode = GenerateBodyWithoutDso(apiClientType, keywords, noDsoParamNames, returnType, returnTypeStr, returnCollectionType);
@@ -67,7 +81,8 @@ namespace AutoGenerator.Config
         private FieldInfo GetField(Type type, string fieldName)
             => type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private string GenerateBodyWithoutDso(Type apiClientType, List<string> keywords, List<string> paramNames, Type returnType, string returnTypeStr, Type? returnCollectionType=null)
+        private string GenerateBodyWithoutDso(Type apiClientType, List<string> keywords, List<string> paramNames,
+            Type returnType, string returnTypeStr, Type? returnCollectionType=null)
         {
             if (paramNames == null) paramNames = new List<string>();
 
@@ -104,7 +119,6 @@ namespace AutoGenerator.Config
                         
                         var _type= (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name)) 
                             ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>" : returnType.Name;  
-
                         body.AppendLine($"\n\treturn _mapper.Map<{_type}>(result);");
                     }
                 }
@@ -239,312 +253,312 @@ namespace AutoGenerator.Config
         }
     }
 
-    public class RepositoryAnalyzer2
-    {
+    //public class RepositoryAnalyzer2
+    //{
       
 
-        public Dictionary<string, string> ProcessRepository(Type repositoryType)
-        {
-            Dictionary<string, string>  chunksCode = new Dictionary<string, string>();
-            var mapperField = repositoryType.GetField("_mapper", BindingFlags.Instance | BindingFlags.NonPublic);
-            var apiClientField = repositoryType.GetField("_apiClient", BindingFlags.Instance | BindingFlags.NonPublic);
+    //    public Dictionary<string, string> ProcessRepository(Type repositoryType)
+    //    {
+    //        Dictionary<string, string>  chunksCode = new Dictionary<string, string>();
+    //        var mapperField = repositoryType.GetField("_mapper", BindingFlags.Instance | BindingFlags.NonPublic);
+    //        var apiClientField = repositoryType.GetField("_apiClient", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            if (mapperField == null || apiClientField == null)
-            {
-                Console.WriteLine($"❌ لم يتم العثور على الحقول المطلوبة داخل الكلاس {repositoryType.Name}");
-                return null;
-            }
+    //        if (mapperField == null || apiClientField == null)
+    //        {
+    //            Console.WriteLine($"❌ لم يتم العثور على الحقول المطلوبة داخل الكلاس {repositoryType.Name}");
+    //            return null;
+    //        }
 
-            var apiClientType = apiClientField.FieldType;
+    //        var apiClientType = apiClientField.FieldType;
 
-            var methods = repositoryType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+    //        var methods = repositoryType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            foreach (var method in methods)
-            {
-                Console.WriteLine($"\n📌 تحليل الدالة: {method.Name}");
+    //        foreach (var method in methods)
+    //        {
+    //            Console.WriteLine($"\n📌 تحليل الدالة: {method.Name}");
        
-                var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
+    //            var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
          
 
-                var parameters = method.GetParameters();
+    //            var parameters = method.GetParameters();
  
             
-                (var returnTypeStr, var Modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
-                var dsoParam = parameters.FirstOrDefault(p => typeof(ITDso).IsAssignableFrom(p.ParameterType));
-                var noDsoParams = parameters.Select(p => p.Name);
-                var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType); 
+    //            (var returnTypeStr, var Modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
+    //            var dsoParam = parameters.FirstOrDefault(p => typeof(ITDso).IsAssignableFrom(p.ParameterType));
+    //            var noDsoParams = parameters.Select(p => p.Name);
+    //            var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType); 
 
-                var mytype = GeneratorHelpers.ConvertToSyntax(method).ReturnType.ToString();
+    //            var mytype = GeneratorHelpers.ConvertToSyntax(method).ReturnType.ToString();
            
-                var keywords = ExtractKeywords(method.Name);
+    //            var keywords = ExtractKeywords(method.Name);
              
 
-                if (dsoParam == null)
-                {
-                    var paramNamesText = "";
-                    if (dsoParam == null && noDsoParams.Any())
-                    {
-                        paramNamesText = string.Join(",", noDsoParams);
-                    }
+    //            if (dsoParam == null)
+    //            {
+    //                var paramNamesText = "";
+    //                if (dsoParam == null && noDsoParams.Any())
+    //                {
+    //                    paramNamesText = string.Join(",", noDsoParams);
+    //                }
 
-                    Console.WriteLine("⚠️ لا تحتوي الدالة على معاملات من نوع ITDso، سيتم محاولة البحث بدون تحويل معامل.");
+    //                Console.WriteLine("⚠️ لا تحتوي الدالة على معاملات من نوع ITDso، سيتم محاولة البحث بدون تحويل معامل.");
 
-                    var apiMethodWithoutParam = FindApiClientMethod(apiClientType, keywords);
-                    if (apiMethodWithoutParam == null)
-                    {
-                        Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
-                        continue;
-                    }
+    //                var apiMethodWithoutParam = FindApiClientMethod(apiClientType, keywords);
+    //                if (apiMethodWithoutParam == null)
+    //                {
+    //                    Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
+    //                    continue;
+    //                }
 
-                    (var returnApiTypeStr, var Mod) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethodWithoutParam));
-                    var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethodWithoutParam.ReturnType);
-                    string bodyCodeNoParam = "";
+    //                (var returnApiTypeStr, var Mod) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethodWithoutParam));
+    //                var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethodWithoutParam.ReturnType);
+    //                string bodyCodeNoParam = "";
 
 
-                    // التحقق مما إذا كانت ترجع قيمة
-                    bool returnsValue = IsReturnTypeWithValue(apiReturnType);
+    //                // التحقق مما إذا كانت ترجع قيمة
+    //                bool returnsValue = IsReturnTypeWithValue(apiReturnType);
 
-                    if (returnsValue)
-                    {
-                        bodyCodeNoParam += $"\tvar result = await _apiClient.{apiMethodWithoutParam.Name}({paramNamesText});\n";
-                        if (typeof(ITDso).IsAssignableFrom(returnType))
-                        {
-                            if (returnApiTypeStr.Contains("Paged"))
-                            {
-                                bodyCodeNoParam += $@"
-                                return  PaginatedResult<{returnType.Name}>.Success(
-                                _mapper.Map<List<{returnType.Name}>>(result.Data.ToList()), 
-                                result.TotalRecords, 
-                                result.PageNumber, 
-                                result.PageSize,
-                                result.SortBy,
-                                result.SortDirection);";
+    //                if (returnsValue)
+    //                {
+    //                    bodyCodeNoParam += $"\tvar result = await _apiClient.{apiMethodWithoutParam.Name}({paramNamesText});\n";
+    //                    if (typeof(ITDso).IsAssignableFrom(returnType))
+    //                    {
+    //                        if (returnApiTypeStr.Contains("Paged"))
+    //                        {
+    //                            bodyCodeNoParam += $@"
+    //                            return  PaginatedResult<{returnType.Name}>.Success(
+    //                            _mapper.Map<List<{returnType.Name}>>(result.Data.ToList()), 
+    //                            result.TotalRecords, 
+    //                            result.PageNumber, 
+    //                            result.PageSize,
+    //                            result.SortBy,
+    //                            result.SortDirection);";
 
-                            }
-                            else {
-                                bodyCodeNoParam += $"\treturn _mapper.Map<{returnType.Name}>(result);";
-                            }
+    //                        }
+    //                        else {
+    //                            bodyCodeNoParam += $"\treturn _mapper.Map<{returnType.Name}>(result);";
+    //                        }
                                    
-                        }
-                        else
-                        {
-                            if (returnApiTypeStr.Contains("Paged"))
-                            {
-                                bodyCodeNoParam += @$"
-                                return  PaginatedResult<{{returnType.Name}}>.Success(
-                                result.Data.ToList(), 
-                                result.TotalRecords, 
-                                result.PageNumber, 
-                                result.PageSize,
-                                result.SortBy,
-                                result.SortDirection);";
+    //                    }
+    //                    else
+    //                    {
+    //                        if (returnApiTypeStr.Contains("Paged"))
+    //                        {
+    //                            bodyCodeNoParam += @$"
+    //                            return  PaginatedResult<{{returnType.Name}}>.Success(
+    //                            result.Data.ToList(), 
+    //                            result.TotalRecords, 
+    //                            result.PageNumber, 
+    //                            result.PageSize,
+    //                            result.SortBy,
+    //                            result.SortDirection);";
 
-                            }
-                            else
-                            {
-                                bodyCodeNoParam += "\treturn result;";
-                            }
+    //                        }
+    //                        else
+    //                        {
+    //                            bodyCodeNoParam += "\treturn result;";
+    //                        }
 
                              
-                        }
-                    }
-                    else
-                    {
-                        bodyCodeNoParam += $"\t await _apiClient.{apiMethodWithoutParam.Name}({paramNamesText});\n";
-                    }
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    bodyCodeNoParam += $"\t await _apiClient.{apiMethodWithoutParam.Name}({paramNamesText});\n";
+    //                }
 
-                    //if (returnType == typeof(void))
-                    //{
-                    //    bodyCodeNoParam += "\treturn;";
-                    //}
+    //                //if (returnType == typeof(void))
+    //                //{
+    //                //    bodyCodeNoParam += "\treturn;";
+    //                //}
 
-                    //else if (IsListOfITDto(apiReturnType, out var dtoItemType))
-                    //{
-                    //    //var dsoItemType = GetMappedDsoType(dtoItemType);
-                    //    bodyCodeNoParam += $"\treturn  _mapper.Map<ICollection<{returnType.Name}>>(result);";
-                    //    //bodyCodeNoParam += $"\treturn result.Select(x => _mapper.Map<{dsoItemType.Name}>(x)).ToList();";
-                    //}
-                    //else if (apiReturnType.Name.Contains("WithPage"))
-                    //{
-                    //    var innerDtoType = GetGenericTypeInside(apiReturnType);
-                    //    var dsoItemType = GetMappedDsoType(innerDtoType);
-                    //    bodyCodeNoParam += $"\treturn new {returnType.Name} {{ Items = result.Items.Select(x => _mapper.Map<{dsoItemType.Name}>(x)).ToList() }};";
-                    //}
+    //                //else if (IsListOfITDto(apiReturnType, out var dtoItemType))
+    //                //{
+    //                //    //var dsoItemType = GetMappedDsoType(dtoItemType);
+    //                //    bodyCodeNoParam += $"\treturn  _mapper.Map<ICollection<{returnType.Name}>>(result);";
+    //                //    //bodyCodeNoParam += $"\treturn result.Select(x => _mapper.Map<{dsoItemType.Name}>(x)).ToList();";
+    //                //}
+    //                //else if (apiReturnType.Name.Contains("WithPage"))
+    //                //{
+    //                //    var innerDtoType = GetGenericTypeInside(apiReturnType);
+    //                //    var dsoItemType = GetMappedDsoType(innerDtoType);
+    //                //    bodyCodeNoParam += $"\treturn new {returnType.Name} {{ Items = result.Items.Select(x => _mapper.Map<{dsoItemType.Name}>(x)).ToList() }};";
+    //                //}
 
-                    chunksCode.Add(method.Name, bodyCodeNoParam);
-                }
-                else
-                {
-
-
-
-                    var apiMethod = FindApiClientMethod(apiClientType, keywords);
-                    if (apiMethod == null)
-                    {
-                        Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
-                        continue;
-                    }
-                    //var apiMethodSyntax = GeneratorHelpers.ConvertToSyntax(apiMethod);
-                    var apiParams = apiMethod.GetParameters();
-                    var dtoParam = apiParams.FirstOrDefault(p => typeof(ITDto).IsAssignableFrom(p.ParameterType));
-                    if (dtoParam == null)
-                    {
-                        Console.WriteLine("⚠️ لا تحتوي دالة ApiClient على معامل من نوع ITDto");
-                        continue;
-                    }
-
-                    int dtoParamIndex = Array.IndexOf(apiParams, dtoParam);
-                    string[] parameterNames = apiParams.Select(p => p.Name).ToArray();
-                    string paramsNameText = string.Join(",", parameterNames);
-                    var apiReturnType2 = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
-                    (var apiReturnType2Str, var Mod) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
-                    string bodyCode = "";
-
-                    if (dtoParam != null)
-                    {
-                        // توليد التحويل من DSO إلى DTO
-                        bodyCode += $"\tvar {parameterNames[dtoParamIndex]} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});\n";
-                    }
-
-
-                    // التحقق مما إذا كانت الدالة ترجع قيمة
-                    bool returnsValue2 = IsReturnTypeWithValue(apiReturnType2);
-
-                    if (returnsValue2)
-                    {
-                        bodyCode += $"\tvar result =await _apiClient.{apiMethod.Name}({paramsNameText});\n";
-                        if (typeof(ITDto).IsAssignableFrom(apiReturnType2))
-                        {
-                            if (apiReturnType2Str.Contains("Paged"))
-                            {
-                                apiReturnType2Str += $@"
-                                 return  PaginatedResult<{returnType.Name}>.Success(
-                                _mapper.Map<List<{returnType.Name}>>(result.Data.ToList()), 
-                                result.TotalRecords, 
-                                result.PageNumber, 
-                                result.PageSize,
-                                result.SortBy,
-                                result.SortDirection);";
-
-                            }
-                            else
-                                bodyCode += $"\treturn _mapper.Map<{returnType.Name}>(result);";
-                        }
-                        else
-                        {
-                            if (apiReturnType2Str.Contains("Paged"))
-                            {
-                                apiReturnType2Str += @$"
-                                return  PaginatedResult<{{returnType.Name}}>.Success(
-                                result.Data.ToList(), 
-                                result.TotalRecords, 
-                                result.PageNumber, 
-                                result.PageSize,
-                                result.SortBy,
-                                result.SortDirection);";
-
-                            }
-                            else
-                                bodyCode += "\treturn result;";
-                        }
-                    }
-                    else
-                    {
-                        bodyCode += $"\t await _apiClient.{apiMethod.Name}({paramsNameText});\n";
-                    }
-
-
-                    //else if (IsListOfITDto(apiReturnType2, out var dtoItemType2))
-                    //{
-                    //    var dsoItemType2 = GetMappedDsoType(dtoItemType2);
-                    //    bodyCode += $"\treturn result.Select(x => _mapper.Map<{dsoItemType2.Name}>(x)).ToList();";
-                    //}
-                    //else if (apiReturnType2.Name.Contains("WithPage"))
-                    //{
-                    //    var innerDtoType = GetGenericTypeInside(apiReturnType2);
-                    //    var dsoItemType = GetMappedDsoType(innerDtoType);
-                    //    bodyCode += $"\treturn new {returnType.Name} {{ Items = result.Items.Select(x => _mapper.Map<{dsoItemType.Name}>(x)).ToList() }};";
-                    //}
-                    //else if (apiReturnType2 == typeof(void))
-                    //{
-                    //    bodyCode += "\treturn;";
-                    //}
-                    chunksCode.Add(method.Name, bodyCode);
+    //                chunksCode.Add(method.Name, bodyCodeNoParam);
+    //            }
+    //            else
+    //            {
 
 
 
-                }
-            }
+    //                var apiMethod = FindApiClientMethod(apiClientType, keywords);
+    //                if (apiMethod == null)
+    //                {
+    //                    Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
+    //                    continue;
+    //                }
+    //                //var apiMethodSyntax = GeneratorHelpers.ConvertToSyntax(apiMethod);
+    //                var apiParams = apiMethod.GetParameters();
+    //                var dtoParam = apiParams.FirstOrDefault(p => typeof(ITDto).IsAssignableFrom(p.ParameterType));
+    //                if (dtoParam == null)
+    //                {
+    //                    Console.WriteLine("⚠️ لا تحتوي دالة ApiClient على معامل من نوع ITDto");
+    //                    continue;
+    //                }
 
-            return chunksCode;
-        }
+    //                int dtoParamIndex = Array.IndexOf(apiParams, dtoParam);
+    //                string[] parameterNames = apiParams.Select(p => p.Name).ToArray();
+    //                string paramsNameText = string.Join(",", parameterNames);
+    //                var apiReturnType2 = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
+    //                (var apiReturnType2Str, var Mod) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
+    //                string bodyCode = "";
 
-        private bool IsReturnTypeWithValue(string returnType)
-        {
-          return  returnType.Contains("Task<");
-        }
-        private bool IsReturnTypeWithValue(Type returnType)
-        {
-            if (returnType==null || returnType == typeof(void) || returnType == typeof(Task))
-                return false;
+    //                if (dtoParam != null)
+    //                {
+    //                    // توليد التحويل من DSO إلى DTO
+    //                    bodyCode += $"\tvar {parameterNames[dtoParamIndex]} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});\n";
+    //                }
 
-            if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
-                return true;
 
-            return true;
-        }
+    //                // التحقق مما إذا كانت الدالة ترجع قيمة
+    //                bool returnsValue2 = IsReturnTypeWithValue(apiReturnType2);
 
-        private List<string> ExtractKeywords(string methodName)
-        {
-            return Regex.Matches(methodName, "[A-Z][a-z]*").Cast<Match>().Select(m => m.Value.ToLower()).ToList();
-        }
+    //                if (returnsValue2)
+    //                {
+    //                    bodyCode += $"\tvar result =await _apiClient.{apiMethod.Name}({paramsNameText});\n";
+    //                    if (typeof(ITDto).IsAssignableFrom(apiReturnType2))
+    //                    {
+    //                        if (apiReturnType2Str.Contains("Paged"))
+    //                        {
+    //                            apiReturnType2Str += $@"
+    //                             return  PaginatedResult<{returnType.Name}>.Success(
+    //                            _mapper.Map<List<{returnType.Name}>>(result.Data.ToList()), 
+    //                            result.TotalRecords, 
+    //                            result.PageNumber, 
+    //                            result.PageSize,
+    //                            result.SortBy,
+    //                            result.SortDirection);";
 
-        private MethodInfo? FindApiClientMethod(Type apiClientType, List<string> keywords)
-        {
-            return apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .FirstOrDefault(m =>
-                {
-                    var name = m.Name.ToLower();
-                    return keywords.All(k => name.Contains(k));
-                });
-        }
+    //                        }
+    //                        else
+    //                            bodyCode += $"\treturn _mapper.Map<{returnType.Name}>(result);";
+    //                    }
+    //                    else
+    //                    {
+    //                        if (apiReturnType2Str.Contains("Paged"))
+    //                        {
+    //                            apiReturnType2Str += @$"
+    //                            return  PaginatedResult<{{returnType.Name}}>.Success(
+    //                            result.Data.ToList(), 
+    //                            result.TotalRecords, 
+    //                            result.PageNumber, 
+    //                            result.PageSize,
+    //                            result.SortBy,
+    //                            result.SortDirection);";
 
-        private bool IsListOfITDto(Type type, out Type itemType)
-        {
-            itemType = null!;
-            if (!type.IsGenericType) return false;
+    //                        }
+    //                        else
+    //                            bodyCode += "\treturn result;";
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    bodyCode += $"\t await _apiClient.{apiMethod.Name}({paramsNameText});\n";
+    //                }
 
-            var def = type.GetGenericTypeDefinition();
-            if (def == typeof(IEnumerable<>) || def == typeof(List<>))
-            {
-                itemType = type.GetGenericArguments()[0];
-                return typeof(ITDto).IsAssignableFrom(itemType);
-            }
 
-            return false;
-        }
+    //                //else if (IsListOfITDto(apiReturnType2, out var dtoItemType2))
+    //                //{
+    //                //    var dsoItemType2 = GetMappedDsoType(dtoItemType2);
+    //                //    bodyCode += $"\treturn result.Select(x => _mapper.Map<{dsoItemType2.Name}>(x)).ToList();";
+    //                //}
+    //                //else if (apiReturnType2.Name.Contains("WithPage"))
+    //                //{
+    //                //    var innerDtoType = GetGenericTypeInside(apiReturnType2);
+    //                //    var dsoItemType = GetMappedDsoType(innerDtoType);
+    //                //    bodyCode += $"\treturn new {returnType.Name} {{ Items = result.Items.Select(x => _mapper.Map<{dsoItemType.Name}>(x)).ToList() }};";
+    //                //}
+    //                //else if (apiReturnType2 == typeof(void))
+    //                //{
+    //                //    bodyCode += "\treturn;";
+    //                //}
+    //                chunksCode.Add(method.Name, bodyCode);
 
-        private Type GetMappedDsoType(Type dtoType)
-        {
-            var name = dtoType.Name.Replace("Dto", "Dso");
-            return AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetTypes())
-                .FirstOrDefault(t => t.Name == name && typeof(ITDso).IsAssignableFrom(t)) ?? dtoType;
-        }
 
-        private Type GetMappedDtoType(Type dsoType)
-        {
-            var name = dsoType.Name.Replace("Dso", "Dto");
-            return AppDomain.CurrentDomain.GetAssemblies()
-                .SelectMany(a => a.GetTypes())
-                .FirstOrDefault(t => t.Name == name && typeof(ITDto).IsAssignableFrom(t)) ?? dsoType;
-        }
 
-        private Type GetGenericTypeInside(Type wrapperType)
-        {
-            return wrapperType.IsGenericType ? wrapperType.GetGenericArguments()[0] : wrapperType;
-        }
-    }
+    //            }
+    //        }
+
+    //        return chunksCode;
+    //    }
+
+    //    private bool IsReturnTypeWithValue(string returnType)
+    //    {
+    //      return  returnType.Contains("Task<");
+    //    }
+    //    private bool IsReturnTypeWithValue(Type returnType)
+    //    {
+    //        if (returnType==null || returnType == typeof(void) || returnType == typeof(Task))
+    //            return false;
+
+    //        if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
+    //            return true;
+
+    //        return true;
+    //    }
+
+    //    private List<string> ExtractKeywords(string methodName)
+    //    {
+    //        return Regex.Matches(methodName, "[A-Z][a-z]*").Cast<Match>().Select(m => m.Value.ToLower()).ToList();
+    //    }
+
+    //    private MethodInfo? FindApiClientMethod(Type apiClientType, List<string> keywords)
+    //    {
+    //        return apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+    //            .FirstOrDefault(m =>
+    //            {
+    //                var name = m.Name.ToLower();
+    //                return keywords.All(k => name.Contains(k));
+    //            });
+    //    }
+
+    //    private bool IsListOfITDto(Type type, out Type itemType)
+    //    {
+    //        itemType = null!;
+    //        if (!type.IsGenericType) return false;
+
+    //        var def = type.GetGenericTypeDefinition();
+    //        if (def == typeof(IEnumerable<>) || def == typeof(List<>))
+    //        {
+    //            itemType = type.GetGenericArguments()[0];
+    //            return typeof(ITDto).IsAssignableFrom(itemType);
+    //        }
+
+    //        return false;
+    //    }
+
+    //    private Type GetMappedDsoType(Type dtoType)
+    //    {
+    //        var name = dtoType.Name.Replace("Dto", "Dso");
+    //        return AppDomain.CurrentDomain.GetAssemblies()
+    //            .SelectMany(a => a.GetTypes())
+    //            .FirstOrDefault(t => t.Name == name && typeof(ITDso).IsAssignableFrom(t)) ?? dtoType;
+    //    }
+
+    //    private Type GetMappedDtoType(Type dsoType)
+    //    {
+    //        var name = dsoType.Name.Replace("Dso", "Dto");
+    //        return AppDomain.CurrentDomain.GetAssemblies()
+    //            .SelectMany(a => a.GetTypes())
+    //            .FirstOrDefault(t => t.Name == name && typeof(ITDto).IsAssignableFrom(t)) ?? dsoType;
+    //    }
+
+    //    private Type GetGenericTypeInside(Type wrapperType)
+    //    {
+    //        return wrapperType.IsGenericType ? wrapperType.GetGenericArguments()[0] : wrapperType;
+    //    }
+    //}
 
 
 

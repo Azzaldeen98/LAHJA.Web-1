@@ -64,6 +64,9 @@ namespace Shared.HandlerException
         }
         public virtual void ThrowMappedException(string errorMessage,int stateCode)
         {
+            if (stateCode <= 0)
+                stateCode = ExtractStateCode(errorMessage);
+
             throw GetExceptionTypeByStateCode(errorMessage,stateCode);
       
         }
@@ -92,7 +95,7 @@ namespace Shared.HandlerException
 
         public virtual int DetectExceptionTypeByMessage(string message)
         {
-            message=message.ToLower();
+          
 
             if (Contain(message, "bad request"))
                 return 400;
@@ -108,7 +111,7 @@ namespace Shared.HandlerException
                 return 423; 
             if (Contain(message, "too many requests"))
                 return 429;    
-            if (Contain(message, "No such host is known"))
+            if (Contain(message, "no such host is known"))
                 return 443;
             if (Contain(message, "internal server error"))
                 return 500;
@@ -127,7 +130,7 @@ namespace Shared.HandlerException
 
         private  bool Contain(string message,string value)
         {
-            return message.Contains(value, StringComparison.OrdinalIgnoreCase);
+            return message.ToLower().Contains(value.ToLower(), StringComparison.OrdinalIgnoreCase);
         }
         
 

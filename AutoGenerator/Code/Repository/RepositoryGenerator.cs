@@ -37,7 +37,8 @@ namespace AutoGenerator.Code.Repository
                 var autoGenAttr = model.GetCustomAttribute<AutoGenerateAttribute>();
                 var supportedAttr = model.GetCustomAttribute<SupportedMethodsAttribute>();
                 var autoMapper = model.GetCustomAttribute<AutomateMapperAttribute>();
-         
+                var methodRouteAttr = model.GetCustomAttribute<MethodRouteAttribute>();
+
 
                 if (autoGenAttr != null && autoGenAttr.GenerateTarget.HasFlag(GenerationTarget.Repository))
                 {
@@ -75,6 +76,8 @@ namespace AutoGenerator.Code.Repository
                         // GetAllWithPaged
                         if (supportedAttr.Methods.HasFlag(SupportedMethods.GetAllWithPaged))
                         {
+
+                 
                             declerMethod += GenerateMethodSignature(
                                 methodName: $"GetAll{modelName}sAsync",
                                 modelName: modelName,
@@ -83,7 +86,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: autoMapper,
                                 hasREAD: hasREAD,
                                 customParams: "",
-                                includeLangParam: hasTranslate
+                                includeLangParam: hasTranslate,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -98,7 +102,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: autoMapper,
                                 hasREAD: hasREAD,
                                 customParams: "",
-                                includeLangParam: hasTranslate
+                                includeLangParam: hasTranslate,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
                         // GetCurrent
@@ -112,7 +117,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: autoMapper,
                                 hasREAD: hasREAD,
                                 customParams: "",
-                                includeLangParam: hasTranslate
+                                includeLangParam: hasTranslate,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
                         // CountAll
@@ -126,7 +132,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: null,
                                 hasREAD: false,
                                 customParams: "",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -146,7 +153,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: autoMapper,
                                 hasREAD: hasCUGET,
                                 customParams: "string id,",
-                                includeLangParam: hasTranslate
+                                includeLangParam: hasTranslate,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -162,7 +170,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: autoMapper,
                                 hasREAD: true,
                                 customParams: $"{modelName} model,",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -177,7 +186,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: autoMapper,
                                 hasREAD: true,
                                 customParams: $"{modelName} model,",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -192,7 +202,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: null,
                                 hasREAD: false,
                                 customParams: "string id,",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -208,7 +219,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: null,
                                 hasREAD: false,
                                 customParams: $"string id,{modelName} model",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -222,7 +234,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: null,
                                 hasREAD: false,
                                 customParams: "string id,",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -236,7 +249,8 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: null,
                                 hasREAD: false,
                                 customParams: "string id,",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
@@ -250,82 +264,12 @@ namespace AutoGenerator.Code.Repository
                                 autoMapper: null,
                                 hasREAD: false,
                                 customParams: "string id,",
-                                includeLangParam: false
+                                includeLangParam: false,
+                                methodRouteAttr: methodRouteAttr
                             );
                         }
 
-
-                        /// الكود  السابق
-                        {
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.GetAllWithPaged) )
-                            //{
-                            //    if (autoMapper?.Methods.HasFlag(SupportedMethods.GetAllWithPaged) == true || hasCUGET)
-                            //        declerMethod += $"[AutomateMapper]\n";
-
-                            //    declerMethod += $"public Task<PaginatedResult<{modelName}>> GetAll{modelName}sAsync({transParamater}CancellationToken cancellationToken);\n";
-                            //}
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.GetAll) || hasREAD)
-                            //{
-                            //    if (autoMapper?.Methods.HasFlag(SupportedMethods.GetAll) == true || hasCUGET)
-                            //        declerMethod += $"[AutomateMapper]\n";
-
-                            //    declerMethod += $"\tpublic Task<ICollection<{modelName}>> Get{modelName}sAsync({transParamater}CancellationToken cancellationToken);\n";
-                            //}
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.CountAll) )
-                            //{
-                            //    declerMethod += $"\tpublic Task<int> CountAll{modelName}sAsync(CancellationToken cancellationToken);\n";
-                            //}
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.GetById) ||supportedAttr.Methods.HasFlag(SupportedMethods.GetOne)  || hasREAD)
-                            //{
-                            //    // تحديد اسم الميثود المناسب
-                            //    string methodName = supportedAttr.Methods.HasFlag(SupportedMethods.GetOne) ? "GetOneAsync" : "GetByIdAsync";
-
-                            //    // التحقق من المابنق
-                            //    if (autoMapper?.Methods.HasFlag(SupportedMethods.GetById) == true ||
-                            //        autoMapper?.Methods.HasFlag(SupportedMethods.GetOne) == true ||
-                            //        hasCUGET)
-                            //    {
-                            //        declerMethod += $"[AutomateMapper]\n";
-                            //    }
-
-                            //    declerMethod += $"\tpublic Task<{modelName}> {methodName}(string id,{transParamater}CancellationToken cancellationToken);\n";
-                            //}
-
-
-
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.Update) || hasCRUD )
-                            //{
-                            //    if (autoMapper?.Methods.HasFlag(SupportedMethods.Update) == true || hasCUGET)
-                            //        declerMethod += $"[AutomateMapper]\n";
-
-                            //    declerMethod += $"\tpublic Task<{modelName}> UpdateAsync({modelName} model,CancellationToken cancellationToken);\n";
-                            //}
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.Delete) || hasCRUD )
-                            //{
-                            //    declerMethod += $"\tpublic Task DeleteAsync(string id,CancellationToken cancellationToken);\n";
-                            //}
-
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.Pause) || hasRRPC)
-                            //{
-                            //    declerMethod += $"\tpublic Task PauseAsync(string id,CancellationToken cancellationToken);\n";
-                            //}
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.Renew) || hasRRPC)
-                            //{
-                            //    declerMethod += $"\tpublic Task RenewAsync(string id,CancellationToken cancellationToken);\n";
-                            //}
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.Resume) || hasRRPC)
-                            //{
-                            //    declerMethod += $"\tpublic Task ResumeAsync(string id,CancellationToken cancellationToken);\n";
-                            //}  
-                            //if (supportedAttr.Methods.HasFlag(SupportedMethods.Cancel) || hasRRPC)
-                            //{
-                            //    declerMethod += $"\tpublic Task CancelAsync(string id,CancellationToken cancellationToken);\n";
-                            //}
-                            }
-
-
-
-                            scode.AppendLine(declerMethod);
+                         scode.AppendLine(declerMethod);
 
                     }
 
@@ -355,13 +299,26 @@ namespace AutoGenerator.Code.Repository
             bool hasREAD,
             string customParams = "",
             bool includeLangParam = false,
-            bool endWithSemicolon = true)
+            bool endWithSemicolon = true,
+            MethodRouteAttribute? methodRouteAttr = null)
         {
-            var sb = new StringBuilder();
 
+            var sb = new StringBuilder();
             bool useMapper = autoMapper != null && (autoMapper.Methods.HasFlag(methodFlag) || hasREAD);
             if (useMapper)
                 sb.AppendLine("\t[AutomateMapper]");
+
+
+            if (methodRouteAttr != null && methodRouteAttr.TargetMethods.ContainsKey(methodFlag))
+            {
+                var method_name = methodRouteAttr.TargetMethods[methodFlag];
+                if (string.IsNullOrWhiteSpace(method_name))
+                {
+                   sb.AppendLine($"[RouteTo({method_name})]\n");
+                }
+
+            }
+
 
             string parameters = customParams;
             if (includeLangParam)
@@ -388,9 +345,6 @@ namespace AutoGenerator.Code.Repository
 
             return sb.ToString();
         }
-
-
-
 
 
         public async Task GenerateRepositoryImplementations(GenerationOptions generationOptions)
@@ -423,6 +377,8 @@ namespace AutoGenerator.Code.Repository
         }
         private async Task GenerateAndSave(Type iRepo, GenerationOptions generationOptions)
         {
+
+
             var modelName = iRepo.Name.Replace(generationOptions.DestinationCategoryName, "").Replace("I", "");
             var className = $"{modelName}{generationOptions.DestinationCategoryName}";
             var interfaceName = iRepo.Name;
@@ -445,13 +401,27 @@ namespace AutoGenerator.Code.Repository
 
             foreach (var method in iRepo.GetMethods())
             {
+                
+                
+                //var routeToAtt = method.CustomAttributes.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
                 var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
                 (var returnType, var modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
 
                 returnType = !returnType.Contains("async") ? $"async {returnType}" : returnType;
 
                 var paramList = string.Join(",", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
+
+                ///TODO :  Read Value from  RouteToAttribute
+
+                var routeToAtt = method.CustomAttributes.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
+                if (routeToAtt !=null)
+                {
+                   var value= routeToAtt.ConstructorArguments.FirstOrDefault().Value?.ToString();
+                    sb.AppendLine($"[RouteTo({value})]");
+                }
+                
                 sb.AppendLine($"\t\t{modifiers} {returnType} {method.Name}({paramList})");
+                
                 sb.AppendLine("\t\t{");
                 sb.AppendLine("\t\t\tthrow new NotImplementedException();");
                 sb.AppendLine("\t\t}");
@@ -463,7 +433,6 @@ namespace AutoGenerator.Code.Repository
             var filePath = @$"{generationOptions.DestinationRoot}\\{generationOptions.DestinationDirectory}\\{modelName}\\{className}.cs";
             await GeneratorManager.SaveToFileAsync(filePath, sb.ToString());
         }
-
         public async Task GenerateRepositoryImplementations2(GenerationOptions generationOptions)
         {
             var dist_root = ArchitecturalLayersRoot.InfrastructureRoot;

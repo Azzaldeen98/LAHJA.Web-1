@@ -15,6 +15,7 @@
     <Folder Include="Entities\ServiceMethod\Response\" />
     <Folder Include="Entities\User\Request\" />
     <Folder Include="Entities\User\Response\" />
+    <Folder Include="Entity\NewFolder\" />
     <Folder Include="Repository\RequestEvent\" />
     <Folder Include="Repository\Roles\" />
     <Folder Include="Repository\ServiceMethod\" />

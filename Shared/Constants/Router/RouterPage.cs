@@ -9,6 +9,8 @@ namespace Shared.Constants.Router
     public class RouterPage
     {
         public const string ERROR = "Error";
+        public const string NotFoundHost = "NotFoundHost";
+        public const string NOCONNECTION = "NoConnection";
         public const string LOGIN = "Login";
         public const string REGISTER = "Rigist";
         public const string LOGOUT = "Logout";
