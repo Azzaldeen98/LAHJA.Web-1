@@ -2,30 +2,31 @@
 
 namespace AutoGenerator.Config.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class| AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class , AllowMultiple = true)]
     public class MethodRouteAttribute : Attribute
     {
-        public SupportedMethods SourceMethod { get; set; }
-        public string TargetMethodName { get; set; }
+        public SupportedMethods SourceMethod { get; }
+        public string TargetMethodName { get; }
+        public string SourceMethodName { get; }
+        public string[] CustomParams { get; }
 
-
-        public  Dictionary<SupportedMethods, string> TargetMethods = new Dictionary<SupportedMethods, string>();
-
-        public MethodRouteAttribute(SupportedMethods sourceMethod,string targetMethodName)
+        public MethodRouteAttribute(SupportedMethods sourceMethod, string targetMethodName="", params string[] customParams)
         {
-
-            if (!string.IsNullOrWhiteSpace(targetMethodName)) 
-            {
-                if (!TargetMethods.ContainsKey(sourceMethod)) 
-                {
-                    SourceMethod = sourceMethod;
-                    TargetMethodName = targetMethodName;
-                    TargetMethods.Add(sourceMethod, targetMethodName);
-                }
-                    
-            }
-                
+            SourceMethod = sourceMethod;
+            TargetMethodName = targetMethodName;
+            CustomParams = customParams;
         }
+        public MethodRouteAttribute(string sourceMethodName, string targetMethodName="", params string[] customParams)
+        {
+            SourceMethodName = sourceMethodName;
+            TargetMethodName = targetMethodName;
+            CustomParams = customParams;
+        }
+
+
     }
+
+
+
 
 }

@@ -9,12 +9,15 @@ namespace Domain.Entity
 
 
     [AutoGenerate(GenerationTarget.Repository | GenerationTarget.UseCase | GenerationTarget.Service)]
-    [SupportedMethods(SupportedMethods.GetAllWithPaged | SupportedMethods.GetById | SupportedMethods.GetAll | SupportedMethods.CountAll)]
-    [AutomateMapper(SupportedMethods.GetAllWithPaged | SupportedMethods.GetById | SupportedMethods.CountAll,true)]
+    [SupportedMethods(SupportedMethods.GetById | SupportedMethods.GetAll | SupportedMethods.CountAll)]
+    [AutomateMapper( SupportedMethods.GetById | SupportedMethods.CountAll,true)]
+    //[MethodRoute(SupportedMethods.GetAll, "GetPlansAsync")]
+    //[MethodRoute("GetPlansAsync", "GetPlansAsync")]
     [AutomateMapperWith(LayersModels.DTO, "PlanOutputVM", "PlanCreateVM" )]
     [AutomateMapperWith(LayersModels.VM, "PlanViewModel")]
    
     [HasTranslate]
+
     public class Plan:  ITDso
     {
         public string Id { get; set; }

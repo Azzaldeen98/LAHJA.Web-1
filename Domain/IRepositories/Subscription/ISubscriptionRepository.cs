@@ -3,6 +3,7 @@ using Shared.Interfaces;
 using Shared.Wrapper;
 using AutoGenerator.Config.Attributes;
 using Domain.Entity;
+using AutoGenerator.Config.Attributes;
 namespace Domain.IRepositories;
 
 
@@ -15,10 +16,13 @@ public interface ISubscriptionRepository: ITBaseRepository,ITScope
 	public Task<Subscription> GetSubscriptionAsync(CancellationToken cancellationToken);
 	[AutomateMapper]
 	public Task<Subscription> GetOneAsync(string id, CancellationToken cancellationToken);
-	public Task PauseAsync(string id,Subscription model, CancellationToken cancellationToken);
-	public Task RenewAsync(string id, CancellationToken cancellationToken);
-	public Task ResumeAsync(string id, CancellationToken cancellationToken);
-	public Task CancelAsync(string id, CancellationToken cancellationToken);
+[RouteTo("PauseCollectionAsync")]
+	public Task PauseAsync(Subscription model, CancellationToken cancellationToken);
+	public Task RenewAsync(CancellationToken cancellationToken);
+[RouteTo("ResumeCollection2Async")]
+	public Task ResumeAsync(CancellationToken cancellationToken);
+[RouteTo("Cancel2Async")]
+	public Task CancelAsync(CancellationToken cancellationToken);
 
 
 }

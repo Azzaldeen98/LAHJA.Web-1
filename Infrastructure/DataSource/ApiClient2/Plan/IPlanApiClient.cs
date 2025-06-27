@@ -15,7 +15,7 @@ namespace Infrastructure.DataSource.ApiClient2;
 public interface IPlanApiClient : ITBaseShareApiClient 
 {
 
-    public Task<PlanOutputVMIEnumerablePagedResponse> GetAllPlansAsync(string lg, CancellationToken cancellationToken);
+
     public Task<ICollection<PlanOutputVM>> GetPlansAsync(string lg, CancellationToken cancellationToken);
 
 

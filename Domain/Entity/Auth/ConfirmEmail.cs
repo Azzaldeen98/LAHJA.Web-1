@@ -7,9 +7,11 @@ using System.ComponentModel.DataAnnotations;
 namespace Domain.Entity
 {
 
-        
+    
     [AutomateMapperWith(LayersModels.DTO, "ConfirmEmailRequest")]
     [AutomateMapperWith(LayersModels.VM, "DataBuildAuthBase", "ConfirmEmailRequest")]
+    [MethodRoute("ConfirmationEmailAsync", "ConfirmEmailAsync")]
+
 
     public class ConfirmEmail : ITDso
     {

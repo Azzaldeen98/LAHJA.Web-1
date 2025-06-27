@@ -41,36 +41,6 @@ namespace AutoGenerator.Code
 
             return true;
         }
-
-        //public bool IsImplementsOrInherits(SyntaxNode declaration,SemanticModel model, string baseTypeOrInterfaceName)
-        //{
-        //    var symbol = model.GetDeclaredSymbol(declaration) as INamedTypeSymbol;
-
-        //    if (symbol == null)
-        //        return false;
-
-        //    // التحقق من الوراثة
-        //    var current = symbol;
-        //    while (current != null && current.Name != "Object")
-        //    {
-        //        if (current.Name == baseTypeOrInterfaceName)
-        //            return true;
-
-        //        current = current.BaseType;
-        //    }
-
-        //    // التحقق من تنفيذ الواجهة (في الكلاس الحالي فقط)
-        //    if (symbol.AllInterfaces.Any(i => i.Name == baseTypeOrInterfaceName))
-        //        return true;
-
-        //    return false;
-        //}
-        //public static bool IsImplementsOrInheritsBase(InterfaceDeclarationSyntax classDecl, SemanticModel model, string baseTypeOrInterfaceName)
-        //{
-
-        //    return IsImplementsOrInherits(classDecl, model, baseTypeOrInterfaceName);
-        //} 
-        
         public static bool IsImplementsOrInheritsBase(SyntaxNode declaration, SemanticModel model, string baseTypeOrInterfaceName)
         {
 
@@ -159,7 +129,6 @@ namespace AutoGenerator.Code
             }
 
         }
-       
         public static string RemoveLastSymbol(string symbolToRemove,string text)
         {
             text = text.TrimEnd();
@@ -170,7 +139,6 @@ namespace AutoGenerator.Code
             return text;
             //return Regex.Replace(text, $@"{symbolToRemove}\s*$", "", RegexOptions.Multiline);
         }
-
         public static IEnumerable<InterfaceDeclarationSyntax>? getInterfacesFromDescendantNodes(CompilationUnitSyntax? root) {
               return root?.DescendantNodes().OfType<InterfaceDeclarationSyntax>();
         }
@@ -178,7 +146,6 @@ namespace AutoGenerator.Code
         {
             return root?.DescendantNodes().OfType<ClassDeclarationSyntax>();
         }
-
         public static async Task GenerateUseCaseClassTemplate(GenerationOptions generationOptions)
         {
 
@@ -276,7 +243,6 @@ namespace AutoGenerator.Code
             }
 
         } 
-        
         public static void ImplementationInterfaces(ref StringBuilder sb, List<Type> interfaces)
         {
        
@@ -297,8 +263,7 @@ namespace AutoGenerator.Code
             }
 
            
-        }
-        
+        } 
         public static string GenerateInterface(ClassDeclarationSyntax classDeclaration, 
             GenerationOptions generationOptions,
             List<Type>? interfaces,bool includeNamespaces=true)
@@ -382,7 +347,6 @@ namespace AutoGenerator.Code
             return sb.ToString();
         }
         public static string GenerateClass(
-
             string className,
             string baseInterface,
             GenerationOptions generationOptions,
@@ -420,7 +384,6 @@ namespace AutoGenerator.Code
             sb.AppendLine("}");
             return sb.ToString();
         }
-            
             
     public static string GenerateInterface(
     string interfaceName,
@@ -490,8 +453,6 @@ namespace AutoGenerator.Code
                 if (!string.IsNullOrWhiteSpace(sourceClassName))
                 {
                     baseClass = baseClass.Replace("<T>", $"<{sourceClassName}>");
-                    //var tclass = generationOptions.ClassName.Replace(generationOptions.DestinationCategoryName, generationOptions.SourceCategoryName);
-                     
                 }
             
                 sb.Append($" : {baseClass} ");
@@ -538,7 +499,7 @@ namespace AutoGenerator.Code
                 if (!string.IsNullOrWhiteSpace(typeModifierMethods))
                 {
                     generateCode = GenerateDeclarationMethod(method, generationOptions.UnifiedNameForFunctions);
-                    generateCode= generateCode.Replace("public", $" public {typeModifierMethods} ");
+                    generateCode = generateCode.Replace("public", $" public {typeModifierMethods} ");
                 }
                 else
                     generateCode = GenerateMethod(method, generationOptions.MethodContentCode, generationOptions.UnifiedNameForFunctions);
@@ -568,8 +529,7 @@ namespace AutoGenerator.Code
 
         return CleanGeneratorCode(sb.ToString());
     }    
-    public static string GenerateMethod(MethodDeclarationSyntax method,
-        string implementationCode,string unifiedNameForFunctions="")
+    public static string GenerateMethod(MethodDeclarationSyntax method,string implementationCode,string unifiedNameForFunctions="")
     {
         var sb = new StringBuilder();
         var returnType = method.ReturnType.ToString();
@@ -604,7 +564,6 @@ namespace AutoGenerator.Code
 
         return CleanGeneratorCode(sb.ToString());
     }
-
     public static string CleanGeneratorCode(string code)
     {
         return code.Replace("System.Threading.Tasks.", "")
@@ -612,7 +571,7 @@ namespace AutoGenerator.Code
                     .Replace("System.Collections.Generic.", "");
        
     }
-    public static (string ReturnType, string Modifiers) CleanMethodSignature(MethodDeclarationSyntax method,string newText="")
+    public static (string ReturnType,string Modifiers) CleanMethodSignature(MethodDeclarationSyntax method,string newText="")
     {
         // استخراج نوع الإرجاع كـ string
         var returnType = method.ReturnType.ToString();

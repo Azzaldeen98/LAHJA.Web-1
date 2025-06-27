@@ -32,31 +32,41 @@ namespace AutoGenerator.Code.Repository
             {
 
                 var hasTranslate = model != null && model.IsDefined(typeof(HasTranslateAttribute));
-
                 var modelName = model.Name;
                 var autoGenAttr = model.GetCustomAttribute<AutoGenerateAttribute>();
                 var supportedAttr = model.GetCustomAttribute<SupportedMethodsAttribute>();
                 var autoMapper = model.GetCustomAttribute<AutomateMapperAttribute>();
-                var methodRouteAttr = model.GetCustomAttribute<MethodRouteAttribute>();
-
+                var MethodRouteAttr = model.GetCustomAttributes<MethodRouteAttribute>();
+                ///TODO: Future developer
+                 //var attrRouteProvider = model.GetCustomAttribute<MethodRouteProviderAttribute>();
+                 //if (attrRouteProvider != null)
+                 //   {
+                 //       if (attrRouteProvider.Routes.TryGetValue(SupportedMethods.Pause, out var routeInfo))
+                 //       {
+                 //           Console.WriteLine($"Method: {routeInfo.Target}");
+                 //           Console.WriteLine("Custom Params: " + (routeInfo.CustomParams.Length > 0
+                 //               ? string.Join(", ", routeInfo.CustomParams)
+                 //               : "(none)"));
+                 //       }
+                 //       else
+                 //       {
+                 //           Console.WriteLine("Method not found.");
+                 //       }
+                 //   }
+                 //   else
+                 //   {
+                 //       Console.WriteLine("Attribute not found.");
+                 //   }
 
                 if (autoGenAttr != null && autoGenAttr.GenerateTarget.HasFlag(GenerationTarget.Repository))
                 {
                     StringBuilder sb = new StringBuilder();
-
                     sb.AppendLine(GeneratorHelpers.GenerateUsingsNamespaces(generationOptions));
-
-
                     var class_name = $"I{modelName}{generationOptions.DestinationCategoryName}";
                     var code = generationOptions.ITemplate.Replace("{InterfaceName}", $"{class_name}:")
                     .Replace("{ImplementInterfaces}", string.Join(",", generationOptions.Interfaces.Select(x => x.Name)));
-
-
-
                     sb.AppendLine(code);
                     sb.AppendLine();
-
-
                     var flags = Enum.GetValues(typeof(SupportedMethods)).Cast<SupportedMethods>();
                     var scode = new StringBuilder();
                     //foreach (var flag in flags)
@@ -87,7 +97,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: hasREAD,
                                 customParams: "",
                                 includeLangParam: hasTranslate,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -101,9 +111,9 @@ namespace AutoGenerator.Code.Repository
                                 methodFlag: SupportedMethods.GetAll,
                                 autoMapper: autoMapper,
                                 hasREAD: hasREAD,
-                                customParams: "",
+                                customParams:"",
                                 includeLangParam: hasTranslate,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
                         // GetCurrent
@@ -118,7 +128,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: hasREAD,
                                 customParams: "",
                                 includeLangParam: hasTranslate,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
                         // CountAll
@@ -133,7 +143,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: false,
                                 customParams: "",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -154,7 +164,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: hasCUGET,
                                 customParams: "string id,",
                                 includeLangParam: hasTranslate,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -171,7 +181,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: true,
                                 customParams: $"{modelName} model,",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -187,7 +197,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: true,
                                 customParams: $"{modelName} model,",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -203,7 +213,7 @@ namespace AutoGenerator.Code.Repository
                                 hasREAD: false,
                                 customParams: "string id,",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -218,9 +228,9 @@ namespace AutoGenerator.Code.Repository
                                 methodFlag: SupportedMethods.Pause,
                                 autoMapper: null,
                                 hasREAD: false,
-                                customParams: $"string id,{modelName} model",
+                                //customParams: $"string id,{modelName} model",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -233,9 +243,9 @@ namespace AutoGenerator.Code.Repository
                                 methodFlag: SupportedMethods.Renew,
                                 autoMapper: null,
                                 hasREAD: false,
-                                customParams: "string id,",
+                                customParams: "",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -248,9 +258,9 @@ namespace AutoGenerator.Code.Repository
                                 methodFlag: SupportedMethods.Resume,
                                 autoMapper: null,
                                 hasREAD: false,
-                                customParams: "string id,",
+                                customParams: "",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -263,9 +273,9 @@ namespace AutoGenerator.Code.Repository
                                 methodFlag: SupportedMethods.Cancel,
                                 autoMapper: null,
                                 hasREAD: false,
-                                customParams: "string id,",
+                                customParams: "",
                                 includeLangParam: false,
-                                methodRouteAttr: methodRouteAttr
+                                MethodRouteAttr: MethodRouteAttr
                             );
                         }
 
@@ -300,7 +310,7 @@ namespace AutoGenerator.Code.Repository
             string customParams = "",
             bool includeLangParam = false,
             bool endWithSemicolon = true,
-            MethodRouteAttribute? methodRouteAttr = null)
+            IEnumerable<MethodRouteAttribute>? MethodRouteAttr = null)
         {
 
             var sb = new StringBuilder();
@@ -308,19 +318,70 @@ namespace AutoGenerator.Code.Repository
             if (useMapper)
                 sb.AppendLine("\t[AutomateMapper]");
 
+            string parameters = customParams;
 
-            if (methodRouteAttr != null && methodRouteAttr.TargetMethods.ContainsKey(methodFlag))
+            //if (MethodRouteAttr != null)
+            //{
+            //    var methodRouteAttr = MethodRouteAttr.ToDictionary(a => a.SourceMethod, a => a.TargetMethodName);
+
+            //    if (methodRouteAttr != null && methodRouteAttr.ContainsKey(methodFlag))
+            //    {
+            //        var method_name = methodRouteAttr[methodFlag];
+            //        if (string.IsNullOrWhiteSpace(method_name))
+            //        {
+            //            sb.AppendLine($"[RouteTo({method_name})]\n");
+            //        }
+
+            //    }
+            //     var methodSourceAttr = MethodRouteAttr.ToDictionary(a => a.SourceMethodName, a => a.TargetMethodName);
+            //    if (methodRouteAttr != null && methodSourceAttr.ContainsKey(methodName))
+            //    {
+            //        var method_name = methodRouteAttr[methodFlag];
+            //        if (string.IsNullOrWhiteSpace(method_name))
+            //        {
+            //            sb.AppendLine($"[RouteTo({method_name})]\n");
+            //        }
+
+            //    }
+
+            //    var methodParamsAttr = MethodRouteAttr.ToDictionary(a => a.SourceMethod, a => a.CustomParams);
+
+            //    if (methodParamsAttr != null && methodParamsAttr.ContainsKey(methodFlag))
+            //    {
+
+
+            //        var _params = methodParamsAttr[methodFlag];
+            //        if(_params!=null && _params.Any())
+            //            parameters += string.Join(',', _params);
+
+            //    }
+            //}
+
+
+            if (MethodRouteAttr != null)
             {
-                var method_name = methodRouteAttr.TargetMethods[methodFlag];
-                if (string.IsNullOrWhiteSpace(method_name))
+                var methodRouteAttr = MethodRouteAttr.ToDictionary(a => a.SourceMethod, a => a.TargetMethodName);
+                var methodSourceAttr = MethodRouteAttr.Where(x=>!string.IsNullOrWhiteSpace(x.SourceMethodName))
+                    ?.ToDictionary(a => a.SourceMethodName, a => a.TargetMethodName);
+
+                var methodParamsAttr = MethodRouteAttr.ToDictionary(a => a.SourceMethod, a => a.CustomParams);
+
+                if (methodRouteAttr != null && methodRouteAttr.TryGetValue(methodFlag, out var targetMethod1) && !string.IsNullOrWhiteSpace(targetMethod1))
                 {
-                   sb.AppendLine($"[RouteTo({method_name})]\n");
+                    sb.AppendLine($"[RouteTo(\"{targetMethod1}\")]");
+                }
+                else if (methodSourceAttr!=null && methodSourceAttr.TryGetValue(methodName, out var targetMethod2) && !string.IsNullOrWhiteSpace(targetMethod2))
+                {
+                    sb.AppendLine($"[RouteTo(\"{targetMethod2}\")]");
                 }
 
+                if (methodParamsAttr != null &&  methodParamsAttr.TryGetValue(methodFlag, out var _params) && _params?.Any() == true)
+                {
+                    parameters += string.Join(',', _params);
+                }
             }
 
 
-            string parameters = customParams;
             if (includeLangParam)
             {
                 if (!string.IsNullOrEmpty(parameters))
@@ -336,6 +397,7 @@ namespace AutoGenerator.Code.Repository
             {
                 parameters = parameters.Trim().TrimEnd(',') + ", CancellationToken cancellationToken";
             }
+
             returnType = string.IsNullOrWhiteSpace(returnType) ? "Task" : $"Task<{returnType}>";
             string signature = $"\tpublic {returnType} {methodName}({parameters})";
             if (endWithSemicolon)
@@ -413,13 +475,17 @@ namespace AutoGenerator.Code.Repository
 
                 ///TODO :  Read Value from  RouteToAttribute
 
-                var routeToAtt = method.CustomAttributes.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
-                if (routeToAtt !=null)
+
+                var attribute = method.GetCustomAttributes(typeof(RouteToAttribute))
+                           ?.OfType<RouteToAttribute>()
+                           ?.FirstOrDefault();
+
+                if (attribute != null)
                 {
-                   var value= routeToAtt.ConstructorArguments.FirstOrDefault().Value?.ToString();
-                    sb.AppendLine($"[RouteTo({value})]");
+                    sb.AppendLine($"[RouteTo(\"{attribute.Name}\")]");
                 }
-                
+
+
                 sb.AppendLine($"\t\t{modifiers} {returnType} {method.Name}({paramList})");
                 
                 sb.AppendLine("\t\t{");
@@ -508,12 +574,12 @@ namespace AutoGenerator.Code.Repository
                     var paramList = string.Join(",", parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
                     var variabels = string.Join(",", parameters.Select(p => $"{p.Name}"));
                     //var variabelsObject = string.Join(",", parameters.Where(p=> p.GetType().IsClass || p.GetType().IsAbstract || p.GetType().IsInterface).Select(p =>  $"{p.Name}"));
-                    var variablesObject =parameters.Where(p => p.ParameterType.IsClass && !p.ParameterType.IsPrimitive && p.ParameterType != typeof(string))
+                    var variablesObject = parameters.Where(p => p.ParameterType.IsClass && !p.ParameterType.IsPrimitive && p.ParameterType != typeof(string))
                         .Select(p => p.Name);
 
                     var defaultBody = $"\t\t\t";
 
-                    partialMethods += $"\n\t\tpublic partial  {returnType} On{methodName}({paramList});";
+                    //partialMethods += $"\n\t\tpublic partial  {returnType} On{methodName}({paramList});";
 
                     sb.AppendLine($"\t\tpublic  {returnType} {methodName}({paramList})");
                     sb.AppendLine("\t\t{");

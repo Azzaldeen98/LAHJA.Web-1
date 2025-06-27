@@ -1,79 +1,67 @@
-﻿
-using AutoMapper;
-using Shared.Settings;
-using Infrastructure.DataSource.ApiClient2;
-using Infrastructure.Nswag;
+using Shared.Interfaces;
+using Shared.Wrapper;
+using AutoGenerator.Config.Attributes;
 using Domain.Entity;
+using Infrastructure.Nswag;
 using Domain.IRepositories;
+using System.Threading.Tasks;
+using Infrastructure.DataSource.ApiClient2;
+using System.Collections.Generic;
+using AutoMapper;
+using AutoGenerator.Enums;
 
-
-namespace Infrastructure.Repositories
+namespace Infrastructure.Repositories;
+public partial class AuthRepository : IAuthRepository
 {
-    public class AuthRepository : IAuthRepository
+    private readonly IAuthApiClient _apiClient;
+    private readonly IMapper _mapper;
+    public AuthRepository(IAuthApiClient apiClient, IMapper mapper)
     {
-    
+        _apiClient = apiClient;
+        _mapper = mapper;
+    }
+
+    public async Task RegisterAsync(Register body, CancellationToken cancellationToken)
+    {
+        var _body = _mapper.Map<RegisterRequest>(body);
+        await _apiClient.RegisterAsync(_body, cancellationToken);
+    }
+
+    public async Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken)
+    {
+        var _body = _mapper.Map<LoginRequest>(body);
+        var result = await _apiClient.LoginAsync(true, true, _body, cancellationToken);
+        return _mapper.Map<AccessToken>(result);
+    }
    
-        private readonly IAuthApiClient apiClient;
-        private readonly IMapper _mapper;
-        private readonly ApplicationModeService appModeService;
-        public AuthRepository(
-            IMapper mapper,
-            ApplicationModeService appModeService,
-            IAuthApiClient apiClient)
-        {
-
-            _mapper = mapper;
-            this.appModeService = appModeService;
-            this.apiClient = apiClient;
-
-        }
-
+    public async Task ConfirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken)
+    {
+        var _body = _mapper.Map<ConfirmEmailRequest>(body);
+        await _apiClient.ConfirmEmailAsync(_body, cancellationToken);
    
-   
+    }
 
-        public async Task RegisterAsync(Register body, CancellationToken cancellationToken)
-        {
-            var model = _mapper.Map<RegisterRequest>(body);
-             await apiClient.RegisterAsync(model, cancellationToken);
-        }
+    public async Task<string> ResendConfirmationEmailAsync(ResendConfirmationEmail body, CancellationToken cancellationToken)
+    {
+        var _body = _mapper.Map<ResendConfirmationEmailRequest>(body);
+        var result = await _apiClient.ResendConfirmationEmailAsync(_body, cancellationToken);
+        return result;
+    }
 
-        public async Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken)
-        {
-            var model = _mapper.Map<LoginRequest>(body);
-            var response= await apiClient.LoginAsync(false,false,model, cancellationToken);
-            return _mapper.Map<AccessToken>(response);
-           
-        }
+    public async Task ForgotPasswordAsync(ForgetPassword body, CancellationToken cancellationToken)
+    {
+        var _body = _mapper.Map<ForgotPasswordRequest>(body);
+        await _apiClient.ForgotPasswordAsync(_body, cancellationToken);
+    }
 
-        public async Task ConfirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken)
-        {
-            var model = _mapper.Map<ConfirmEmailRequest>(body);
-             await apiClient.CustomMapIdentityApiApi_confirmEmailAsync(model, cancellationToken);
-        }
+    public async Task ResetPasswordAsync(ResetPassword body, CancellationToken cancellationToken)
+    {
+        var _body = _mapper.Map<ResetPasswordRequest>(body);
+        await _apiClient.ResetPasswordAsync(_body, cancellationToken);
+    }
 
-        public async Task<string> ResendConfirmationEmailAsync(ResendConfirmationEmail body, CancellationToken cancellationToken)
-        {
-            var model = _mapper.Map<ResendConfirmationEmailRequest>(body);
-            return await apiClient.ResendConfirmationEmailAsync(model, cancellationToken);
-        }
-
-        public async Task ForgotPasswordAsync(ForgetPassword body, CancellationToken cancellationToken)
-        {
-            var model = _mapper.Map<ForgotPasswordRequest>(body);
-             await apiClient.ForgotPasswordAsync(model, cancellationToken);
-        }
-
-        public async Task ResetPasswordAsync(ResetPassword body, CancellationToken cancellationToken)
-        {
-            var model = _mapper.Map<ResetPasswordRequest>(body);
-            await apiClient.ResetPasswordAsync(model, cancellationToken);
-        }
-
-        public async Task LogoutAsync(object body, CancellationToken cancellationToken)
-        {
-            await apiClient.LogoutAsync(body, cancellationToken);
-        }
-
-   
+    public async Task LogoutAsync(Object body, CancellationToken cancellationToken)
+    {
+        await _apiClient.LogoutAsync(body, cancellationToken);
     }
 }

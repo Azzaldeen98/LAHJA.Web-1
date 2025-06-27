@@ -68,7 +68,7 @@ else
 	{
 		if (TemplatePlan != null && !string.IsNullOrEmpty(PlanId))
 		{
-			var result = await TemplatePlan.BuilderComponents.GetPlanById(new DataBuildPlansBase { PlanId = PlanId, Lg = lg });
+			var result = await TemplatePlan.BuilderComponentsQuery.GetPlanById(new DataBuildPlansBase { PlanId = PlanId, Lg = lg });
 
 			if (result.Succeeded)
 			{

@@ -65,7 +65,7 @@ public class PlanService : IPlanService {
 
 
 
-    public async Task<List<Plan>> getPlansAsync(String lg, CancellationToken cancellationToken)
+    public async Task<ICollection<Plan>> getPlansAsync(String lg, CancellationToken cancellationToken)
     {
     
 

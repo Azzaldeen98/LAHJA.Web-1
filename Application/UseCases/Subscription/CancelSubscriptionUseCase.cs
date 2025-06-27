@@ -17,10 +17,10 @@ public class CancelSubscriptionUseCase : ITBaseUseCase {
     }
 
                 
-    public async  Task ExecuteAsync(string id, CancellationToken cancellationToken)
+    public async  Task ExecuteAsync(CancellationToken cancellationToken)
     {
     
-          await _repository.CancelAsync(id, cancellationToken);
+          await _repository.CancelAsync(cancellationToken);
         
     }
 

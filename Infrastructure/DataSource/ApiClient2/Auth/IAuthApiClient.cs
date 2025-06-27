@@ -9,7 +9,7 @@ public interface IAuthApiClient : ITBaseShareApiClient
 
     public Task<AccessTokenResponse> LoginAsync(bool? useCookies, bool? useSessionCookies, LoginRequest body, CancellationToken cancellationToken);
 
-    public Task CustomMapIdentityApiApi_confirmEmailAsync(ConfirmEmailRequest body, CancellationToken cancellationToken);
+    public Task ConfirmEmailAsync(ConfirmEmailRequest body, CancellationToken cancellationToken);
 
     public Task<string> ResendConfirmationEmailAsync(ResendConfirmationEmailRequest body, CancellationToken cancellationToken);
 

@@ -17,10 +17,10 @@ public class GetPlansUseCase : ITBaseUseCase {
     }
 
                 
-    public  async Task<List<Plan>> ExecuteAsync(String lg, CancellationToken cancellationToken)
+    public  async Task<ICollection<Plan>> ExecuteAsync(String lg, CancellationToken cancellationToken)
     {
     
-         return    await _repository.GetPlansAsync(lg, cancellationToken);
+         return   await _repository.GetPlansAsync(lg, cancellationToken);
         
     }
 

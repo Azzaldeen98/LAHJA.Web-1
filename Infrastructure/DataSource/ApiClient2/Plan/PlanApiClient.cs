@@ -1,14 +1,8 @@
-﻿
-using System.Net.Http;
-using System.Threading.Tasks;
-using Infrastructure.Nswag;
+﻿using Infrastructure.Nswag;
 using Infrastructure.Share.Invoker;
 using AutoMapper;
-using Shared.Interfaces;
 using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
-using Infrastructure.Share.Invoker;
-using Microsoft.Extensions.Configuration;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
@@ -33,7 +27,7 @@ namespace Infrastructure.DataSource.ApiClient2;
     
          return   await apiInvoker.InvokeAsync(async () => {
             var client = await GetApiClient();
-             return    await client.GetPlansAsync(lg, cancellationToken);
+             return   await client.GetPlansAsync(lg,cancellationToken);
         });
                 
     }

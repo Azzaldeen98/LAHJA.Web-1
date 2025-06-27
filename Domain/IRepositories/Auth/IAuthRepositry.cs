@@ -1,4 +1,5 @@
 ﻿
+using AutoGenerator.Config.Attributes;
 using Domain.Entity;
 using Shared.Interfaces;
 
@@ -11,6 +12,7 @@ namespace Domain.IRepositories
 
         public Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken);
 
+        [RouteTo("ConfirmEmailAsync")]
         public Task ConfirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken);
 
         public Task<string> ResendConfirmationEmailAsync(ResendConfirmationEmail body, CancellationToken cancellationToken);

@@ -28,7 +28,7 @@ public partial class SubscriptionRepository : ISubscriptionRepository
 
     public async Task<Subscription> GetSubscriptionAsync(CancellationToken cancellationToken)
     {
-        var result = await _apiClient.GetSubscriptionsAsync(cancellationToken);
+        var result = await _apiClient.GetMySubscriptionAsync(cancellationToken);
         return _mapper.Map<Subscription>(result);
     }
 
@@ -38,24 +38,27 @@ public partial class SubscriptionRepository : ISubscriptionRepository
         return _mapper.Map<Subscription>(result);
     }
 
-    public async Task PauseAsync(String id, Subscription model, CancellationToken cancellationToken)
+    [RouteTo("PauseCollectionAsync")]
+    public async Task PauseAsync(Subscription model, CancellationToken cancellationToken)
     {
-        var body = _mapper.Map<SubscriptionUpdateRequest>(model);
-        await _apiClient.PauseCollectionAsync(body, cancellationToken);
+        var _body = _mapper.Map<SubscriptionUpdateRequest>(model);
+        await _apiClient.PauseCollectionAsync(_body, cancellationToken);
     }
 
-    public async Task RenewAsync(String id, CancellationToken cancellationToken)
+    public async Task RenewAsync(CancellationToken cancellationToken)
     {
-        await _apiClient.RenewAsync(id, cancellationToken);
+        await _apiClient.RenewSubscriptionAsync(cancellationToken);
     }
 
-    public async Task ResumeAsync(String id, CancellationToken cancellationToken)
+    [RouteTo("ResumeCollection2Async")]
+    public async Task ResumeAsync(CancellationToken cancellationToken)
     {
-        await _apiClient.ResumeCollection2Async(id, cancellationToken);
+        await _apiClient.ResumeCollectionAsync(cancellationToken);
     }
 
-    public async Task CancelAsync(String id, CancellationToken cancellationToken)
+    [RouteTo("Cancel2Async")]
+    public async Task CancelAsync(CancellationToken cancellationToken)
     {
-        await _apiClient.Cancel2Async(id, cancellationToken);
+        await _apiClient.CancelAtEndAsync(cancellationToken);
     }
 }

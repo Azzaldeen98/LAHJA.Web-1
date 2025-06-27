@@ -17,10 +17,10 @@ public class PauseSubscriptionUseCase : ITBaseUseCase {
     }
 
                 
-    public async  Task ExecuteAsync(string id, Subscription model, CancellationToken cancellationToken)
+    public async  Task ExecuteAsync(Subscription model, CancellationToken cancellationToken)
     {
     
-          await _repository.PauseAsync(id, model, cancellationToken);
+          await _repository.PauseAsync(model, cancellationToken);
         
     }
 

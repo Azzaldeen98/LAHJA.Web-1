@@ -43,17 +43,16 @@
     {
 
         <MainPayment 
-
-        BuildPlanData="buildPlanData" 
-        BuildBillingData="buildBillingData"
-        HasPreviousSubscription="hasActiveFreeSubscription"
-        SubmitPayment="onSubmitCheckout"
-        SubmitCancelPreviousSubscription="OnSubmitDeleteSubscription"
-        BuildCreditCardData="buildCreditCardData" 
-        SubmitSelectedActiveCard="onSubmitActiveCreditCard"
-        SubmitCreateCard="OnSubmitCreateCard"
-        SubmitUpdateCard="OnSubmitUpdateCard"
-        SubmitDeleteCard="OnSubmitDeleteCard" />
+            BuildPlanData="buildPlanData" 
+            BuildBillingData="buildBillingData"
+            HasPreviousSubscription="hasActiveFreeSubscription"
+            SubmitPayment="onSubmitCheckout"
+            SubmitCancelPreviousSubscription="OnSubmitDeleteSubscription"
+            BuildCreditCardData="buildCreditCardData" 
+            SubmitSelectedActiveCard="onSubmitActiveCreditCard"
+            SubmitCreateCard="OnSubmitCreateCard"
+            SubmitUpdateCard="OnSubmitUpdateCard"
+            SubmitDeleteCard="OnSubmitDeleteCard" />
     }
 }
 
@@ -120,9 +119,9 @@
             if (activeSubscription != null && activeSubscription.Succeeded)
             {
 
-                if (TemplatePlan.BuilderComponents.GetPlans != null)
+                if (TemplatePlan.BuilderComponentsQuery.GetAllPlans != null)
                 {
-                    var response = await TemplatePlan.BuilderComponents.GetPlanById(new DataBuildPlansBase { PlanId = activeSubscription?.Data?.PlanId, Lg = lg });
+                    var response = await TemplatePlan.BuilderComponentsQuery.GetPlanById(new DataBuildPlansBase { PlanId = activeSubscription?.Data?.PlanId, Lg = lg });
                     if (response.Succeeded)
                     {
                         hasActiveFreeSubscription = response.Data.IsFree;
@@ -157,7 +156,7 @@
 
     private async Task getPlanDataAsync()
     {
-        var planResult = await TemplatePlan.BuilderComponents.GetPlanById(new DataBuildPlansBase { PlanId = PlanId, Lg = lg });
+        var planResult = await TemplatePlan.BuilderComponentsQuery.GetPlanById(new DataBuildPlansBase { PlanId = PlanId, Lg = lg });
         if (planResult.Succeeded)
         {
 

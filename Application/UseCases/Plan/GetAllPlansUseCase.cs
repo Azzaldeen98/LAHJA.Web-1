@@ -19,8 +19,8 @@ public class GetAllPlansUseCase : ITBaseUseCase {
                 
     public  async Task<PaginatedResult<Plan>> ExecuteAsync(string lg, CancellationToken cancellationToken)
     {
-    
-         return    await _repository.GetAllPlansAsync(lg, cancellationToken);
+
+        return null;//  await _repository.GetPlansAsync(lg, cancellationToken);
         
     }
 

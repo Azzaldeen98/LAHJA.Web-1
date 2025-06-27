@@ -38,6 +38,7 @@ using LAHJA.Data.UI.Models.SessionTokenAuth;
 using Application.Config;
 using Client.Shared.UI.ErrorHandling;
 using LAHJA.Data.UI.Templates.Categories;
+using LAHJA.Data.UI.Components.Plan;
 
 namespace LAHJA
 {
@@ -107,7 +108,9 @@ namespace LAHJA
             //// Plans
             serviceCollection.AddScoped<IBuilderPlansApi<DataBuildPlansBase>, BuilderPlansApiClient>();
             serviceCollection.AddScoped<IBuilderPlansComponent<DataBuildPlansBase>, BuilderPlansComponent<DataBuildPlansBase>>();
-            serviceCollection.AddScoped<TemplatePlansShare<PlansClientService, DataBuildPlansBase>>();
+            serviceCollection.AddScoped<IBuilderPlansComponentQuery<DataBuildPlansBase, PlanViewModel>, BuilderPlansComponentQuery<DataBuildPlansBase,PlanViewModel>>();
+            serviceCollection.AddScoped<IBuilderPlansComponentCommand<DataBuildPlansBase>, BuilderPlansComponentCommand<DataBuildPlansBase>>();
+            serviceCollection.AddScoped<TemplatePlansShare<PlansClientService, DataBuildPlansBase, PlanViewModel>>();
             serviceCollection.AddScoped<TemplatePlans>();
 
             //// Categories

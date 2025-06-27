@@ -20,7 +20,7 @@ public interface IPlanService :  ITBaseShareService
     public Task<Plan> getByIdPlanAsync(string lg, string id, CancellationToken cancellationToken);
 
 
-    public Task<List<Plan>> getPlansAsync(String lg, CancellationToken cancellationToken);
+    public Task<ICollection<Plan>> getPlansAsync(String lg, CancellationToken cancellationToken);
 
 
 

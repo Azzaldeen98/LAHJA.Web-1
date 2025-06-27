@@ -31,7 +31,7 @@ namespace Infrastructure.Config
             //await Task.Delay(1000);
             //await GenerateAllApiClientTemplates(sourceFilePath);
             ////await Task.Delay(1000);
-            //await GeneratorRepositoriesForEntityModels();
+            await GeneratorRepositoriesForEntityModels();
 
 
 
@@ -181,7 +181,7 @@ namespace Infrastructure.Config
             IDataTypeExplorerService dataType = new DataTypeExplorerService();
 
             var typesRepositories = dataType.GetRepositoriesType(assembly, "Repository", typeof(ITBaseRepository), "Infrastructure.Repositories").ToList();
-            var repo = typesRepositories.FirstOrDefault();
+            //var repo = typesRepositories.FirstOrDefault();
             foreach (var type in typesRepositories)
             {
                 var filePath = $"{appRoot}\\Repositories\\{type.Name.Replace("Repository", "")}\\{type.Name}.cs";

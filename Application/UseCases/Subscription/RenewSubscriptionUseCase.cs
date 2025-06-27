@@ -17,10 +17,10 @@ public class RenewSubscriptionUseCase : ITBaseUseCase {
     }
 
                 
-    public async  Task ExecuteAsync(string id, CancellationToken cancellationToken)
+    public async  Task ExecuteAsync(CancellationToken cancellationToken)
     {
     
-          await _repository.RenewAsync(id, cancellationToken);
+          await _repository.RenewAsync(cancellationToken);
         
     }
 

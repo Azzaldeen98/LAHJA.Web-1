@@ -29,6 +29,24 @@ namespace LAHJA.Data.UI.Templates.Plans
         public Func<T, Task> SubmitSubscriptionPlan { get; set; }
     }
 
+    //public interface IBuilderPlansComponent<T, E> : IBuilderComponents<T>
+    //{
+
+    //    public IBuilderPlansComponentCommand<T> BuilderCommand { get; set; } 
+    //    public IBuilderPlansComponentQuery<T, E> BuilderQuery { get; set; } 
+
+    //}
+    public interface IBuilderPlansComponentCommand<E> : IBuilderComponents<E>
+    {
+        public Func<E, Task> SubmitSubscriptionPlan { get; set; }
+    }
+    public interface IBuilderPlansComponentQuery<E,R> : IBuilderComponents<R>
+    {
+        public Func<E, Task<Result<List<R>>>> GetAllPlans { get; set; }
+        public Func<E, Task<Result<R>>> GetPlanById { get; set; }
+
+
+    }
     public interface IBuilderPlansApi<T> : IBuilderApi<T>
     {
         //public Task<Result<List<CategoryComponent>>> GetAllCategories();
@@ -65,26 +83,15 @@ namespace LAHJA.Data.UI.Templates.Plans
         public Func<T, Task> SubmitUpdatePlan { get; set; }
     }
 
-    public class TemplatePlansShare<T, E> : TemplateBase<T, E>
+    public class BuilderPlansComponentQuery<E, R> : IBuilderPlansComponentQuery<E, R>
     {
-        protected readonly NavigationManager navigation;
-        protected readonly IDialogService dialogService;
-        protected readonly ISnackbar Snackbar;
-        protected IBuilderPlansApi<E> builderApi;
-        private readonly IBuilderPlansComponent<E> builderComponents;
-    
-        public IBuilderPlansComponent<E> BuilderComponents { get => builderComponents; }
+        public Func<E, Task<Result<List<R>>>> GetAllPlans { get; set; }
+        public Func<E, Task<Result<R>>> GetPlanById { get; set; }
+    }
 
-        public TemplatePlansShare(IMapper mapper, Helpers.Services.AuthService AuthService, T client, IBuilderPlansComponent<E> builderComponents, NavigationManager navigation, IDialogService dialogService, ISnackbar snackbar, ISafeInvoker safelyHandler) : base(mapper, AuthService, client, safelyHandler)
-        {
-            builderComponents = new BuilderPlansComponent<E>();
-            this.navigation = navigation;
-            this.dialogService = dialogService;
-            this.Snackbar = snackbar;
-            //this.builderApi = builderApi;
-            this.builderComponents = builderComponents;
-            //this.providerLanguage = providerLanguage;
-        }
+    public class BuilderPlansComponentCommand<E> : IBuilderPlansComponentCommand<E>
+    {
+        public Func<E, Task> SubmitSubscriptionPlan { get; set; }
     }
 
     public class BuilderPlansApiClient : BuilderPlansApi<IPlanService, DataBuildPlansBase>, IBuilderPlansApi<DataBuildPlansBase>
@@ -98,7 +105,7 @@ namespace LAHJA.Data.UI.Templates.Plans
         {
             var res = await Service.getPlansAsync(lg, cancellationToken);
 
-            var map= Mapper.Map<List<PlanViewModel>>(res);
+            var map = Mapper.Map<List<PlanViewModel>>(res);
             return map;
 
 
@@ -106,7 +113,7 @@ namespace LAHJA.Data.UI.Templates.Plans
 
         public override async Task<PaginatedResult<PlanViewModel>> GetAllPlansAsync(string lg, CancellationToken cancellationToken)
         {
-            var res = await Service.getAllPlansAsync(lg,cancellationToken);
+            var res = await Service.getAllPlansAsync(lg, cancellationToken);
             if (res.Succeeded)
             {
                 var data = Mapper.Map<List<PlanViewModel>>(res.Data);
@@ -131,16 +138,50 @@ namespace LAHJA.Data.UI.Templates.Plans
             }
         }
 
-        
-        
+
+
     }
 
-    [AutoSafeInvoke]
-    public class TemplatePlans : TemplatePlansShare<IPlanService, DataBuildPlansBase>
+    public class TemplatePlansShare<T,E,R> : TemplateBase<T, E>
     {
-        private readonly ISafeInvoker safeInvoker;
-        private readonly ICancelableTaskExecutor taskExecutor;
+        
+        //protected readonly IDialogService dialogService;
+        //protected readonly ISnackbar Snackbar;
+        protected IBuilderPlansApi<E> builderApi;
+        //private readonly IBuilderPlansComponent<E> builderComponents;
+        private readonly IBuilderPlansComponentCommand<E> builderComponentsCommand;
+        private readonly IBuilderPlansComponentQuery<E, R> builderComponentsQuery;
     
+        public IBuilderPlansComponentCommand<E> BuilderComponentsCommand { get => builderComponentsCommand; }
+        public IBuilderPlansComponentQuery<E,R> BuilderComponentsQuery { get => builderComponentsQuery; }
+
+        public TemplatePlansShare(IMapper mapper,
+            Helpers.Services.AuthService AuthService,
+            T client,
+            IBuilderPlansComponentCommand<E> builderComponentsCommand,
+            IBuilderPlansComponentQuery<E,R> builderComponentsQuery,
+            ISafeInvoker safelyHandler,
+            ICancelableTaskExecutor taskExecutor) : base(mapper, AuthService, client, safelyHandler, taskExecutor)
+        {
+            //builderComponents = new BuilderPlansComponent<E>();
+         
+            //this.dialogService = dialogService;
+            //this.Snackbar = snackbar;
+            //this.builderApi = builderApi;
+            this.builderComponentsCommand = builderComponentsCommand;
+            this.builderComponentsQuery = builderComponentsQuery;
+
+            //this.providerLanguage = providerLanguage;
+        }
+    }
+
+
+
+    [AutoSafeInvoke]
+    public class TemplatePlans : TemplatePlansShare<IPlanService, DataBuildPlansBase, PlanViewModel>
+    {
+
+        protected readonly NavigationManager navigation;
 
         private List<CategoryComponent> _categories = new List<CategoryComponent>();
         private List<PlanViewModel> _plans = new List<PlanViewModel>();
@@ -148,22 +189,24 @@ namespace LAHJA.Data.UI.Templates.Plans
         private PlanViewModel _plan = new PlanViewModel();
         private readonly IProviderLanguage providerLanguage;
 
-        public TemplatePlans(IMapper mapper, Helpers.Services.AuthService AuthService, ICancelableTaskExecutor taskExecutor, IPlanService service, 
-            IBuilderPlansComponent<DataBuildPlansBase> builderComponents, NavigationManager navigation, IDialogService dialogService, ISnackbar snackbar, 
-            ISafeInvoker safeInvoker, IServiceProvider provider, IProviderLanguage providerLanguage)
-            : base(mapper, AuthService, service, builderComponents, navigation, dialogService, snackbar, safeInvoker)
+        public TemplatePlans(IMapper mapper,
+            Helpers.Services.AuthService AuthService,
+            IPlanService service,
+            IBuilderPlansComponentCommand<DataBuildPlansBase> builderComponents,
+            IBuilderPlansComponentQuery<DataBuildPlansBase, PlanViewModel> builderComponentsQuery,
+            ISafeInvoker safeInvoker,
+            ICancelableTaskExecutor taskExecutor,
+            IProviderLanguage providerLanguage,
+            NavigationManager navigation)
+            : base(mapper, AuthService, service, builderComponents, builderComponentsQuery, safeInvoker, taskExecutor)
         {
-            this.safeInvoker = safeInvoker;
-            this.BuilderComponents.GetPlans = getPlansAsync;
-            this.BuilderComponents.GetPlanById = getPlanById;
-            //this.BuilderComponents.SubmitSubscriptionPlan = OnSubmitSubscriptionPlan;
-            //this.BuilderComponents.SubmitUpdatePlan = OnSubmitUpdatePlans;
-            //this.BuilderComponents.SubmitCreatePlan = OnSubmitCreatePlans;
+
+            this.BuilderComponentsQuery.GetAllPlans = getPlansAsync;
+            this.BuilderComponentsQuery.GetPlanById = getPlanById;
+            this.BuilderComponentsCommand.SubmitSubscriptionPlan = onSubmitSubscriptionPlan;
             this.builderApi = new BuilderPlansApiClient(mapper, service);
             this.providerLanguage = providerLanguage;
-            this.taskExecutor = taskExecutor;
-
-            //_self = provider.GetRequiredService<TemplatePlans>();
+            this.navigation = navigation;
         }
 
         public List<CategoryComponent> Categories { get => _categories; }
@@ -172,70 +215,12 @@ namespace LAHJA.Data.UI.Templates.Plans
         public PlanViewModel SubscriptionPlan { get => _plan; }
         public List<string> Errors { get => _errors; }
 
-        //public async Task<Result<List<CategoryComponent>>> GetAllCategoriesAsync()
-        //{
-        //    return await safeInvoker.InvokeAsync(async () =>
-        //    {
-        //        return await builderApi.GetAllCategories();
-        //    });
-        //}
 
         [IgnoreSafeInvoke]
         private async Task<Result<List<PlanViewModel>>> getPlansAsync(DataBuildPlansBase buildData)
         {
             return await getPlansAsync(buildData.Take, buildData.PremiumPlanNumber, buildData.Lg);
         }
-
-        //private  void InitializeCancellationToken()
-        //{
-        //    if (cancellationTokenSource == null || cancellationTokenSource.IsCancellationRequested)
-        //    {
-        //        cancellationTokenSource = new CancellationTokenSource();
-        //    }
-
-        //}
-        //public void CancelCurrentTask()
-        //{
-        //    if (cancellationTokenSource != null && !cancellationTokenSource.IsCancellationRequested)
-        //    {
-        //        cancellationTokenSource.Cancel();
-        //    }
-        //}
-
-
-        //private async Task<PaginatedResult<PlanViewModel>> getPlansAsync(int take, int premiumPlanNumber = 0, string lg = "en")
-        //{
-           
-        //    return (await safeInvoker.InvokeAsync(async () =>
-        //    {
-        //      return await taskExecutor.RunAsync<PaginatedResult<PlanViewModel>?>(async (token) =>
-        //        {
-
-        //                var response = await builderApi.GetPlansAsync(providerLanguage.Language, token);
-        //                if (response.Succeeded)
-        //                {
-        //                    if (premiumPlanNumber > 0 && take > 0)
-        //                    {
-        //                        var allPlans = response.Data.Take(take).ToList();
-        //                        if (allPlans.Count() > premiumPlanNumber)
-        //                        {
-        //                            allPlans[premiumPlanNumber].ClassImport = "plan-import-card";
-        //                            allPlans[premiumPlanNumber].HeaderImport = "textHeader";
-        //                        }
-        //                        return PaginatedResult<PlanViewModel>.Success(allPlans, response.TotalCount, response.PageNumber, response.PageSize, response.SortBy, response.SortDirection);
-        //                    }
-                                                    
-        //                }
-
-        //               return response;
-              
-        //        });
-            
-        //    }))?? PaginatedResult<PlanViewModel>.Success();
-        //}\
-
-
-
         private async Task<Result<List<PlanViewModel>>> getPlansAsync(int take, int premiumPlanNumber = 0, string lg = "en")
         {
             return await safeInvoker.InvokeAsync(async () =>
@@ -244,7 +229,7 @@ namespace LAHJA.Data.UI.Templates.Plans
                 {
                     var response = await builderApi.GetPlansAsync(providerLanguage.Language, token);
 
-                    if (response!=null)
+                    if (response != null)
                     {
                         var plans = response ?? new List<PlanViewModel>();
 
@@ -274,7 +259,7 @@ namespace LAHJA.Data.UI.Templates.Plans
                         return plans;
                     }
 
-                    throw new  NotFoundException("Not found");
+                    throw new NotFoundException("Not found");
 
                 });
 
@@ -287,38 +272,8 @@ namespace LAHJA.Data.UI.Templates.Plans
             return await getPlansAsync(filter.Take, premiumPlanNumber, filter.lg);
         }
 
-        //private async Task OnSubmitCreatePlans(DataBuildPlansBase dataBuildPlansBase)
-        //{
-        //    if (dataBuildPlansBase != null)
-        //    {
-        //        var response = await safeInvoker.InvokeAsync(async () => await builderApi.CreatePlanAsync(dataBuildPlansBase));
-        //        if (response.Succeeded)
-        //        {
-        //        }
-        //        else
-        //        {
-        //            _errors = response.Messages;
-        //        }
-        //    }
-        //}
 
-        //private async Task OnSubmitUpdatePlans(DataBuildPlansBase dataBuildPlansBase)
-        //{
-        //    if (dataBuildPlansBase != null)
-        //    {
-        //        //var response = await builderApi.UpdatePlanAsync(dataBuildPlansBase);
-        //        var response = await safeInvoker.InvokeAsync(async () => await builderApi.UpdatePlanAsync(dataBuildPlansBase));
-        //        if (response.Succeeded)
-        //        {
-        //        }
-        //        else
-        //        {
-        //            _errors = response.Messages;
-        //        }
-        //    }
-        //}
-
-        public async Task OnSubmitSubscriptionPlan(DataBuildPlansBase dataBuildPlansBase)
+        private async Task onSubmitSubscriptionPlan(DataBuildPlansBase dataBuildPlansBase)
         {
             await safeInvoker.InvokeAsync(async () =>
             {
@@ -336,21 +291,73 @@ namespace LAHJA.Data.UI.Templates.Plans
                 return await taskExecutor.RunAsync<PlanViewModel>(async (token) =>
                 {
 
-     
-                        if (dataBuildPlansBase != null && !string.IsNullOrWhiteSpace(dataBuildPlansBase.PlanId))
-                        {
-                            var response= await builderApi.GetPlanAsync(providerLanguage.Language, dataBuildPlansBase.PlanId, token);
-                            return response;
-                        }
-                        else
-                        {
-                            throw new Exception("Plan id is Required");
-                        
-                        }
-            });
 
-            }))?? Result<PlanViewModel>.Success();
-           
+                    if (dataBuildPlansBase != null && !string.IsNullOrWhiteSpace(dataBuildPlansBase.PlanId))
+                    {
+                        var response = await builderApi.GetPlanAsync(providerLanguage.Language, dataBuildPlansBase.PlanId, token);
+                        return response;
+                    }
+                    else
+                    {
+                        throw new Exception("Plan id is Required");
+
+                    }
+                });
+
+            })) ?? Result<PlanViewModel>.Success();
+
         }
+
+        //private  void InitializeCancellationToken()
+        //{
+        //    if (cancellationTokenSource == null || cancellationTokenSource.IsCancellationRequested)
+        //    {
+        //        cancellationTokenSource = new CancellationTokenSource();
+        //    }
+
+        //}
+        //public void CancelCurrentTask()
+        //{
+        //    if (cancellationTokenSource != null && !cancellationTokenSource.IsCancellationRequested)
+        //    {
+        //        cancellationTokenSource.Cancel();
+        //    }
+        //}
+
+
+        //private async Task<PaginatedResult<PlanViewModel>> getPlansAsync(int take, int premiumPlanNumber = 0, string lg = "en")
+        //{
+
+        //    return (await safeInvoker.InvokeAsync(async () =>
+        //    {
+        //      return await taskExecutor.RunAsync<PaginatedResult<PlanViewModel>?>(async (token) =>
+        //        {
+
+        //                var response = await builderApi.GetPlansAsync(providerLanguage.Language, token);
+        //                if (response.Succeeded)
+        //                {
+        //                    if (premiumPlanNumber > 0 && take > 0)
+        //                    {
+        //                        var allPlans = response.Data.Take(take).ToList();
+        //                        if (allPlans.Count() > premiumPlanNumber)
+        //                        {
+        //                            allPlans[premiumPlanNumber].ClassImport = "plan-import-card";
+        //                            allPlans[premiumPlanNumber].HeaderImport = "textHeader";
+        //                        }
+        //                        return PaginatedResult<PlanViewModel>.Success(allPlans, response.TotalCount, response.PageNumber, response.PageSize, response.SortBy, response.SortDirection);
+        //                    }
+
+        //                }
+
+        //               return response;
+
+        //        });
+
+        //    }))?? PaginatedResult<PlanViewModel>.Success();
+        //}\
+
+
+
+
     }
 }

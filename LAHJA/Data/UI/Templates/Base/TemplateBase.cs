@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Client.Shared.Execution;
+using Client.Shared.Providers;
 using Infrastructure.Middlewares;
 using LAHJA.Helpers;
 using LAHJA.Helpers.Services;
 using Microsoft.AspNetCore.Components;
 using Shared.Constants.Localization;
+using Shared.Wrapper;
 using System.Globalization;
 
 namespace LAHJA.Data.UI.Templates.Base;
@@ -19,10 +21,7 @@ public  enum TypeTemplate
 public  interface IBuilderApi<T>
 {
     
-    //Task <bool> SendAsync(E data);
-    //T DeleteAsync(E data);
-    //T GetOneAsync(E data);
-    //IEnumerable<T> GetAllAsync(int skip = 0, int take = 1);
+
 }
 
 public interface IBuilderComponents<T>
@@ -43,10 +42,21 @@ public class BuilderApi<T,E> : IBuilderApi<E>
         Language = new LanguageCode{ Code = CultureInfo.CurrentUICulture.Name ?? "en" };
     }
 
-    public object GetInstance()
+    protected async Task<Result<TResult>> ExecuteSafeAsync<TResult>(Func<Task<TResult>> func)
     {
-        return this;
+        try
+        {
+            var result = await func();
+            return Result<TResult>.Success(result);
+        }
+        catch (Exception ex)
+        {
+            return Result<TResult>.Fail(ex.Message);
+        }
     }
+
+
+    public object GetInstance() => this;
 }
 
 public class BuilderComponents<T> : IBuilderComponents<T>
@@ -57,26 +67,29 @@ public interface ITemplateBase<T,E>
 {
     bool IsActive { set; get; }
     TypeTemplate Type { get; }
+    List<string> Errors { get; }
 
- 
+
 
 }
 
 
 public abstract class TemplateBase<T,E> : ITemplateBase<T, E>
 {
+
     public bool IsActive { get; set; }
-    //public bool IsAuth { get=> _isAuth; }
-    //protected bool _isAuth = false;
+    public List<string> Errors => _errors;
 
 
-    public  TypeTemplate Type { get=> TypeTemplate.Base; }
+    public TypeTemplate Type { get=> TypeTemplate.Base; }
 
     protected readonly IMapper mapper;
     protected readonly AuthService authService;
     protected readonly ISafeInvoker safeInvoker;
-    //protected readonly ProtectedSessionStorage PSession;
+    protected readonly ICancelableTaskExecutor taskExecutor;
+
     protected readonly T client;
+
     protected List<string> _errors;
 
 
@@ -96,6 +109,17 @@ public abstract class TemplateBase<T,E> : ITemplateBase<T, E>
         this.safeInvoker = safeInvoker;
     }
 
+    public TemplateBase(IMapper mapper, AuthService authService, T client, ISafeInvoker safeInvoker, ICancelableTaskExecutor taskExecutor) 
+        : this(mapper, authService, client,safeInvoker)
+    {
+        this.taskExecutor = taskExecutor;
+    }
+
+    protected void AddError(string message)
+    {
+        if (!_errors.Contains(message))
+            _errors.Add(message);
+    }
 }
 
 

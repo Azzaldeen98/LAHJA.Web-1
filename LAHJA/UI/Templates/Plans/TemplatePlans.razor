@@ -26,7 +26,7 @@
         <MainPlan 
             IsLoading="isLoading"
             DataBuilds="dataBuilds"
-            SubmitSelectPlan="Template.BuilderComponents.SubmitSubscriptionPlan"
+              SubmitSelectPlan="Template.BuilderComponentsCommand.SubmitSubscriptionPlan"
             SubmitOpenSubscription="OnSubmitOpenSubscription" />
     }
 
@@ -60,10 +60,10 @@
         isLoading = true;
 
         var data = new DataBuildPlansBase { Lg = CultureInfo.CurrentUICulture.Name, Take = _countItemsShow, PremiumPlanNumber = 2 };
-        if (Template.BuilderComponents.GetPlans != null)
+        if (Template.BuilderComponentsQuery.GetAllPlans != null)
         {
 
-            var response = await Template.BuilderComponents.GetPlans(data);
+            var response = await Template.BuilderComponentsQuery.GetAllPlans(data);
             if (response!=null && response.Succeeded)
             {
                 var _dataBuilds = response.Data;

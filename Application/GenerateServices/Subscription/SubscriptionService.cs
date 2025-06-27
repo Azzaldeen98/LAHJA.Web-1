@@ -44,11 +44,11 @@ public class SubscriptionService : ISubscriptionService {
 
                 
 
-    public async Task cancelSubscriptionAsync(string id, CancellationToken cancellationToken)
+    public async Task cancelSubscriptionAsync(CancellationToken cancellationToken)
     {
     
 
-         await _cancelSubscriptionUseCase.ExecuteAsync(id, cancellationToken);
+         await _cancelSubscriptionUseCase.ExecuteAsync(cancellationToken);
         
     }
 
@@ -58,7 +58,7 @@ public class SubscriptionService : ISubscriptionService {
     {
     
 
-         return   await _getOneSubscriptionUseCase.ExecuteAsync(id, cancellationToken);
+         return   await _getOneSubscriptionUseCase.ExecuteAsync(id,cancellationToken);
         
     }
 
@@ -84,31 +84,31 @@ public class SubscriptionService : ISubscriptionService {
 
 
 
-    public async Task pauseSubscriptionAsync(string id, Subscription model, CancellationToken cancellationToken)
+    public async Task pauseSubscriptionAsync(Subscription model, CancellationToken cancellationToken)
     {
     
 
-         await _pauseSubscriptionUseCase.ExecuteAsync(id, model, cancellationToken);
+         await _pauseSubscriptionUseCase.ExecuteAsync(model, cancellationToken);
         
     }
 
 
 
-    public async Task renewSubscriptionAsync(string id, CancellationToken cancellationToken)
+    public async Task renewSubscriptionAsync(CancellationToken cancellationToken)
     {
     
 
-         await _renewSubscriptionUseCase.ExecuteAsync(id, cancellationToken);
+         await _renewSubscriptionUseCase.ExecuteAsync(cancellationToken);
         
     }
 
 
 
-    public async Task resumeSubscriptionAsync(string id, CancellationToken cancellationToken)
+    public async Task resumeSubscriptionAsync(CancellationToken cancellationToken)
     {
     
 
-         await _resumeSubscriptionUseCase.ExecuteAsync(id, cancellationToken);
+         await _resumeSubscriptionUseCase.ExecuteAsync(cancellationToken);
         
     }
 

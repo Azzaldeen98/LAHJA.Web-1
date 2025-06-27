@@ -48,17 +48,24 @@ namespace AutoGenerator.Config
                 var returnCollectionType = GeneratorHelpers.ExtractCollectionTypeFromMethodReturnType(method.ReturnType);
 
                 ///TODO :  Read RouteToAttribute
-                var routeToAtt = method.CustomAttributes?.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
+
+                var routeToAttribute = method.GetCustomAttribute<RouteToAttribute>();
+
                 var keywords = new List<string>();
-                if (routeToAtt != null && routeToAtt.AttributeType!=null)
+                if (routeToAttribute != null && routeToAttribute is RouteToAttribute)
                 {
-                    keywords.Add(routeToAtt.AttributeType.Name);
+                    keywords.Add(routeToAttribute.Name);
                 }
                 else
                 {
-                    keywords = ExtractKeywords(method.Name);
+                    keywords.Add(method.Name);
+
+                    //keywords = ExtractKeywords(method.Name);
                 }
-                    
+                if (method.Name.Contains("ForgotPassword"))
+                {
+
+                }
                 if (dsoParam == null)
                 {
                     var bodyCode = GenerateBodyWithoutDso(apiClientType, keywords, noDsoParamNames, returnType, returnTypeStr, returnCollectionType);
@@ -90,8 +97,17 @@ namespace AutoGenerator.Config
 
             Console.WriteLine("⚠️ الدالة لا تحتوي على معاملات ITDso، سيتم استخدام دالة ApiClient بدون تحويل.");
 
-            var apiMethod = FindApiClientMethod(apiClientType, keywords);
-            if (apiMethod == null)
+            var apiMethod = FindTargetMethod(apiClientType, keywords);
+
+
+            if (apiClientType.Name.Contains("ForgotPassword"))
+            {
+        
+             
+            }
+
+
+            if (apiMethod == null )
             {
                 Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
                 return string.Empty;
@@ -145,7 +161,7 @@ namespace AutoGenerator.Config
 
         private string GenerateBodyWithDso(Type apiClientType, List<string> keywords, ParameterInfo dsoParam, Type returnType, Type? returnCollectionType = null)
         {
-            var apiMethod = FindApiClientMethod(apiClientType, keywords);
+            var apiMethod = FindTargetMethod(apiClientType, keywords);
             if (apiMethod == null)
             {
                 Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
@@ -168,7 +184,8 @@ namespace AutoGenerator.Config
             var body = new StringBuilder();
 
             // تحويل DSO إلى DTO
-            body.AppendLine($"\n\tvar {dtoParam.Name} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});");
+            body.AppendLine($"\n\tvar _{dtoParam.Name} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});");
+            paramsText = paramsText.Replace(dtoParam.Name, $"_{dtoParam.Name}");
 
             if (IsReturnTypeWithValue(apiReturnType))
             {
@@ -178,9 +195,7 @@ namespace AutoGenerator.Config
                 {
                     if (apiReturnTypeStr.Contains("Paged"))
                     {
-
                         body.AppendLine(generatePaginatedResult(returnType.Name, true));
-                       
                     }
                     else
                     {
@@ -189,7 +204,7 @@ namespace AutoGenerator.Config
 
                         body.AppendLine($"\n\treturn _mapper.Map<{_type}>(result);");
                      
-                            }
+                    }
                 }
                 else
                 {
@@ -215,13 +230,13 @@ namespace AutoGenerator.Config
         {
             var data =  hasMapped ? $"_mapper.Map<List<{typeName}>>(result.Data.ToList())":"result.Data.ToList()";
             return "\n"+$@"
-        return PaginatedResult<{typeName}>.Success(
-            {data},
-            result.TotalRecords,
-            result.PageNumber,
-            result.PageSize,
-            result.SortBy,
-            result.SortDirection);";
+                return PaginatedResult<{typeName}>.Success(
+                    {data},
+                    result.TotalRecords,
+                    result.PageNumber,
+                    result.PageSize,
+                    result.SortBy,
+                    result.SortDirection);";
         }
         private bool IsReturnTypeWithValue(Type returnType)
         {
@@ -242,20 +257,36 @@ namespace AutoGenerator.Config
                 .ToList();
         }
 
-        private MethodInfo FindApiClientMethod(Type apiClientType, List<string> keywords)
+        private MethodInfo FindTargetMethod(Type apiClientType, List<string> keywords)
         {
-            return apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
-                .FirstOrDefault(m =>
-                {
-                    var name = m.Name.ToLower();
-                    return keywords.All(k => name.Contains(k));
-                });
+            var methods = apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+            // 1. تطابق تام مع أحد الكلمات
+            var exactMatch = methods.FirstOrDefault(m => keywords.Contains(m.Name));
+            if (exactMatch != null)
+                return exactMatch;
+
+            // 2. استخراج كلمات مفتاحية جديدة من أول كلمة (إن وجدت)
+            if (keywords != null && keywords.Any())
+                keywords = ExtractKeywords(keywords.First());
+
+            // 3. تحقق من صلاحية الكلمات بعد الاستخراج
+            if (keywords == null || !keywords.Any())
+                return null;
+
+            // 4. تطابق جزئي (كل كلمة موجودة في اسم الدالة)
+            return methods.FirstOrDefault(m =>
+            {
+                var name = m.Name.ToLowerInvariant();
+                return keywords.All(k => name.Contains(k.ToLowerInvariant()));
+            });
         }
+
     }
 
     //public class RepositoryAnalyzer2
     //{
-      
+
 
     //    public Dictionary<string, string> ProcessRepository(Type repositoryType)
     //    {
@@ -276,22 +307,22 @@ namespace AutoGenerator.Config
     //        foreach (var method in methods)
     //        {
     //            Console.WriteLine($"\n📌 تحليل الدالة: {method.Name}");
-       
+
     //            var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
-         
+
 
     //            var parameters = method.GetParameters();
- 
-            
+
+
     //            (var returnTypeStr, var Modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
     //            var dsoParam = parameters.FirstOrDefault(p => typeof(ITDso).IsAssignableFrom(p.ParameterType));
     //            var noDsoParams = parameters.Select(p => p.Name);
     //            var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType); 
 
     //            var mytype = GeneratorHelpers.ConvertToSyntax(method).ReturnType.ToString();
-           
+
     //            var keywords = ExtractKeywords(method.Name);
-             
+
 
     //            if (dsoParam == null)
     //            {
@@ -338,7 +369,7 @@ namespace AutoGenerator.Config
     //                        else {
     //                            bodyCodeNoParam += $"\treturn _mapper.Map<{returnType.Name}>(result);";
     //                        }
-                                   
+
     //                    }
     //                    else
     //                    {
@@ -359,7 +390,7 @@ namespace AutoGenerator.Config
     //                            bodyCodeNoParam += "\treturn result;";
     //                        }
 
-                             
+
     //                    }
     //                }
     //                else

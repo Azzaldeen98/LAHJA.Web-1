@@ -51,7 +51,7 @@ namespace Infrastructure.DataSource.ApiClient2;
     }
 
 
-    public   async Task CustomMapIdentityApiApi_confirmEmailAsync(ConfirmEmailRequest body, CancellationToken cancellationToken)
+    public   async Task ConfirmEmailAsync(ConfirmEmailRequest body, CancellationToken cancellationToken)
     {
     
          await apiInvoker.InvokeAsync(async () => {

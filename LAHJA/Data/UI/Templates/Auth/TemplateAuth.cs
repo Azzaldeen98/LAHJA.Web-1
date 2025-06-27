@@ -84,7 +84,74 @@ public class BuilderAuthComponent<T> : IBuilderAuthComponent<T>
     public Func<T, Task> SubmitResetPassword { get; set; }
     public Func<T, Task> SubmitLogout { get; set; }
 }
+public class BuilderAuthApiClient : BuilderAuthApi<IAuthService, DataBuildAuthBase>, IBuilderAuthApi<DataBuildAuthBase>
+{
+    public BuilderAuthApiClient(IMapper mapper, IAuthService service) : base(mapper, service)
+    {
+    }
 
+    public override async Task ExternalLoginAsync(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var map_data = Mapper.Map<ExternalLoginRequest>(data);
+        await Task.CompletedTask;
+        //await Service.ExternalLoginAsync(map_data);
+    }
+
+    public override async Task ForgetPassword(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var model = Mapper.Map<ForgetPassword>(data);
+        model.ReturnUrl = Helper.GetInstance().GetFullPath(ConstantsApp.RESET_PASSWORDL_PAGE_URL); //   shareProvider.Navigation.anager.BaseUri+ConstantsApp.RESET_PASSWORDL_PAGE_URL;
+        await Service.forgotPasswordAsync(model, cancellationToken);
+    }
+
+    public override async Task<AccessTokenResponse> Login(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var model = Mapper.Map<Login>(data);
+        var res = await Service.loginAsync(model, cancellationToken);
+        return Mapper.Map<AccessTokenResponse>(res);
+    }
+
+
+
+    public override async Task Logout(object data, CancellationToken cancellationToken)
+    {
+        await Service.logoutAsync(data, cancellationToken);
+    }
+
+
+    public async override Task<AccessTokenResponse> RefreshToken(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var map_data = Mapper.Map<RefreshToken>(data);
+        //return await Service.RefreshToken(map_data);
+        return new();
+    }
+
+    public override async Task Register(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var model = Mapper.Map<Register>(data);
+        await Service.registerAsync(model, cancellationToken);
+    }
+
+    public override async Task<string> ReSendConfirmationEmail(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        data.ReturnUrl = Helper.GetInstance().GetFullPath(ConstantsApp.CONFIRM_EMAIL_PAGE_URL);
+        var model = Mapper.Map<ResendConfirmationEmail>(data);
+        return await Service.resendConfirmationEmailAsync(model, cancellationToken);
+
+    }
+
+    public override async Task ResetPassword(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var model = Mapper.Map<ResetPassword>(data);
+        await Service.resetPasswordAsync(model, cancellationToken);
+    }
+
+    public override async Task SubmitConfirmEmail(DataBuildAuthBase data, CancellationToken cancellationToken)
+    {
+        var model = Mapper.Map<ConfirmEmail>(data);
+        await Service.confirmationEmailAsync(model, cancellationToken);
+    }
+}
 public class TemplateAuthShare<T, E> : TemplateBase<T, E>
 {
     public IBuilderAuthComponent<E> BuilderComponents { get => builderComponents; }
@@ -102,74 +169,7 @@ public class TemplateAuthShare<T, E> : TemplateBase<T, E>
     }
 }
 
-public class BuilderAuthApiClient : BuilderAuthApi<IAuthService, DataBuildAuthBase>, IBuilderAuthApi<DataBuildAuthBase>
-{
-    public BuilderAuthApiClient(IMapper mapper, IAuthService service) : base(mapper, service)
-    {
-    }
 
-    public override async Task ExternalLoginAsync(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var map_data = Mapper.Map<ExternalLoginRequest>(data);
-       await Task.CompletedTask;
-        //await Service.ExternalLoginAsync(map_data);
-    }
-
-    public override async Task ForgetPassword(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var model = Mapper.Map<ForgetPassword>(data);
-        model.ReturnUrl = Helper.GetInstance().GetFullPath(ConstantsApp.RESET_PASSWORDL_PAGE_URL); //   shareProvider.Navigation.anager.BaseUri+ConstantsApp.RESET_PASSWORDL_PAGE_URL;
-        await Service.forgotPasswordAsync(model,cancellationToken);
-    }
-
-    public override async Task<AccessTokenResponse> Login(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var model = Mapper.Map<Login>(data);
-        var res = await Service.loginAsync(model, cancellationToken);
-        return Mapper.Map<AccessTokenResponse>(res);
-    }
-
-
-
-    public override async Task Logout(object data, CancellationToken cancellationToken)
-    {
-         await Service.logoutAsync(data, cancellationToken);
-    }
-
-
-    public async override Task<AccessTokenResponse> RefreshToken(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var map_data = Mapper.Map<RefreshToken>(data);
-        //return await Service.RefreshToken(map_data);
-        return new();
-    }
-
-    public override async Task Register(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var model = Mapper.Map<Register>(data);
-         await Service.registerAsync(model,cancellationToken);
-    }
-
-    public override async Task<string> ReSendConfirmationEmail(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        data.ReturnUrl = Helper.GetInstance().GetFullPath(ConstantsApp.CONFIRM_EMAIL_PAGE_URL);
-        var model = Mapper.Map<ResendConfirmationEmail>(data);
-        return await Service.resendConfirmationEmailAsync(model,cancellationToken);
-        
-    }
-
-    public override async Task ResetPassword(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var model = Mapper.Map<ResetPassword>(data);
-        await Service.resetPasswordAsync(model,cancellationToken);
-    }
-
-    public override async Task SubmitConfirmEmail(DataBuildAuthBase data, CancellationToken cancellationToken)
-    {
-        var model = Mapper.Map<ConfirmEmail>(data);
-         await Service.confirmationEmailAsync(model,cancellationToken);
-    }
-}
 
 [AutoSafeInvoke]
 public class TemplateAuth : TemplateAuthShare<IAuthService, DataBuildAuthBase>
@@ -364,7 +364,7 @@ public class TemplateAuth : TemplateAuthShare<IAuthService, DataBuildAuthBase>
     }
 
     protected async Task OnSubmitConfirmEmail(DataBuildAuthBase data)
-    {
+    { 
         var result = await safeInvoker.InvokeAsync(async () =>
         {
             // ≈⁄œ«œ —«»ÿ «·⁄Êœ…
