@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Domain.Validator.Enums
+namespace Domain.Validators.Enums
 {
     public enum UserValidatorStates
     {

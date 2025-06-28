@@ -4,6 +4,23 @@ using System;
 
 namespace Domain.Validators.Conditions.Base
 {
+
+    /// <summary>
+    /// Provides a base implementation of a condition provider that manages a collection of conditions
+    /// associated with enumeration-based keys of type <typeparamref name="ETStatus"/>.
+    /// </summary>
+    /// <typeparam name="ETStatus">An enumeration type used to identify different condition categories.</typeparam>
+    /// <remarks>
+    /// This class maintains an internal dictionary that maps enum values to corresponding <see cref="ICondition"/> instances.
+    /// It provides various methods to:
+    /// - Register and retrieve conditions by their enum type.
+    /// - Evaluate conditions synchronously and asynchronously against given context data.
+    /// - Query conditions that pass based on the provided context.
+    /// - Filter conditions using predicates and support different retrieval scenarios.
+    ///
+    /// The evaluation methods may block on asynchronous operations internally, so use the async versions when possible.
+    /// This base provider can be extended to add custom condition handling logic specific to application requirements.
+    /// </remarks>
     public class BaseConditionProvider<ETStatus> : IConditionProvider<ETStatus> where ETStatus : Enum
     {
         private readonly Dictionary<ETStatus, ICondition> _conditions = new();

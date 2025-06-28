@@ -1,10 +1,7 @@
-﻿
-using System.Threading.Tasks;
-using Shared.Interfaces;
-using Microsoft.Extensions.Configuration;
-using Application.UseCases;
-using Shared.Wrapper;
+﻿using Application.UseCases;
 using Domain.Entity;
+using Application.Validators.User;
+using Domain.Validators.Enums;
 namespace Application.Services;
 
 
@@ -19,38 +16,33 @@ public class SubscriptionService : ISubscriptionService {
      private readonly PauseSubscriptionUseCase _pauseSubscriptionUseCase;
      private readonly RenewSubscriptionUseCase _renewSubscriptionUseCase;
      private readonly ResumeSubscriptionUseCase _resumeSubscriptionUseCase;
+     private readonly IUserValidator userValidator;
 
 
-    public SubscriptionService(   
+    public SubscriptionService(
             CancelSubscriptionUseCase cancelSubscriptionUseCase,
             GetOneSubscriptionUseCase getOneSubscriptionUseCase,
             GetSubscriptionsUseCase getSubscriptionsUseCase,
             GetSubscriptionUseCase getSubscriptionUseCase,
             PauseSubscriptionUseCase pauseSubscriptionUseCase,
             RenewSubscriptionUseCase renewSubscriptionUseCase,
-            ResumeSubscriptionUseCase resumeSubscriptionUseCase)
+            ResumeSubscriptionUseCase resumeSubscriptionUseCase,
+            IUserValidator userValidator)
     {
-                        
-          _cancelSubscriptionUseCase=cancelSubscriptionUseCase;
-          _getOneSubscriptionUseCase=getOneSubscriptionUseCase;
-          _getSubscriptionsUseCase=getSubscriptionsUseCase;
-          _getSubscriptionUseCase=getSubscriptionUseCase;
-          _pauseSubscriptionUseCase=pauseSubscriptionUseCase;
-          _renewSubscriptionUseCase=renewSubscriptionUseCase;
-          _resumeSubscriptionUseCase=resumeSubscriptionUseCase;
 
-
+        _cancelSubscriptionUseCase = cancelSubscriptionUseCase;
+        _getOneSubscriptionUseCase = getOneSubscriptionUseCase;
+        _getSubscriptionsUseCase = getSubscriptionsUseCase;
+        _getSubscriptionUseCase = getSubscriptionUseCase;
+        _pauseSubscriptionUseCase = pauseSubscriptionUseCase;
+        _renewSubscriptionUseCase = renewSubscriptionUseCase;
+        _resumeSubscriptionUseCase = resumeSubscriptionUseCase;
+        this.userValidator = userValidator;
     }
 
-                
 
-    public async Task cancelSubscriptionAsync(CancellationToken cancellationToken)
-    {
-    
 
-         await _cancelSubscriptionUseCase.ExecuteAsync(cancellationToken);
-        
-    }
+
 
 
 
@@ -86,9 +78,10 @@ public class SubscriptionService : ISubscriptionService {
 
     public async Task pauseSubscriptionAsync(Subscription model, CancellationToken cancellationToken)
     {
-    
 
-         await _pauseSubscriptionUseCase.ExecuteAsync(model, cancellationToken);
+        var validate = await userValidator.ValidateAsync(UserValidatorStates.SubscriptionActive);
+        if (validate!=null && validate.Success==true)
+            await _pauseSubscriptionUseCase.ExecuteAsync(model, cancellationToken);
         
     }
 
@@ -106,14 +99,22 @@ public class SubscriptionService : ISubscriptionService {
 
     public async Task resumeSubscriptionAsync(CancellationToken cancellationToken)
     {
-    
 
-         await _resumeSubscriptionUseCase.ExecuteAsync(cancellationToken);
+        var validate = await userValidator.ValidateAsync(UserValidatorStates.SubscriptionActive);
+        if (validate != null && validate.Success == true)
+            await _resumeSubscriptionUseCase.ExecuteAsync(cancellationToken);
         
     }
 
 
+    public async Task cancelSubscriptionAsync(CancellationToken cancellationToken)
+    {
 
+        var validate = await userValidator.ValidateAsync(UserValidatorStates.SubscriptionActive);
+        if (validate != null && validate.Success == true)
+            await _cancelSubscriptionUseCase.ExecuteAsync(cancellationToken);
+
+    }
 
 
 }

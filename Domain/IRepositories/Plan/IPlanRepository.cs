@@ -4,9 +4,6 @@ using Shared.Wrapper;
 using AutoGenerator.Config.Attributes;
 using Domain.Entity;
 using AutoGenerator.Config.Attributes;
-using AutoGenerator.Enums;
-using static System.Net.Mime.MediaTypeNames;
-using System;
 namespace Domain.IRepositories;
 
 

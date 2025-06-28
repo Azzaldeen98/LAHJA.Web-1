@@ -8,7 +8,8 @@ namespace Domain.Validators.Conditions.Shared.User
     public class SubscriptionActiveCondition : BaseCondition, ICondition, ITScope
     {
 
-        public SubscriptionActiveCondition(string name = "Subscription Active", string? errorMessage = "No active subscription") : base(name, errorMessage)
+        public SubscriptionActiveCondition(string name = "Subscription Active", string? errorMessage = "No active subscription") 
+            : base(name, errorMessage)
         {
 
         }
