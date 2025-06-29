@@ -9,7 +9,7 @@
 @using LAHJA.UI.Components.General.Skeleton
 @using LAHJA.UI.Components.Index.MainSectionCard
 @using LAHJA.UI.Components.Plan
-
+@inject LAHJA.Data.UI.Templates.Subscriptions.TemplateSubscription templateSubscription
 @inject LAHJA.Data.UI.Templates.Plans.TemplatePlans Template
 @inject LAHJA.Data.UI.Templates.Profile.TemplateProfile TemplateProfile
 @inherits AppUtilityComponent
@@ -21,14 +21,14 @@
 @* } *@
 @* else{ *@
 
-    @if (Template != null)
-    {
-        <MainPlan 
-            IsLoading="isLoading"
-            DataBuilds="dataBuilds"
-              SubmitSelectPlan="Template.BuilderComponentsCommand.SubmitSubscriptionPlan"
-            SubmitOpenSubscription="OnSubmitOpenSubscription" />
-    }
+@if (Template != null)
+{
+    <MainPlan 
+    IsLoading="isLoading"
+    DataBuilds="dataBuilds"
+    SubmitSelectPlan="Template.BuilderComponentsCommand.SubmitSubscriptionPlan"
+    SubmitOpenSubscription="OnSubmitOpenSubscription" />
+}
 
 
 
@@ -49,15 +49,30 @@
 
 
 
-    private void OnSubmitOpenSubscription(PlanViewModel plan)
+    private async Task OnSubmitOpenSubscription(PlanViewModel plan)
     {
-        GoTo($"{RouterPage.SUBSCRIPTION_DETAILS}/{plan.SubscriptionId}/{plan.Id}");
+        if (templateSubscription.BuilderComponents.GetActiveSubscription != null)
+        {
+            var result = await templateSubscription.BuilderComponents.GetActiveSubscription();
+            if (result != null && result.Succeeded)
+            {
+                plan.SubscriptionId = result.Data?.Id;
+                GoTo($"{RouterPage.SUBSCRIPTION_DETAILS}/{plan.SubscriptionId}/{plan.Id}");
+            }
+            else
+            {
+
+            }
+
+        }
     }
 
 
     protected override async Task OnInitializedAsync()
     {
         isLoading = true;
+
+     
 
         var data = new DataBuildPlansBase { Lg = CultureInfo.CurrentUICulture.Name, Take = _countItemsShow, PremiumPlanNumber = 2 };
         if (Template.BuilderComponentsQuery.GetAllPlans != null)

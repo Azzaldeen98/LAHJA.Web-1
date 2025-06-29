@@ -1,6 +1,6 @@
 using Shared.Interfaces;
 using Shared.Wrapper;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 using Domain.Entity;
 using Infrastructure.Nswag;
 using Domain.IRepositories;

@@ -11,7 +11,7 @@ using LAHJA.ApplicationLayer.Subscription;
 using LAHJA.ApplicationLayer.Price;
 using LAHJA.Data.UI.Templates.Price;
 using LAHJA.Data.UI.Templates.Product;
-using LAHJA.Data.UI.Templates.Subscription;
+using LAHJA.Data.UI.Templates.Subscriptions;
 using LAHJA.Data.UI.Components;
 using Application.Service.Plans;
 using LAHJA.Data.UI.Templates.CreditCard;
@@ -35,10 +35,11 @@ using LAHJA.ContextServices;
 
 using LAHJA.Data.UI.Models.Profile;
 using LAHJA.Data.UI.Models.SessionTokenAuth;
-using Application.Config;
 using Client.Shared.UI.ErrorHandling;
 using LAHJA.Data.UI.Templates.Categories;
 using LAHJA.Data.UI.Components.Plan;
+using Application.Services;
+using AuthService = LAHJA.Helpers.Services.AuthService;
 
 namespace LAHJA
 {

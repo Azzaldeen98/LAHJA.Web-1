@@ -1,12 +1,11 @@
-﻿using AutoGenerator.Config.Attributes;
-using AutoGenerator.Enums;
+﻿using AutoGenerator.Enums;
 using AutoGenerator.AppFolder;
 using AutoGenerator.Helper;
 using Shared.Constants.ArchitecturalLayersRoot;
 using Shared.Interfaces;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
+using AutoGenerator.Attributes;
 
 namespace AutoGenerator.Code.Repository
 {
@@ -35,7 +34,7 @@ namespace AutoGenerator.Code.Repository
                 var modelName = model.Name;
                 var autoGenAttr = model.GetCustomAttribute<AutoGenerateAttribute>();
                 var supportedAttr = model.GetCustomAttribute<SupportedMethodsAttribute>();
-                var autoMapper = model.GetCustomAttribute<AutomateMapperAttribute>();
+                var autoMapper = model.GetCustomAttribute<AutoMapperAttribute>();
                 var MethodRouteAttr = model.GetCustomAttributes<MethodRouteAttribute>();
                 ///TODO: Future developer
                  //var attrRouteProvider = model.GetCustomAttribute<MethodRouteProviderAttribute>();
@@ -295,7 +294,7 @@ namespace AutoGenerator.Code.Repository
             }
 
         }
-        private static bool ShouldAddMapper(SupportedMethods method, AutomateMapperAttribute mapperAttr, bool hasCUGET)
+        private static bool ShouldAddMapper(SupportedMethods method, AutoMapperAttribute mapperAttr, bool hasCUGET)
         {
             return (mapperAttr?.Methods.HasFlag(method) == true) || hasCUGET;
         }
@@ -305,7 +304,7 @@ namespace AutoGenerator.Code.Repository
             string modelName,
             string returnType,
             SupportedMethods methodFlag,
-            AutomateMapperAttribute autoMapper,
+            AutoMapperAttribute autoMapper,
             bool hasREAD,
             string customParams = "",
             bool includeLangParam = false,
@@ -316,7 +315,7 @@ namespace AutoGenerator.Code.Repository
             var sb = new StringBuilder();
             bool useMapper = autoMapper != null && (autoMapper.Methods.HasFlag(methodFlag) || hasREAD);
             if (useMapper)
-                sb.AppendLine("\t[AutomateMapper]");
+                sb.AppendLine($"\t[{nameof(AutoMapperAttribute).Replace("Attribute","")}]");
 
             string parameters = customParams;
 
@@ -368,11 +367,11 @@ namespace AutoGenerator.Code.Repository
 
                 if (methodRouteAttr != null && methodRouteAttr.TryGetValue(methodFlag, out var targetMethod1) && !string.IsNullOrWhiteSpace(targetMethod1))
                 {
-                    sb.AppendLine($"[RouteTo(\"{targetMethod1}\")]");
+                    sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{targetMethod1}\")]");
                 }
                 else if (methodSourceAttr!=null && methodSourceAttr.TryGetValue(methodName, out var targetMethod2) && !string.IsNullOrWhiteSpace(targetMethod2))
                 {
-                    sb.AppendLine($"[RouteTo(\"{targetMethod2}\")]");
+                    sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{targetMethod2}\")]");
                 }
 
                 if (methodParamsAttr != null &&  methodParamsAttr.TryGetValue(methodFlag, out var _params) && _params?.Any() == true)
@@ -482,7 +481,7 @@ namespace AutoGenerator.Code.Repository
 
                 if (attribute != null)
                 {
-                    sb.AppendLine($"[RouteTo(\"{attribute.Name}\")]");
+                    sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{attribute.Name}\")]");
                 }
 
 

@@ -1,27 +1,28 @@
-﻿using AutoGenerator.Config.Attributes;
+﻿using AutoGenerator.Attributes;
+
 using AutoGenerator.Enums;
 using Shared.Interfaces;
 
 namespace Domain.Entity
 {
 
-        public static class RouteProviderSubscription
+    public static class RouteProviderSubscription
+    {
+        public static readonly (SupportedMethods Method, string Target, string[] CustomParams)[] Routes = new[]
         {
-            public static readonly (SupportedMethods Method, string Target, string[] CustomParams)[] Routes = new[]
-            {
-                (SupportedMethods.Pause, "PauseCollectionAsync", new[] { "Subscription model" }),
-                (SupportedMethods.Pause, "PauseCollectionAsync", Array.Empty<string>()),
-                (SupportedMethods.Resume, "ResumeCollectionAsync", Array.Empty<string>()),
-                (SupportedMethods.Cancel, "CancelAtEndAsync", Array.Empty<string>()),
-                (SupportedMethods.GetCurrent, "GetMySubscriptionAsync", Array.Empty<string>())
-            };
+            (SupportedMethods.Pause, "PauseCollectionAsync", new[] { "Subscription model" }),
+            (SupportedMethods.Pause, "PauseCollectionAsync", Array.Empty<string>()),
+            (SupportedMethods.Resume, "ResumeCollectionAsync", Array.Empty<string>()),
+            (SupportedMethods.Cancel, "CancelAtEndAsync", Array.Empty<string>()),
+            (SupportedMethods.GetCurrent, "GetMySubscriptionAsync", Array.Empty<string>())
+        };
 
-        }
+    }
 
 
     [AutoGenerate(GenerationTarget.Repository | GenerationTarget.UseCase| GenerationTarget.Service)]
     [SupportedMethods(SupportedMethods.RRPC | SupportedMethods.GetOne | SupportedMethods.GetCurrent | SupportedMethods.GetAll)]
-    [AutomateMapper(SupportedMethods.GetAll | SupportedMethods.GetOne | SupportedMethods.GetCurrent, true)]
+    [AutoMapper(SupportedMethods.GetAll | SupportedMethods.GetOne | SupportedMethods.GetCurrent, true)]
     [MethodRoute(SupportedMethods.Pause, "PauseCollectionAsync", "Subscription model")]
     [MethodRoute(SupportedMethods.Resume, "ResumeCollectionAsync")]
     [MethodRoute(SupportedMethods.Resume, "RenewSubscriptionAsync")]

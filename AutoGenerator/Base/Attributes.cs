@@ -12,7 +12,7 @@ namespace AutoGenerator
 {
 
 
-    [AttributeUsage( AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class ToTranslationAttribute : Attribute
     {
         public bool IsEnable { get; set; }

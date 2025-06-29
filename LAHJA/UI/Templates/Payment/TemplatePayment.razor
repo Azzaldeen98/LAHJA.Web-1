@@ -20,7 +20,7 @@
 @inject NavigationManager Navigation;
 @inject LAHJA.Data.UI.Templates.Plans.TemplatePlans TemplatePlan
 @inject LAHJA.Data.UI.Templates.Payment.TemplatePayment templatePayment
-@inject LAHJA.Data.UI.Templates.Subscription.TemplateSubscription templateSubscription
+@inject LAHJA.Data.UI.Templates.Subscriptions.TemplateSubscription templateSubscription
 
 
 @inject LAHJA.Data.UI.Templates.Billing.TemplateBilling TemplateBilling
@@ -43,16 +43,16 @@
     {
 
         <MainPayment 
-            BuildPlanData="buildPlanData" 
-            BuildBillingData="buildBillingData"
-            HasPreviousSubscription="hasActiveFreeSubscription"
-            SubmitPayment="onSubmitCheckout"
-            SubmitCancelPreviousSubscription="OnSubmitDeleteSubscription"
-            BuildCreditCardData="buildCreditCardData" 
-            SubmitSelectedActiveCard="onSubmitActiveCreditCard"
-            SubmitCreateCard="OnSubmitCreateCard"
-            SubmitUpdateCard="OnSubmitUpdateCard"
-            SubmitDeleteCard="OnSubmitDeleteCard" />
+        BuildPlanData="buildPlanData" 
+        BuildBillingData="buildBillingData"
+        HasPreviousSubscription="hasActiveFreeSubscription"
+        SubmitPayment="onSubmitCheckout"
+        SubmitCancelPreviousSubscription="OnSubmitDeleteSubscription"
+        BuildCreditCardData="buildCreditCardData" 
+        SubmitSelectedActiveCard="onSubmitActiveCreditCard"
+        SubmitCreateCard="OnSubmitCreateCard"
+        SubmitUpdateCard="OnSubmitUpdateCard"
+        SubmitDeleteCard="OnSubmitDeleteCard" />
     }
 }
 
@@ -114,29 +114,32 @@
     {
         if (PlanId != null)
         {
-
-            var activeSubscription = await templateSubscription.GetUserActiveSubscriptionAsync();
-            if (activeSubscription != null && activeSubscription.Succeeded)
+            if (templateSubscription.BuilderComponents.GetActiveSubscription != null)
             {
-
-                if (TemplatePlan.BuilderComponentsQuery.GetAllPlans != null)
+                var activeSubscription = await templateSubscription.BuilderComponents.GetActiveSubscription();
+                if (activeSubscription != null && activeSubscription.Succeeded)
                 {
-                    var response = await TemplatePlan.BuilderComponentsQuery.GetPlanById(new DataBuildPlansBase { PlanId = activeSubscription?.Data?.PlanId, Lg = lg });
-                    if (response.Succeeded)
-                    {
-                        hasActiveFreeSubscription = response.Data.IsFree;
-                        if (hasActiveFreeSubscription)
-                        {
-                            buildPlanData = response.Data;
-                            if (activeSubscription?.Data != null)
-                                buildPlanData.SubscriptionId = activeSubscription.Data.Id;
-                        }
-                    }
-                    
-                }
-                
 
+                    if (TemplatePlan.BuilderComponentsQuery.GetAllPlans != null)
+                    {
+                        var response = await TemplatePlan.BuilderComponentsQuery.GetPlanById(new DataBuildPlansBase { PlanId = activeSubscription?.Data?.PlanId, Lg = lg });
+                        if (response.Succeeded)
+                        {
+                            hasActiveFreeSubscription = response.Data.IsFree;
+                            if (hasActiveFreeSubscription)
+                            {
+                                buildPlanData = response.Data;
+                                if (activeSubscription?.Data != null)
+                                    buildPlanData.SubscriptionId = activeSubscription.Data.Id;
+                            }
+                        }
+
+                    }
+
+
+                }
             }
+            
 
             if (!hasActiveFreeSubscription)
             {

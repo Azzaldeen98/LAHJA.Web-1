@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Shared.Constants.Router;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 using Application.Service;
 using LAHJA.Providers;
 using LAHJA.UI.Components.General.DialogBox;

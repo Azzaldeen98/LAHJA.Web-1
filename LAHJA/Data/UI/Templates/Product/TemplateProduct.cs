@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 
 namespace LAHJA.Data.UI.Templates.Product
 {

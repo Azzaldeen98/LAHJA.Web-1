@@ -1,48 +1,70 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+﻿using System.Reflection;
+using AutoGenerator.CodeAnalysis.Specifications;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 
 namespace AutoGenerator.Config
 {
 
-    // لتوفير كود المصدر (File, Memory, Database, etc.)
-   
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /// <summary>
+    /// Provides methods to explore and retrieve types from an assembly based on various filtering criteria.
+    /// </summary>
     public interface IDataTypeExplorerService
     {
+        /// <summary>
+        /// Gets all types discovered in the specified assembly that match an optional predicate.
+        /// </summary>
+        /// <param name="assembly">The assembly to scan for types.</param>
+        /// <param name="predicate">An optional filter predicate to apply to types.</param>
+        /// <returns>A list of types that satisfy the predicate or all types if no predicate is provided.</returns>
         List<Type> GetDiscoveredTypes(Assembly assembly, Func<Type, bool> predicate = null);
+
+        /// <summary>
+        /// Gets types representing data models within the specified assembly, optionally filtered by interface implementation and namespace.
+        /// </summary>
+        /// <param name="assembly">The assembly to scan for data model types.</param>
+        /// <param name="interfaceType">An optional interface type that data models should implement.</param>
+        /// <param name="targetNamespace">An optional namespace to restrict the search.</param>
+        /// <returns>A list of data model types matching the criteria.</returns>
         List<Type> GetDataModelsType(Assembly assembly, Type interfaceType = null, string targetNamespace = null);
-         List<Type> GetRepositoriesType(Assembly assembly, string endText, Type? interfaceType = null, string? targetNamespace = null);
+
+        /// <summary>
+        /// Gets types representing repository classes within the specified assembly, filtered by name suffix, optional interface, and namespace.
+        /// </summary>
+        /// <param name="assembly">The assembly to scan for repository types.</param>
+        /// <param name="endText">The suffix that repository class names should end with.</param>
+        /// <param name="interfaceType">An optional interface type that repositories should implement.</param>
+        /// <param name="targetNamespace">An optional namespace to restrict the search.</param>
+        /// <returns>A list of repository types matching the criteria.</returns>
+        List<Type> GetRepositoriesType(Assembly assembly, string endText, Type? interfaceType = null, string? targetNamespace = null);
+
+        /// <summary>
+        /// Gets data model types in the specified assembly filtered by namespace only.
+        /// </summary>
+        /// <param name="assembly">The assembly to scan.</param>
+        /// <param name="targetNamespace">Optional namespace to filter types.</param>
+        /// <returns>A list of data model types in the namespace.</returns>
         List<Type> GetDataModelsType(Assembly assembly, string targetNamespace = null);
+
+        /// <summary>
+        /// Gets types in the assembly whose names contain a specified keyword, optionally filtered by interface implementation and namespace.
+        /// </summary>
+        /// <param name="assembly">The assembly to scan.</param>
+        /// <param name="keyword">The keyword to match within type names.</param>
+        /// <param name="interfaceType">Optional interface type to filter types.</param>
+        /// <param name="targetNamespace">Optional namespace filter.</param>
+        /// <returns>A list of types with names containing the keyword.</returns>
         List<Type> GetModelsType(Assembly assembly, string keyword, Type? interfaceType = null, string? targetNamespace = null);
     }
 
-
- 
-
+    /// <summary>
+    /// Implements <see cref="IDataTypeExplorerService"/> to provide filtering and retrieval of types from assemblies
+    /// using customizable predicates and filters.
+    /// </summary>
     public class DataTypeExplorerService : IDataTypeExplorerService
     {
-
+        /// <inheritdoc/>
         public List<Type> GetDiscoveredTypes(Assembly assembly, Func<Type, bool> predicate = null)
         {
             var types = assembly.GetTypes();
@@ -55,12 +77,10 @@ namespace AutoGenerator.Config
             return types.ToList();
         }
 
-
-        public List<Type> GetDataModelsType(Assembly assembly, Type? interfaceType=null, string? targetNamespace = null)
+        /// <inheritdoc/>
+        public List<Type> GetDataModelsType(Assembly assembly, Type? interfaceType = null, string? targetNamespace = null)
         {
-    
-
-            var filter = new TypeFilterBuilder()
+            var filter = new TypeSpecificationBuilder()
                .InNamespace(targetNamespace)
                .IsClass(true)
                .IsPublic(true)
@@ -73,15 +93,13 @@ namespace AutoGenerator.Config
                .HasStaticMethods(false)
                .Build();
 
-
-           return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
+            return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
         }
 
+        /// <inheritdoc/>
         public List<Type> GetModelsType(Assembly assembly, string keyword, Type? interfaceType = null, string? targetNamespace = null)
         {
-
-
-            var filter = new TypeFilterBuilder()
+            var filter = new TypeSpecificationBuilder()
                .InNamespace(targetNamespace)
                .IsClass(true)
                .IsPublic(true)
@@ -89,15 +107,13 @@ namespace AutoGenerator.Config
                .WhereNameContains(keyword)
                .Build();
 
-
             return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
         }
 
+        /// <inheritdoc/>
         public List<Type> GetRepositoriesType(Assembly assembly, string endText, Type? interfaceType = null, string? targetNamespace = null)
         {
-
-
-            var filter = new TypeFilterBuilder()
+            var filter = new TypeSpecificationBuilder()
                .InNamespace(targetNamespace)
                .IsClass(true)
                .IsPublic(true)
@@ -105,26 +121,111 @@ namespace AutoGenerator.Config
                .WhereNameEndWith(endText)
                .Build();
 
-
             return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
         }
 
-
+        /// <inheritdoc/>
         public List<Type> GetDataModelsType(Assembly assembly, string? targetNamespace = null)
         {
-            return GetDataModelsType(assembly,null,targetNamespace );
+            return GetDataModelsType(assembly, null, targetNamespace);
         }
-
     }
-   
-    public interface ICodeInjectionService
-    {
 
 
-        Task<bool> ExecuteAsync(CodeInjectionOptions options);
+    //public interface IDataTypeExplorerService
+    //{
+    //    List<Type> GetDiscoveredTypes(Assembly assembly, Func<Type, bool> predicate = null);
+    //    List<Type> GetDataModelsType(Assembly assembly, Type interfaceType = null, string targetNamespace = null);
+    //     List<Type> GetRepositoriesType(Assembly assembly, string endText, Type? interfaceType = null, string? targetNamespace = null);
+    //    List<Type> GetDataModelsType(Assembly assembly, string targetNamespace = null);
+    //    List<Type> GetModelsType(Assembly assembly, string keyword, Type? interfaceType = null, string? targetNamespace = null);
+    //}
 
 
-    }
+
+    ///// <summary>
+    ///// 
+    ///// </summary>
+    //public class DataTypeExplorerService : IDataTypeExplorerService
+    //{
+
+    //    public List<Type> GetDiscoveredTypes(Assembly assembly, Func<Type, bool> predicate = null)
+    //    {
+    //        var types = assembly.GetTypes();
+
+    //        if (predicate != null)
+    //        {
+    //            types = types.Where(predicate).ToArray();
+    //        }
+
+    //        return types.ToList();
+    //    }
+
+
+    //    public List<Type> GetDataModelsType(Assembly assembly, 
+    //                                        Type? interfaceType=null, 
+    //                                        string? targetNamespace = null)
+    //    {
+
+
+    //        var filter = new TypeFilterBuilder()
+    //           .InNamespace(targetNamespace)
+    //           .IsClass(true)
+    //           .IsPublic(true)
+    //           .IsImplementInterface(interfaceType, true)
+    //           .IsStaticClass(false)
+    //           .DoesInherit(true)
+    //           .HasMethods(false)
+    //           .HasConstructors(false)
+    //           .HasStaticProperties(false)
+    //           .HasStaticMethods(false)
+    //           .Build();
+
+
+    //       return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
+    //    }
+
+    //    public List<Type> GetModelsType(Assembly assembly, string keyword, Type? interfaceType = null, string? targetNamespace = null)
+    //    {
+
+
+    //        var filter = new TypeFilterBuilder()
+    //           .InNamespace(targetNamespace)
+    //           .IsClass(true)
+    //           .IsPublic(true)
+    //           .IsImplementInterface(interfaceType, true)
+    //           .WhereNameContains(keyword)
+    //           .Build();
+
+
+    //        return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
+    //    }
+
+    //    public List<Type> GetRepositoriesType(Assembly assembly, string endText, Type? interfaceType = null, string? targetNamespace = null)
+    //    {
+
+
+    //        var filter = new TypeFilterBuilder()
+    //           .InNamespace(targetNamespace)
+    //           .IsClass(true)
+    //           .IsPublic(true)
+    //           .IsImplementInterface(interfaceType, true)
+    //           .WhereNameEndWith(endText)
+    //           .Build();
+
+
+    //        return new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
+    //    }
+
+
+    //    public List<Type> GetDataModelsType(Assembly assembly, string? targetNamespace = null)
+    //    {
+    //        return GetDataModelsType(assembly,null,targetNamespace );
+    //    }
+
+    //}
+
+
 
     //public static class InterfaceInjector2
     //{
@@ -251,4 +352,4 @@ namespace AutoGenerator.Config
 
     //}
 
-    }
+}

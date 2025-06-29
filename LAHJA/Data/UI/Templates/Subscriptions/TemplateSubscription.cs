@@ -1,59 +1,51 @@
 using AutoMapper;
-using Domain.Entities.Subscriptions.Request;
-using Domain.Entities.Subscriptions.Response;
-using Domain.ShareData.Base;
+using Domain.Entity;
+
 using Shared.Wrapper;
-using LAHJA.ApplicationLayer.Subscription;
-using LAHJA.Data.UI.Components.Subscription;
+
 using LAHJA.Data.UI.Models.Profile;
 using LAHJA.Data.UI.Templates.Base;
-using LAHJA.Helpers.Services;
 using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using Shared.Constants.Router;
-using System.Threading.Tasks;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
+using Application.Services;
+using LAHJA.Data.UI.Models.Subscription;
+using MudBlazor;
+using Shared.Interfaces;
 
-namespace LAHJA.Data.UI.Templates.Subscription
+namespace LAHJA.Data.UI.Templates.Subscriptions
 {
-    //public class DataBuildUserSubscriptionInfo
-    //{
-    //    public string? Id { get; set; }
-    //    public string? UserId { get; set; }
-    //    public string? PlanId { get; set; }
-    //    public string? CustomerId { get; set; }
-    //    public string? BillingPeriod { get; set; }
-    //    public DateTimeOffset? StartDate { get; set; }
-    //    public string? Status { get; set; }
-    //    public bool? CancelAtPeriodEnd { get; set; }
-    //}
+
     public interface IBuilderSubscriptionComponent<T> : IBuilderComponents<T>
     {
-        public Func<T, Task> SubmitSearch { get; set; }
-        public Func<Task> SubmitGetAll { get; set; }
-        public Func<FilterResponseData, Task<Result<DataBuildUserSubscriptionInfo>>> SubmitGetSubscription { get; set; }
-        public Func<T, Task> SubmitPause { get; set; }
-        public Func<T, Task> SubmitResume { get; set; }
-        public Func<T, Task<Result<DeleteResponse>>> SubmitDelete { get; set; }
-        //public Func<T, Task<Result<ICollection<ProfileSubscriptionResponse>>>> GetUserSubscriptions { get; set; }
-        //public Func<T, Task<Result<ICollection<ProfileSubscriptionResponse>>>> GetUserActiveSubscriptions { get; set; }
-        public Func<T, Task<Result<SubscriptionCreateResponse>>> SubmitCreate { get; set; }
-        public Func<T, Task> SubmitUpdate { get; set; }
+        public Func<T, Task<Result<ICollection<DataBuildUserSubscriptionInfo>>>> SubmitSearch { get; set; }
+        public Func<Task<Result<ICollection<DataBuildUserSubscriptionInfo>>>> GetAllSubscriptions { get; set; }
+        public Func<string,Task<Result<DataBuildUserSubscriptionInfo>>> GetSubscription { get; set; }
+        public Func<Task<Result<DataBuildUserSubscriptionInfo>>> GetActiveSubscription { get; set; }
+        public Func<Task<Result<bool>>> HasActiveSubscription { get; set; }
+        public Func<T, Task<Result>> SubmitPause { get; set; }
+        public Func<T, Task<Result>> SubmitResume { get; set; }
+        public Func<T, Task<Result>> SubmitRenew { get; set; }
+        public Func<T, Task<Result>> SubmitDelete { get; set; }
+        public Func<T, Task<Result>> SubmitCancel { get; set; }
+        public Func<T, Task<Result>> SubmitCreate { get; set; }
+        public Func<T, Task<Result>> SubmitUpdate { get; set; }
     }
 
     public interface IBuilderSubscriptionApi<T> : IBuilderApi<T>
     {
-        //Task<Result<List<SubscriptionResponse>>> SearchAsync(T data);
-        Task<Result<List<UserSubscription>>> GetAllAsync();
-        Task<Result<SubscriptionResponse>> GetUserActiveSubscriptionAsync();
-        Task<Result<SubscriptionResponse>> GetSubscriptionAsync(FilterResponseData filter);
-        Task<Result<bool>> HasActiveSubscriptionAsync();
-        Task<Result<SubscriptionCreateResponse>> CreateAsync(T data);
-        Task<Result<UserSubscription>> ResumeAsync(T data);
-        Task<Result<UserSubscription>> PauseAsync(T data);
-        Task<Result<DeleteResponse>> DeleteAsync(T data);
-        Task<Result<UserSubscription>> UpdateAsync(T data);
+        public  Task<ICollection<DataBuildUserSubscriptionInfo>> GetAllAsync(CancellationToken cancellation);
+        public  Task<bool> HasActiveSubscriptionAsync();
+        public  Task<DataBuildUserSubscriptionInfo> GetUserActiveSubscriptionAsync(CancellationToken cancellation);
+  
+        public  Task<DataBuildUserSubscriptionInfo> GetSubscriptionAsync(string id, CancellationToken cancellation);
+        public  Task CreateAsync(T data, CancellationToken cancellation);
+        public  Task PauseAsync(T data, CancellationToken cancellation);
+        public  Task ResumeAsync(T data, CancellationToken cancellation);
+        public  Task DeleteAsync(T data, CancellationToken cancellation);
+        public  Task CancelAsync(CancellationToken cancellation);
+        public  Task RenewAsync(CancellationToken cancellation);
+        public  Task UpdateAsync(T data, CancellationToken cancellation);
     }
 
     public abstract class BuilderSubscriptionApi<T, E> : BuilderApi<T, E>, IBuilderSubscriptionApi<E>
@@ -63,28 +55,34 @@ namespace LAHJA.Data.UI.Templates.Subscription
         }
 
         //public abstract Task<Result<SubscriptionResponse>> CreateAsync(E data);
-        public abstract Task<Result<List<UserSubscription>>> GetAllAsync();
-        public abstract Task<Result<bool>> HasActiveSubscriptionAsync();
-        public abstract Task<Result<SubscriptionResponse>> GetUserActiveSubscriptionAsync();
+        public abstract Task<ICollection<DataBuildUserSubscriptionInfo>> GetAllAsync(CancellationToken cancellation);
+        public abstract Task<bool> HasActiveSubscriptionAsync();
+        public abstract Task<DataBuildUserSubscriptionInfo> GetUserActiveSubscriptionAsync(CancellationToken cancellation);
         //public abstract Task<ICollection<ProfileSubscriptionResponse>> GetUserSubscriptionsAsync();
-        public abstract Task<Result<SubscriptionResponse>> GetSubscriptionAsync(FilterResponseData filter);
-        public abstract Task<Result<SubscriptionCreateResponse>> CreateAsync(E data);
-        public abstract Task<Result<UserSubscription>> PauseAsync(E data);
-        public abstract Task<Result<UserSubscription>> ResumeAsync(E data);
-        public abstract Task<Result<DeleteResponse>> DeleteAsync(E dataId);
-        public abstract Task<Result<UserSubscription>> UpdateAsync(E data);
+        public abstract Task<DataBuildUserSubscriptionInfo> GetSubscriptionAsync(string id, CancellationToken cancellation);
+        public abstract Task CreateAsync(E data, CancellationToken cancellation);
+        public abstract Task PauseAsync(E data, CancellationToken cancellation);
+        public abstract Task ResumeAsync(E data, CancellationToken cancellation);
+        public abstract Task DeleteAsync(E data, CancellationToken cancellation);
+        public abstract Task CancelAsync(CancellationToken cancellation);
+        public abstract Task RenewAsync(CancellationToken cancellation);
+        public abstract Task UpdateAsync(E data, CancellationToken cancellation);
     }
 
     public class BuilderSubscriptionComponent<T> : IBuilderSubscriptionComponent<T>
     {
-        public Func<FilterResponseData, Task<Result<DataBuildUserSubscriptionInfo>>> SubmitGetSubscription { get; set; }
-        public Func<T, Task> SubmitSearch { get; set; }
-        public Func<Task> SubmitGetAll { get; set; }
-        public Func<T, Task> SubmitPause { get; set; }
-        public Func<T, Task> SubmitResume { get; set; }
-        public Func<T, Task<Result<DeleteResponse>>> SubmitDelete { get; set; }
-        public Func<T, Task> SubmitUpdate { get; set; }
-        public Func<T, Task<Result<SubscriptionCreateResponse>>> SubmitCreate { get; set; }
+        public Func<T, Task<Result<ICollection<DataBuildUserSubscriptionInfo>>>> SubmitSearch { get; set; }
+        public Func<Task<Result<ICollection<DataBuildUserSubscriptionInfo>>>> GetAllSubscriptions { get; set; }
+        public Func<string, Task<Result<DataBuildUserSubscriptionInfo>>> GetSubscription { get; set; }
+        public Func<Task<Result<DataBuildUserSubscriptionInfo>>> GetActiveSubscription { get; set; }
+        public Func<Task<Result<bool>>> HasActiveSubscription { get; set; }
+        public Func<T, Task<Result>> SubmitPause { get; set; }
+        public Func<T, Task<Result>> SubmitResume { get; set; }
+        public Func<T, Task<Result>> SubmitRenew { get; set; }
+        public Func<T, Task<Result>> SubmitDelete { get; set; }
+        public Func<T, Task<Result>> SubmitCancel { get; set; }
+        public Func<T, Task<Result>> SubmitCreate { get; set; }
+        public Func<T, Task<Result>> SubmitUpdate { get; set; }
     }
 
     public class TemplateSubscriptionShare<T, E> : TemplateBase<T, E>
@@ -96,7 +94,12 @@ namespace LAHJA.Data.UI.Templates.Subscription
         private readonly IBuilderSubscriptionComponent<E> builderComponents;
         public IBuilderSubscriptionComponent<E> BuilderComponents { get => builderComponents; }
 
-        public TemplateSubscriptionShare(IMapper mapper, AuthService AuthService, T client, IBuilderSubscriptionComponent<E> builderComponents, NavigationManager navigation, IDialogService dialogService, ISnackbar snackbar) : base(mapper, AuthService, client)
+        public TemplateSubscriptionShare(IMapper mapper,
+            Helpers.Services.AuthService AuthService, 
+            T client, 
+            IBuilderSubscriptionComponent<E> builderComponents, 
+            NavigationManager navigation, IDialogService dialogService, ISnackbar snackbar)
+            : base(mapper, AuthService, client)
         {
             builderComponents = new BuilderSubscriptionComponent<E>();
             this.navigation = navigation;
@@ -107,176 +110,117 @@ namespace LAHJA.Data.UI.Templates.Subscription
         }
     }
 
-    public class BuilderSubscriptionApiClient : BuilderSubscriptionApi<SubscriptionClientService, DataBuildUserSubscriptionInfo>, IBuilderSubscriptionApi<DataBuildUserSubscriptionInfo>
+    public class BuilderSubscriptionApiClient : BuilderSubscriptionApi<ISubscriptionService, DataBuildUserSubscriptionInfo>, IBuilderSubscriptionApi<DataBuildUserSubscriptionInfo>
     {
-        public BuilderSubscriptionApiClient(IMapper mapper, SubscriptionClientService service) : base(mapper, service)
+        public BuilderSubscriptionApiClient(IMapper mapper, ISubscriptionService service) : base(mapper, service)
         {
         }
 
-        public override async Task<Result<SubscriptionResponse>> GetSubscriptionAsync(FilterResponseData filter)
+        public override async Task<DataBuildUserSubscriptionInfo> GetSubscriptionAsync(string id,CancellationToken cancellation)
         {
-            return await Service.GetSubscriptionAsync(filter);
+            var subscription=await Service.getSubscriptionAsync(cancellation);
+            return Mapper.Map<DataBuildUserSubscriptionInfo>(subscription);
         }
 
-        public override async Task<Result<SubscriptionResponse>> GetUserActiveSubscriptionAsync()
+        public override async Task<DataBuildUserSubscriptionInfo> GetUserActiveSubscriptionAsync(CancellationToken cancellation)
         {
-            return await Service.GetUserActiveSubscriptionAsync();
+            var subscription = await Service.getSubscriptionAsync(cancellation);
+            return Mapper.Map<DataBuildUserSubscriptionInfo>(subscription);
         }
 
-        public override async Task<Result<bool>> HasActiveSubscriptionAsync()
+        public override async Task<bool> HasActiveSubscriptionAsync()
         {
-            return await Service.HasActiveSubscriptionAsync();
+            //var subscription = await Service.getSubscriptionAsync();
+            return await Task.FromResult(false);
         }
 
-        public override async Task<Result<UserSubscription>> PauseAsync(DataBuildUserSubscriptionInfo data)
+        public override async Task PauseAsync(DataBuildUserSubscriptionInfo data, CancellationToken cancellation)
         {
-            //var model = Mapper.Map<SubscriptionCreate>(data);
-            var res = await Service.PauseAsync(data.Id);
-            if (res.Succeeded)
-            {
-                try
-                {
-                    var map = Mapper.Map<UserSubscription>(res.Data);
-                    return Result<UserSubscription>.Success(map);
-                }
-                catch (Exception e)
-                {
-                    return Result<UserSubscription>.Fail();
-                }
-            }
-            else
-            {
-                return Result<UserSubscription>.Fail(res.Messages);
-            }
+            var model = Mapper.Map<Subscription>(data);
+            await Service.pauseSubscriptionAsync(model, cancellation);
+          
+        }
+        public override async Task CancelAsync(CancellationToken cancellations)
+        {
+
+            await Service.cancelSubscriptionAsync(cancellations);
         }
 
-        public override async Task<Result<DeleteResponse>> DeleteAsync(DataBuildUserSubscriptionInfo data)
+        public override async Task DeleteAsync(DataBuildUserSubscriptionInfo data, CancellationToken cancellations)
         {
-            var res = await Service.DeleteAsync(data.Id);
-            if (res.Succeeded)
-            {
-                try
-                {
-                    return Result<DeleteResponse>.Success(res.Data);
-                }
-                catch (Exception e)
-                {
-                    return Result<DeleteResponse>.Fail();
-                }
-            }
-            else
-            {
-                return Result<DeleteResponse>.Fail(res.Messages);
-            }
+
+       
+             await  Task.CompletedTask;
+            
         }
 
-        public override async Task<Result<List<UserSubscription>>> GetAllAsync()
+        public override async Task<ICollection<DataBuildUserSubscriptionInfo>> GetAllAsync(CancellationToken cancellations)
         {
-            //var model = Mapper.Map<FilterResponseData>(filter);
-            var res = await Service.GetAllAsync();
-            if (res.Succeeded)
-            {
-                try
-                {
-                    var map = Mapper.Map<List<UserSubscription>>(res.Data);
-                    return Result<List<UserSubscription>>.Success(map);
-                }
-                catch (Exception e)
-                {
-                    return Result<List<UserSubscription>>.Fail();
-                }
-            }
-            else
-            {
-                return Result<List<UserSubscription>>.Fail(res.Messages);
-            }
+       
+            var subscriptions = await Service.getSubscriptionsAsync(cancellations);
+            return Mapper.Map<ICollection<DataBuildUserSubscriptionInfo>>(subscriptions); 
         }
 
-        public override async Task<Result<UserSubscription>> ResumeAsync(DataBuildUserSubscriptionInfo data)
+        public override async Task ResumeAsync(DataBuildUserSubscriptionInfo data, CancellationToken cancellation)
         {
-            //var model = Mapper.Map<SubscriptionSearchRequest>(data);
-            var res = await Service.ResumeAsync(data.Id);
-            if (res.Succeeded)
-            {
-                try
-                {
-                    var map = Mapper.Map<UserSubscription>(res.Data);
-                    return Result<UserSubscription>.Success(map);
-                }
-                catch (Exception e)
-                {
-                    return Result<UserSubscription>.Fail();
-                }
-            }
-            else
-            {
-                return Result<UserSubscription>.Fail(res.Messages);
-            }
+            await Service.resumeSubscriptionAsync(cancellation);
         }
 
-        public override async Task<Result<SubscriptionCreateResponse>> CreateAsync(DataBuildUserSubscriptionInfo data)
+        public override async Task CreateAsync(DataBuildUserSubscriptionInfo data, CancellationToken cancellation)
         {
-            var model = Mapper.Map<SubscriptionCreate>(data);
-            return await Service.CreateAsync(model);
-        //if (res.Succeeded)
-        //{
-        //    try
-        //    {
-        //        var map = Mapper.Map<UserSubscription>(res.Data);
-        //        return Result<UserSubscription>.Success(map);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        return Result<UserSubscription>.Fail();
-        //    }
-        //}
-        //else
-        //{
-        //    return Result<UserSubscription>.Fail(res.Messages);
-        //}
+  
+             await Service.renewSubscriptionAsync(cancellation);
+
         }
 
-        public override async Task<Result<UserSubscription>> UpdateAsync(DataBuildUserSubscriptionInfo data)
+        public override async Task RenewAsync(CancellationToken cancellation)
         {
-            var model = Mapper.Map<SubscriptionRequest>(data);
-            var res = await Service.UpdateAsync(model);
-            if (res.Succeeded)
-            {
-                try
-                {
-                    var map = Mapper.Map<UserSubscription>(res.Data);
-                    return Result<UserSubscription>.Success(map);
-                }
-                catch (Exception e)
-                {
-                    return Result<UserSubscription>.Fail();
-                }
-            }
-            else
-            {
-                return Result<UserSubscription>.Fail(res.Messages);
-            }
+
+            await Service.renewSubscriptionAsync(cancellation);
+
+        }
+
+        public override async Task UpdateAsync(DataBuildUserSubscriptionInfo data, CancellationToken cancellation)
+        {
+
+            await Task.CompletedTask;
+
+  
         }
     }
 
     [AutoSafeInvoke]
-    public class TemplateSubscription : TemplateSubscriptionShare<SubscriptionClientService, DataBuildUserSubscriptionInfo>
+    public class TemplateSubscription : TemplateSubscriptionShare<ISubscriptionService, DataBuildUserSubscriptionInfo>
     {
         private readonly ISafeInvoker safeInvoker;
-        private List<UserSubscription> _Subscriptions = new List<UserSubscription>();
-        public TemplateSubscription(IMapper mapper, AuthService AuthService, SubscriptionClientService client, IBuilderSubscriptionComponent<DataBuildUserSubscriptionInfo> builderComponents, NavigationManager navigation, IDialogService dialogService, ISnackbar snackbar, ISafeInvoker safeInvoker) : base(mapper, AuthService, client, builderComponents, navigation, dialogService, snackbar)
+        private readonly ICancelableTaskExecutor taskExecutor;
+        private List<DataBuildUserSubscriptionInfo> _Subscriptions = new List<DataBuildUserSubscriptionInfo>();
+        public TemplateSubscription(IMapper mapper, 
+            Helpers.Services.AuthService AuthService,
+            ISubscriptionService client, 
+            IBuilderSubscriptionComponent<DataBuildUserSubscriptionInfo> builderComponents, 
+            NavigationManager navigation, 
+            IDialogService dialogService, 
+            ISnackbar snackbar, 
+            ISafeInvoker safeInvoker,
+            ICancelableTaskExecutor taskExecutor) 
+            : base(mapper, AuthService, client, builderComponents, navigation, dialogService, snackbar)
         {
-            this.BuilderComponents.SubmitCreate = OnSubmitCreateSubscription;
-            this.BuilderComponents.SubmitGetAll = OnSubmitGetAllSubscriptions;
-            this.BuilderComponents.SubmitGetSubscription = OnGetSubscriptionAsync;
+            //this.BuilderComponents.SubmitCreate = OnSubmitCreateSubscription;
+            this.BuilderComponents.GetAllSubscriptions = OnGetAllSubscriptions;
+            this.BuilderComponents.GetSubscription = OnGetSubscriptionAsync;
+            this.BuilderComponents.GetActiveSubscription = OnGetUserActiveSubscriptionAsync;
+            this.BuilderComponents.HasActiveSubscription = OnHasActiveSubscriptionAsync;
             this.BuilderComponents.SubmitPause = OnSubmitPauseSubscription;
             this.BuilderComponents.SubmitResume = OnSubmitUResumeSubscription;
-            this.BuilderComponents.SubmitDelete = OnSubmitDeleteSubscription;
+            this.BuilderComponents.SubmitRenew = OnSubmitRenewSubscription;
+            this.BuilderComponents.SubmitCancel = OnSubmitCancelSubscription;
             this.builderApi = new BuilderSubscriptionApiClient(mapper, client);
             this.safeInvoker = safeInvoker;
+            this.taskExecutor = taskExecutor;
         }
 
-        public List<UserSubscription> Subscriptions { get => _Subscriptions; }
+        public List<DataBuildUserSubscriptionInfo> Subscriptions { get => _Subscriptions; }
         public List<string> Errors { get => _errors; }
 
         [IgnoreSafeInvoke]
@@ -285,135 +229,138 @@ namespace LAHJA.Data.UI.Templates.Subscription
             navigation.NavigateTo(url, false);
         }
 
-        public async Task<bool> HasActiveSubscriptionAsync()
+        private async Task<Result<bool>> OnHasActiveSubscriptionAsync()
         {
             return await safeInvoker.InvokeAsync(async () =>
             {
-                var res = await builderApi.HasActiveSubscriptionAsync();
-                if (res.Succeeded)
-                {
-                    return res.Data;
-                }
 
-                return false;
+
+                    var res = await builderApi.HasActiveSubscriptionAsync();
+                    if (res)
+                    {
+                        return Result<bool>.Success(res);
+                    }
+
+                    return Result<bool>.Fail("Error");
+               
+           
             });
         }
 
-        public async Task<Result<SubscriptionResponse>> GetUserActiveSubscriptionAsync()
+        private async Task<Result<DataBuildUserSubscriptionInfo>> OnGetUserActiveSubscriptionAsync()
         {
             return await safeInvoker.InvokeAsync(async () =>
             {
-                return await builderApi.GetUserActiveSubscriptionAsync();
+                return await taskExecutor.RunAsync(async (token) =>
+                {
+                   return await builderApi.GetUserActiveSubscriptionAsync(token);
+    
+                });
+           
             });
         }
 
-        private async Task<Result<DeleteResponse>> OnSubmitDeleteSubscription(DataBuildUserSubscriptionInfo DataBuildUserSubscriptionInfo)
+        private async Task<Result> OnSubmitCancelSubscription(DataBuildUserSubscriptionInfo DataBuildUserSubscriptionInfo)
         {
             return await safeInvoker.InvokeAsync(async () =>
             {
-                if (DataBuildUserSubscriptionInfo != null)
+                return await taskExecutor.RunAsync(async (token) =>
                 {
-                    var response = await builderApi.DeleteAsync(DataBuildUserSubscriptionInfo);
-                    if (response.Succeeded)
-                    {
-                        return response;
-                    }
-                    else
-                    {
-                        _errors = response.Messages;
-                        return Result<DeleteResponse>.Fail(response.Messages);
-                    }
-                }
 
-                return Result<DeleteResponse>.Fail();
+                      await builderApi.CancelAsync(token);
+
+                });
+
             });
         }
-
-        private async Task OnSubmitPauseSubscription(DataBuildUserSubscriptionInfo DataBuildUserSubscriptionInfo)
-        {
-            await safeInvoker.InvokeAsync(async () =>
-            {
-                if (DataBuildUserSubscriptionInfo != null)
-                {
-                    var response = await builderApi.PauseAsync(DataBuildUserSubscriptionInfo);
-                    if (response.Succeeded)
-                    {
-                        redirectTo(RouterPage.DASHBOARD_SUBSCRIPTION);
-                    }
-                    else
-                    {
-                        _errors = response.Messages;
-                    }
-                }
-            });
-        }
-
-        private async Task<Result<SubscriptionCreateResponse>> OnSubmitCreateSubscription(DataBuildUserSubscriptionInfo DataBuildUserSubscriptionInfo)
+        private async Task<Result> OnSubmitRenewSubscription(DataBuildUserSubscriptionInfo data=null)
         {
             return await safeInvoker.InvokeAsync(async () =>
             {
-                return await builderApi.CreateAsync(DataBuildUserSubscriptionInfo);
+                return await taskExecutor.RunAsync(async (token) =>
+                {
+
+                    await builderApi.RenewAsync(token);
+
+                });
+
+            });
+        }
+        private async Task<Result> OnSubmitPauseSubscription(DataBuildUserSubscriptionInfo data)
+        {
+           return await safeInvoker.InvokeAsync(async () =>
+            {
+                return await taskExecutor.RunAsync(async (token) =>
+                {
+
+                    await builderApi.PauseAsync(data,token);
+
+                });
+                
             });
         }
 
-        private async Task<Result<DataBuildUserSubscriptionInfo>> OnGetSubscriptionAsync(FilterResponseData filter)
+        //private async Task<Result<SubscriptionCreateResponse>> OnSubmitCreateSubscription(DataBuildUserSubscriptionInfo DataBuildUserSubscriptionInfo)
+        //{
+        //    return await safeInvoker.InvokeAsync(async () =>
+        //    {
+        //        return await builderApi.CreateAsync(DataBuildUserSubscriptionInfo);
+        //    });
+        //}
+
+        private async Task<Result<DataBuildUserSubscriptionInfo>> OnGetSubscriptionAsync(string id)
         {
             return await safeInvoker.InvokeAsync(async () =>
             {
-                var response = await builderApi.GetSubscriptionAsync(filter);
-                if (response.Succeeded)
+              
+                return await taskExecutor.RunAsync(async (token) =>
                 {
-                    var mapData = mapper.Map<DataBuildUserSubscriptionInfo>(response.Data);
-                    return Result<DataBuildUserSubscriptionInfo>.Success(mapData);
-                }
-                else
-                {
-                    return Result<DataBuildUserSubscriptionInfo>.Fail(response?.Messages ?? ["Error"]);
-                }
+
+                   return await builderApi.GetSubscriptionAsync(id,token);
+
+                });
             });
         }
 
-        private async Task OnSubmitUResumeSubscription(DataBuildUserSubscriptionInfo DataBuildUserSubscriptionInfo)
+        private async Task<Result> OnSubmitUResumeSubscription(DataBuildUserSubscriptionInfo data)
         {
-            await safeInvoker.InvokeAsync(async () =>
+           return await safeInvoker.InvokeAsync(async () =>
             {
-                if (DataBuildUserSubscriptionInfo != null)
+
+                return await taskExecutor.RunAsync(async (token) =>
                 {
-                    var response = await builderApi.ResumeAsync(DataBuildUserSubscriptionInfo);
-                    if (response.Succeeded)
+                    if (data != null)
                     {
-                        redirectTo(RouterPage.DASHBOARD_SUBSCRIPTION);
+                        await builderApi.ResumeAsync(data, token);
                     }
-                    else
-                    {
-                        _errors = response.Messages;
-                    }
-                }
+
+                });
+                
             });
         }
 
-        private async Task OnSubmitGetAllSubscriptions()
+        private async Task<Result<ICollection<DataBuildUserSubscriptionInfo>>> OnGetAllSubscriptions()
         {
-            await safeInvoker.InvokeAsync(async () =>
+           return await safeInvoker.InvokeAsync(async () =>
             {
-                var response = await builderApi.GetAllAsync();
-                if (response.Succeeded)
+                return await taskExecutor.RunAsync(async (token) =>
                 {
-                    _Subscriptions = response.Data;
-                }
-                else
-                {
-                    _errors = response.Messages;
-                }
+                    return await builderApi.GetAllAsync(token);
+
+                });
+        
             });
         }
 
-        public async Task<Result<List<UserSubscription>>> GetAllSubscriptions()
-        {
-            return await safeInvoker.InvokeAsync(async () =>
-            {
-                return await builderApi.GetAllAsync();
-            });
-        }
+        //private async Task<Result<ICollection<DataBuildUserSubscriptionInfo>>> GetAllSubscriptions()
+        //{
+        //    return await safeInvoker.InvokeAsync(async () =>
+        //    {
+        //        return await taskExecutor.RunAsync(async (token) =>
+        //        {
+        //            return await builderApi.GetAllAsync(token);
+        //        });
+        //    });
+        //}
     }
 }

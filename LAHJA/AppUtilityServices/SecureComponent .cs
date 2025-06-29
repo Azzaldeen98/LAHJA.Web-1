@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Shared.Constants.Router;
-using LAHJA.Data.UI.Templates.Subscription;
+using LAHJA.Data.UI.Templates.Subscriptions;
 using MudBlazor;
 
 
@@ -25,7 +25,14 @@ namespace LAHJA.ContextServices
         public async Task<bool> HasSubscriptionAsync()
         {
             await RequiredAuthAsync();
-            return await subscription.HasActiveSubscriptionAsync();
+
+            if (subscription.BuilderComponents.HasActiveSubscription != null)
+            {
+                var result = await subscription.BuilderComponents.HasActiveSubscription();
+                return result.Succeeded && result.Data;
+            }
+
+            return false;
         }
 
         public virtual async Task RequiredSubscriptionAsync()

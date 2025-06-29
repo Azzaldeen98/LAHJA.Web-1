@@ -1,5 +1,6 @@
 ﻿
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
+using AutoGenerator.Attributes;
 using Domain.Entity;
 using Shared.Interfaces;
 

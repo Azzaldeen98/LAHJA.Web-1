@@ -1,20 +1,20 @@
 ﻿
 using Shared.Interfaces;
 using Shared.Wrapper;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 using Domain.Entity;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 namespace Domain.IRepositories;
 
 
 
 public interface ISubscriptionRepository: ITBaseRepository,ITScope
 {
-    	[AutomateMapper]
+    	[AutoMapper]
 	public Task<ICollection<Subscription>> GetSubscriptionsAsync(CancellationToken cancellationToken);
-	[AutomateMapper]
+	[AutoMapper]
 	public Task<Subscription> GetSubscriptionAsync(CancellationToken cancellationToken);
-	[AutomateMapper]
+	[AutoMapper]
 	public Task<Subscription> GetOneAsync(string id, CancellationToken cancellationToken);
 [RouteTo("PauseCollectionAsync")]
 	public Task PauseAsync(Subscription model, CancellationToken cancellationToken);

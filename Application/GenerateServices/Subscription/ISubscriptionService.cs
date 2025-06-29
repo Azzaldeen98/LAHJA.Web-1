@@ -10,10 +10,6 @@ namespace Application.Services;
 
 public interface ISubscriptionService :  ITBaseShareService  
 {
-
-
-
-
     public Task<Subscription> getOneSubscriptionAsync(string id, CancellationToken cancellationToken);
 
 

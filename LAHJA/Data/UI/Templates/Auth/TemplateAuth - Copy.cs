@@ -16,7 +16,7 @@
 //using Shared.Constants.Router;
 //using LAHJA.ApplicationLayer.Auth;
 //using Shared.Enums;
-//using AutoGenerator.Config.Attributes;
+//using AutoGenerator.Attributes;
 
 //namespace LAHJA.Data.UI.Templates.Auth;
 ///// <summary>

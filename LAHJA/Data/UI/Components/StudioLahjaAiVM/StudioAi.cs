@@ -3,7 +3,7 @@ using LAHJA.ContextServices;
 using LAHJA.Data.UI.Models.SessionTokenAuth;
 using LAHJA.Data.UI.Templates.AuthSession;
 using LAHJA.Data.UI.Templates.Services;
-using LAHJA.Data.UI.Templates.Subscription;
+using LAHJA.Data.UI.Templates.Subscriptions;
 using LAHJA.Helpers;
 using LAHJA.Helpers.Services;
 using Microsoft.AspNetCore.Components;
@@ -27,7 +27,16 @@ namespace LAHJA.Data.UI.Components.StudioLahjaAiVM
 
         protected override async Task OnInitializedAsync()
         {
-            await subscription.HasActiveSubscriptionAsync();
+            if (subscription.BuilderComponents.HasActiveSubscription != null)
+            {
+                var result = await subscription.BuilderComponents.HasActiveSubscription();
+                
+                if(!result.Succeeded)
+                {
+                    Snackbar.Add(result.Messages.First(),Severity.Error);
+                }
+            }
+
         }
 
 

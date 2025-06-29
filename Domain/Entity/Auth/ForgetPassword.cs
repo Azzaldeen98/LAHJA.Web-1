@@ -1,4 +1,4 @@
-﻿using AutoGenerator.Config.Attributes;
+﻿using AutoGenerator.Attributes;
 using AutoGenerator.Enums;
 using System.ComponentModel.DataAnnotations;
 

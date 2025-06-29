@@ -58,9 +58,9 @@ public class SubscriptionService : ISubscriptionService {
 
     public async Task<ICollection<Subscription>> getSubscriptionsAsync(CancellationToken cancellationToken)
     {
-    
 
-         return   await _getSubscriptionsUseCase.ExecuteAsync(cancellationToken);
+
+        return   await _getSubscriptionsUseCase.ExecuteAsync(cancellationToken);
         
     }
 

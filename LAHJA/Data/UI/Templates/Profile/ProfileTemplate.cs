@@ -17,7 +17,7 @@ using LAHJA.Helpers.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 
 namespace LAHJA.Data.UI.Templates.Profile
 {

@@ -7,12 +7,9 @@ using System.Reflection;
 using AutoGenerator.Code.Repository;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
-using System.ComponentModel.DataAnnotations;
 using AutoGenerator.AppFolder;
-using System.Diagnostics.Eventing.Reader;
-using System.Threading.Tasks;
-using AutoGenerator.Helper;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+using AutoGenerator.CodeAnalysis.Injections;
+using AutoGenerator.CodeAnalysis.Selectors;
 
 
 namespace Infrastructure.Config
@@ -27,7 +24,7 @@ namespace Infrastructure.Config
         {
 
 
-            await InterfaceInjectionDtoModelsAsync();
+            //await InterfaceInjectionDtoModelsAsync();
             //await Task.Delay(1000);
             //await GenerateAllApiClientTemplates(sourceFilePath);
             ////await Task.Delay(1000);
@@ -112,9 +109,9 @@ namespace Infrastructure.Config
                     {
                         "Shared.Interfaces",
                         "Shared.Wrapper",
-                        "AutoGenerator.Config.Attributes",
+                        "AutoGenerator.Attributes",
                         "Domain.Entity",
-                        "AutoGenerator.Config.Attributes",
+                        "AutoGenerator.Attributes",
 
                      },
                 AdditionalCode = @"
@@ -151,7 +148,7 @@ namespace Infrastructure.Config
 
                         "Shared.Interfaces",
                         "Shared.Wrapper",
-                        "AutoGenerator.Config.Attributes",
+                        "AutoGenerator.Attributes",
                         "Domain.Entity",
                         "Infrastructure.Nswag",
                         "Domain.IRepositories",

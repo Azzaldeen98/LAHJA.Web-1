@@ -3,9 +3,9 @@ using AutoGenerator.Helper.Translation;
 using Shared.Interfaces;
 using AutoGenerator.AppFolder;
 using System.Reflection;
-using AutoGenerator.Config.Attributes;
 using Microsoft.Extensions.Logging;
 using AutoGenerator.Enums;
+using AutoGenerator.Attributes;
 
 namespace AutoGenerator.Config
 {

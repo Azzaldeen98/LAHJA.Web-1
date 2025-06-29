@@ -2,11 +2,12 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
-using AutoGenerator.Config.Attributes;
 using System.Reflection;
 using Castle.Components.DictionaryAdapter.Xml;
 using AutoGenerator.Enums;
 using System.Threading.Tasks;
+using AutoGenerator.Attributes;
+using AutoGenerator.CodeAnalysis.Attributes;
 
 namespace AutoGenerator.Code.Service
 {
@@ -147,7 +148,7 @@ namespace AutoGenerator.Code.Service
             if (model == null) 
                 return "";
 
-            var classAttributes= ModelAnalyzer.GetClassAttributes(model);
+            var classAttributes= TypeAttributesAnalyzer.GetClassAttributes(model);
             if(classAttributes!=null && classAttributes.Any(x=> x is ValidatorEnabledAttribute attrib && attrib.IsValidatorped))
             {
                 foreach (var attribute in classAttributes)

@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using Shared.Constants;
 using Shared.Constants.Router;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 
 namespace LAHJA.Data.UI.Templates.Payment
 {

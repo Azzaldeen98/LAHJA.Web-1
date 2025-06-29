@@ -6,6 +6,7 @@ using Domain.Validators.Conditions.Shared.User;
 using WasmAI.ConditionChecker.Validators;
 using Application.Validators.Shared;
 using Domain.Validators.Enums;
+using System;
 
 
 namespace Application.Validators.User
@@ -24,19 +25,18 @@ namespace Application.Validators.User
     /// </summary>
     public class UserValidator : BaseValidator<UserValidatorStates>, IUserValidator
     {
-        private readonly IUserConditionChecker checker;
+        //private readonly IUserConditionChecker checker;
         private readonly IUserConditionContextProvider contextProvider;
 
-        public UserValidator(IUserConditionChecker checker, IUserConditionContextProvider contextProvider):base(checker) 
+        public UserValidator(IUserConditionChecker checker, IUserConditionContextProvider contextProvider)
+            :base(checker) 
         {
-            this.checker = checker;
+            //this.checker = checker;
             this.contextProvider = contextProvider;
 
         }
 
        
-        
-
         /// <summary>
         /// Initializes and registers the set of condition validators required for user validation.
         /// </summary>
@@ -48,12 +48,11 @@ namespace Application.Validators.User
         /// </remarks>
         protected override void InitializeConditions()
         {
-            var conditionProvider = new UserConditionProvider();
-            var subscriptionActiveCondition = new SubscriptionActiveCondition();
+            //var conditionProvider = new UserConditionProvider();
+          
+            _provider.Register(UserValidatorStates.SubscriptionActive, new SubscriptionActiveCondition());
+            _checker.RegisterProvider(_provider);
 
-            conditionProvider.Register(UserValidatorStates.SubscriptionActive, subscriptionActiveCondition);
-
-            checker.RegisterProvider(conditionProvider);
         }
 
         /// <summary>
@@ -64,17 +63,23 @@ namespace Application.Validators.User
         /// <returns></returns>
         public async Task<ConditionResult> ValidateAsync(UserValidatorStates type, IConditionContextInput? input = null)
         {
-            var provider = checker.GetProvider<UserValidatorStates>();
+            return await ValidateAsync(type, CancellationToken.None, input);
+        }
+
+        public async Task<ConditionResult> ValidateAsync(UserValidatorStates type, CancellationToken cancellationToken, IConditionContextInput? input = null)
+        {
+
+            var provider = _checker.GetProvider<UserValidatorStates>();
             var condition = provider?.Get(type);
 
             object? context = null;
 
             if (condition != null)
             {
-                context = await contextProvider.GetContextAsync(type, input);
+                context = await contextProvider.GetContextAsync(type, cancellationToken, input);
             }
 
-            return await checker.CheckAndResultAsync(type, context);
+            return await _checker.CheckAndResultAsync(type, context);
         }
 
     }

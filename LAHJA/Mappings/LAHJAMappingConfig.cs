@@ -11,7 +11,7 @@ using LAHJA.Data.UI.Components.ProFileModel;
 using Domain.Entities.Profile;
 using LAHJA.Data.UI.Components.Payment.CreditCard;
 using Domain.Entities.Billing.Request;
-using LAHJA.Data.UI.Templates.Subscription;
+using LAHJA.Data.UI.Templates.Subscriptions;
 using Domain.Entities.Subscriptions.Request;
 using Domain.Entities.Subscriptions.Response;
 using LAHJA.Data.UI.Components.Subscription;

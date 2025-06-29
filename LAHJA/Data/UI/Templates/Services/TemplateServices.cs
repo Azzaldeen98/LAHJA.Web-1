@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 using Shared.Interfaces;
 
 namespace LAHJA.Data.UI.Templates.Services

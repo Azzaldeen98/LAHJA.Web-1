@@ -6,283 +6,573 @@ using AutoGenerator.Helper;
 
 namespace AutoGenerator.Config
 {
-    using AutoGenerator.Config.Attributes;
+    using AutoGenerator.Attributes;
     using Microsoft.CodeAnalysis;
     using System;
     using System.IO;
     using System.Linq;
     using System.Text;
-
     public class RepositoryAnalyzer
+{
+    /// <summary>
+    /// Processes a repository type and generates method bodies
+    /// based on matching API client methods and mapping rules.
+    /// </summary>
+    /// <param name="repositoryType">The repository class type to analyze.</param>
+    /// <returns>A dictionary where keys are method names and values are generated method body code strings.</returns>
+    public Dictionary<string, string> ProcessRepository(Type repositoryType)
     {
-        public Dictionary<string, string> ProcessRepository(Type repositoryType)
+        var chunksCode = new Dictionary<string, string>();
+
+        // Get required private fields _mapper and _apiClient from the repository class
+        var mapperField = GetField(repositoryType, "_mapper");
+        var apiClientField = GetField(repositoryType, "_apiClient");
+
+        if (mapperField == null || apiClientField == null)
         {
-            var chunksCode = new Dictionary<string, string>();
+            Console.WriteLine($"❌ Required fields (_mapper and _apiClient) not found in class {repositoryType.Name}");
+            return null;
+        }
 
-            var mapperField = GetField(repositoryType, "_mapper");
-            var apiClientField = GetField(repositoryType, "_apiClient");
+        var apiClientType = apiClientField.FieldType;
+        // Get all public instance methods declared in the repository type (not inherited)
+        var methods = repositoryType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-            if (mapperField == null || apiClientField == null)
+        foreach (var method in methods)
+        {
+            Console.WriteLine($"\n📌 Analyzing method: {method.Name}");
+
+            var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
+            var parameters = method.GetParameters();
+
+            // Extract return type string and modifiers using your existing helper
+            var (returnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
+
+            // Check if method has a parameter assignable from ITDso
+            var dsoParam = parameters.FirstOrDefault(p => typeof(ITDso).IsAssignableFrom(p.ParameterType));
+            var paramNames = parameters.Select(p => p.Name).ToList();
+
+            // Extract inner and collection types from method return type
+            var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType);
+            var returnCollectionType = GeneratorHelpers.ExtractCollectionTypeFromMethodReturnType(method.ReturnType);
+
+            // Optional: read RouteTo attribute if present
+            var routeToAttribute = method.GetCustomAttribute<RouteToAttribute>();
+
+            var keywords = new List<string>();
+            if (routeToAttribute != null)
             {
-                Console.WriteLine($"❌ الحقول المطلوبة (_mapper و _apiClient) غير موجودة في الكلاس {repositoryType.Name}");
-                return null;
+                keywords.Add(routeToAttribute.Name);
+            }
+            else
+            {
+                keywords.Add(method.Name);
+                // Optionally: keywords = ExtractKeywords(method.Name);
             }
 
-            var apiClientType = apiClientField.FieldType;
-            var methods = repositoryType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
-
-            foreach (var method in methods)
+            // Generate method body differently based on presence of ITDso parameter
+            string bodyCode;
+            if (dsoParam == null)
             {
-                Console.WriteLine($"\n📌 تحليل الدالة: {method.Name}");
+                bodyCode = GenerateBodyWithoutDso(apiClientType, keywords, paramNames, returnType, returnTypeStr, returnCollectionType);
+            }
+            else
+            {
+                bodyCode = GenerateBodyWithDso(apiClientType, keywords, dsoParam, returnType, returnCollectionType);
+            }
+
+            var cleanedBodyCode = GeneratorHelpers.CleanMessyCode(bodyCode);
+            chunksCode.Add(method.Name, cleanedBodyCode);
+        }
+
+        return chunksCode;
+    }
+
+    /// <summary>
+    /// Retrieves a non-public instance field by name from a type.
+    /// </summary>
+    private FieldInfo GetField(Type type, string fieldName)
+        => type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+
+    /// <summary>
+    /// Generates method body code for methods without ITDso parameters,
+    /// calling the corresponding API client method and mapping results if necessary.
+    /// </summary>
+    private string GenerateBodyWithoutDso(Type apiClientType, List<string> keywords, List<string> paramNames,
+        Type returnType, string returnTypeStr, Type? returnCollectionType = null)
+    {
+        string paramText = paramNames.Any() ? string.Join(",", paramNames) : string.Empty;
+
+        Console.WriteLine("⚠️ Method does not contain ITDso parameters, using ApiClient method directly.");
+
+        var apiMethod = FindTargetMethod(apiClientType, keywords);
+
+        if (apiMethod == null)
+        {
+            Console.WriteLine("❌ No matching method found inside _apiClient");
+            return string.Empty;
+        }
+
+        var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
+        var (apiReturnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
+        bool returnsValue = IsReturnTypeWithValue(apiReturnType);
+
+        var body = new StringBuilder();
+
+        if (returnsValue)
+        {
+            body.AppendLine($"\n\tvar result = await _apiClient.{apiMethod.Name}({paramText});");
+
+            if (typeof(ITDso).IsAssignableFrom(returnType))
+            {
+                if (apiReturnTypeStr.Contains("Paged"))
+                {
+                    body.AppendLine(generatePaginatedResult(returnType.Name, true));
+                }
+                else
+                {
+                    var mappedType = (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name))
+                        ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>"
+                        : returnType.Name;
+
+                    body.AppendLine($"\n\treturn _mapper.Map<{mappedType}>(result);");
+                }
+            }
+            else
+            {
+                if (apiReturnTypeStr.Contains("Paged"))
+                {
+                    body.AppendLine(generatePaginatedResult(returnType.Name, false));
+                }
+                else
+                {
+                    body.AppendLine("\n\treturn result;");
+                }
+            }
+        }
+        else
+        {
+            body.AppendLine($"\n\tawait _apiClient.{apiMethod.Name}({paramText});");
+        }
+
+        return body.ToString();
+    }
+
+    /// <summary>
+    /// Generates method body code for methods with an ITDso parameter,
+    /// mapping the DSO to DTO before calling the API client method and mapping back the response if needed.
+    /// </summary>
+    private string GenerateBodyWithDso(Type apiClientType, List<string> keywords, ParameterInfo dsoParam, Type returnType, Type? returnCollectionType = null)
+    {
+        var apiMethod = FindTargetMethod(apiClientType, keywords);
+        if (apiMethod == null)
+        {
+            Console.WriteLine("❌ No matching method found inside _apiClient");
+            return string.Empty;
+        }
+
+        var apiParams = apiMethod.GetParameters();
+        var dtoParam = apiParams.FirstOrDefault(p => typeof(ITDto).IsAssignableFrom(p.ParameterType));
+        if (dtoParam == null)
+        {
+            Console.WriteLine("⚠️ ApiClient method does not have a parameter of type ITDto");
+            return string.Empty;
+        }
+
+        var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
+        var (apiReturnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
+        var paramNames = apiParams.Select(p => p.Name).ToArray();
+        var paramsText = string.Join(",", paramNames);
+
+        var body = new StringBuilder();
+
+        // Map DSO parameter to DTO
+        body.AppendLine($"\n\tvar _{dtoParam.Name} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});");
+        paramsText = paramsText.Replace(dtoParam.Name, $"_{dtoParam.Name}");
+
+        if (IsReturnTypeWithValue(apiReturnType))
+        {
+            body.AppendLine($"\n\tvar result = await _apiClient.{apiMethod.Name}({paramsText});");
+
+            if (typeof(ITDto).IsAssignableFrom(apiReturnType))
+            {
+                if (apiReturnTypeStr.Contains("Paged"))
+                {
+                    body.AppendLine(generatePaginatedResult(returnType.Name, true));
+                }
+                else
+                {
+                    var mappedType = (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name))
+                        ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>"
+                        : returnType.Name;
+
+                    body.AppendLine($"\n\treturn _mapper.Map<{mappedType}>(result);");
+                }
+            }
+            else
+            {
+                if (apiReturnTypeStr.Contains("Paged"))
+                {
+                    body.AppendLine(generatePaginatedResult(returnType.Name, false));
+                }
+                else
+                {
+                    body.AppendLine("\n\treturn result;");
+                }
+            }
+        }
+        else
+        {
+            body.AppendLine($"\n\tawait _apiClient.{apiMethod.Name}({paramsText});");
+        }
+
+        return body.ToString();
+    }
+
+    /// <summary>
+    /// Generates code for returning a paginated result.
+    /// </summary>
+    private string generatePaginatedResult(string typeName, bool hasMapped = true)
+    {
+        var data = hasMapped
+            ? $"_mapper.Map<List<{typeName}>>(result.Data.ToList())"
+            : "result.Data.ToList()";
+
+        return "\n" + $@"
+            return PaginatedResult<{typeName}>.Success(
+                {data},
+                result.TotalRecords,
+                result.PageNumber,
+                result.PageSize,
+                result.SortBy,
+                result.SortDirection);";
+    }
+
+    /// <summary>
+    /// Determines if the return type contains a value (not void or non-generic Task).
+    /// </summary>
+    private bool IsReturnTypeWithValue(Type returnType)
+    {
+        if (returnType == null || returnType == typeof(void) || returnType == typeof(Task))
+            return false;
+
+        if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
+            return true;
+
+        return true;
+    }
+
+    /// <summary>
+    /// Extracts lowercase keyword tokens from a method name based on capitalization.
+    /// Example: "GetUserById" => ["get", "user", "by", "id"]
+    /// </summary>
+    private List<string> ExtractKeywords(string methodName)
+    {
+        return Regex.Matches(methodName, "[A-Z][a-z]*")
+            .Cast<Match>()
+            .Select(m => m.Value.ToLower())
+            .ToList();
+    }
+
+    /// <summary>
+    /// Finds the best matching method in the API client by keywords.
+    /// Tries exact match first, then partial match using extracted keywords.
+    /// </summary>
+    private MethodInfo FindTargetMethod(Type apiClientType, List<string> keywords)
+    {
+        var methods = apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+        // Try exact match with any keyword
+        var exactMatch = methods.FirstOrDefault(m => keywords.Contains(m.Name));
+        if (exactMatch != null)
+            return exactMatch;
+
+        // Extract new keywords from the first keyword (if any)
+        if (keywords != null && keywords.Any())
+            keywords = ExtractKeywords(keywords.First());
+
+        if (keywords == null || !keywords.Any())
+            return null;
+
+        // Partial match: method name must contain all keywords
+        return methods.FirstOrDefault(m =>
+        {
+            var name = m.Name.ToLowerInvariant();
+            return keywords.All(k => name.Contains(k.ToLowerInvariant()));
+        });
+    }
+}
+
+    //public class RepositoryAnalyzer
+    //{
+    //    public Dictionary<string, string> ProcessRepository(Type repositoryType)
+    //    {
+    //        var chunksCode = new Dictionary<string, string>();
+
+    //        var mapperField = GetField(repositoryType, "_mapper");
+    //        var apiClientField = GetField(repositoryType, "_apiClient");
+
+    //        if (mapperField == null || apiClientField == null)
+    //        {
+    //            Console.WriteLine($"❌ الحقول المطلوبة (_mapper و _apiClient) غير موجودة في الكلاس {repositoryType.Name}");
+    //            return null;
+    //        }
+
+    //        var apiClientType = apiClientField.FieldType;
+    //        var methods = repositoryType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+    //        foreach (var method in methods)
+    //        {
+    //            Console.WriteLine($"\n📌 تحليل الدالة: {method.Name}");
 
           
 
-                var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
-                var parameters = method.GetParameters();
-                var (returnTypeStr, modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
+    //            var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
+    //            var parameters = method.GetParameters();
+    //            var (returnTypeStr, modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
 
-                var dsoParam = parameters.FirstOrDefault(p => typeof(ITDso).IsAssignableFrom(p.ParameterType));
-                var noDsoParamNames = parameters.Select(p => p.Name).ToList();
+    //            var dsoParam = parameters.FirstOrDefault(p => typeof(ITDso).IsAssignableFrom(p.ParameterType));
+    //            var noDsoParamNames = parameters.Select(p => p.Name).ToList();
 
-                var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType);
-                var returnCollectionType = GeneratorHelpers.ExtractCollectionTypeFromMethodReturnType(method.ReturnType);
+    //            var returnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(method.ReturnType);
+    //            var returnCollectionType = GeneratorHelpers.ExtractCollectionTypeFromMethodReturnType(method.ReturnType);
 
-                ///TODO :  Read RouteToAttribute
+    //            ///TODO :  Read RouteToAttribute
 
-                var routeToAttribute = method.GetCustomAttribute<RouteToAttribute>();
+    //            var routeToAttribute = method.GetCustomAttribute<RouteToAttribute>();
 
-                var keywords = new List<string>();
-                if (routeToAttribute != null && routeToAttribute is RouteToAttribute)
-                {
-                    keywords.Add(routeToAttribute.Name);
-                }
-                else
-                {
-                    keywords.Add(method.Name);
+    //            var keywords = new List<string>();
+    //            if (routeToAttribute != null && routeToAttribute is RouteToAttribute)
+    //            {
+    //                keywords.Add(routeToAttribute.Name);
+    //            }
+    //            else
+    //            {
+    //                keywords.Add(method.Name);
 
-                    //keywords = ExtractKeywords(method.Name);
-                }
-                if (method.Name.Contains("ForgotPassword"))
-                {
+    //                //keywords = ExtractKeywords(method.Name);
+    //            }
+    //            if (method.Name.Contains("ForgotPassword"))
+    //            {
 
-                }
-                if (dsoParam == null)
-                {
-                    var bodyCode = GenerateBodyWithoutDso(apiClientType, keywords, noDsoParamNames, returnType, returnTypeStr, returnCollectionType);
-                    var cleanedBodyCode = GeneratorHelpers.CleanMessyCode(bodyCode);
-                    chunksCode.Add(method.Name, cleanedBodyCode);
+    //            }
+    //            if (dsoParam == null)
+    //            {
+    //                var bodyCode = GenerateBodyWithoutDso(apiClientType, keywords, noDsoParamNames, returnType, returnTypeStr, returnCollectionType);
+    //                var cleanedBodyCode = GeneratorHelpers.CleanMessyCode(bodyCode);
+    //                chunksCode.Add(method.Name, cleanedBodyCode);
 
-                }
-                else
-                {
-                    var bodyCode = GenerateBodyWithDso(apiClientType, keywords, dsoParam, returnType, returnCollectionType);
-                    var cleanedBodyCode = GeneratorHelpers.CleanMessyCode(bodyCode);
-                    chunksCode.Add(method.Name, cleanedBodyCode);
+    //            }
+    //            else
+    //            {
+    //                var bodyCode = GenerateBodyWithDso(apiClientType, keywords, dsoParam, returnType, returnCollectionType);
+    //                var cleanedBodyCode = GeneratorHelpers.CleanMessyCode(bodyCode);
+    //                chunksCode.Add(method.Name, cleanedBodyCode);
 
-                }
-            }
+    //            }
+    //        }
 
-            return chunksCode;
-        }
+    //        return chunksCode;
+    //    }
 
-        private FieldInfo GetField(Type type, string fieldName)
-            => type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+    //    private FieldInfo GetField(Type type, string fieldName)
+    //        => type.GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
 
-        private string GenerateBodyWithoutDso(Type apiClientType, List<string> keywords, List<string> paramNames,
-            Type returnType, string returnTypeStr, Type? returnCollectionType=null)
-        {
-            if (paramNames == null) paramNames = new List<string>();
+    //    private string GenerateBodyWithoutDso(Type apiClientType, List<string> keywords, List<string> paramNames,
+    //        Type returnType, string returnTypeStr, Type? returnCollectionType=null)
+    //    {
+    //        if (paramNames == null) paramNames = new List<string>();
 
-            string paramText = paramNames.Any() ? string.Join(",", paramNames) : string.Empty;
+    //        string paramText = paramNames.Any() ? string.Join(",", paramNames) : string.Empty;
 
-            Console.WriteLine("⚠️ الدالة لا تحتوي على معاملات ITDso، سيتم استخدام دالة ApiClient بدون تحويل.");
+    //        Console.WriteLine("⚠️ الدالة لا تحتوي على معاملات ITDso، سيتم استخدام دالة ApiClient بدون تحويل.");
 
-            var apiMethod = FindTargetMethod(apiClientType, keywords);
+    //        var apiMethod = FindTargetMethod(apiClientType, keywords);
 
 
-            if (apiClientType.Name.Contains("ForgotPassword"))
-            {
+    //        if (apiClientType.Name.Contains("ForgotPassword"))
+    //        {
         
              
-            }
+    //        }
 
 
-            if (apiMethod == null )
-            {
-                Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
-                return string.Empty;
-            }
+    //        if (apiMethod == null )
+    //        {
+    //            Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
+    //            return string.Empty;
+    //        }
 
-            var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
-            var (apiReturnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
+    //        var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
+    //        var (apiReturnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
 
-            bool returnsValue = IsReturnTypeWithValue(apiReturnType);
+    //        bool returnsValue = IsReturnTypeWithValue(apiReturnType);
 
-            var body = new StringBuilder();
+    //        var body = new StringBuilder();
 
-            if (returnsValue)
-            {
-                body.AppendLine($"\n\tvar result = await _apiClient.{apiMethod.Name}({paramText});");
+    //        if (returnsValue)
+    //        {
+    //            body.AppendLine($"\n\tvar result = await _apiClient.{apiMethod.Name}({paramText});");
 
-                if (typeof(ITDso).IsAssignableFrom(returnType))
-                {
-                    if (apiReturnTypeStr.Contains("Paged"))
-                    {
-                        body.AppendLine(generatePaginatedResult(returnType.Name, true));
-                    }
-                    else
-                    {
+    //            if (typeof(ITDso).IsAssignableFrom(returnType))
+    //            {
+    //                if (apiReturnTypeStr.Contains("Paged"))
+    //                {
+    //                    body.AppendLine(generatePaginatedResult(returnType.Name, true));
+    //                }
+    //                else
+    //                {
                         
-                        var _type= (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name)) 
-                            ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>" : returnType.Name;  
-                        body.AppendLine($"\n\treturn _mapper.Map<{_type}>(result);");
-                    }
-                }
-                else
-                {
-                    if (apiReturnTypeStr.Contains("Paged"))
-                    {
-                        body.AppendLine(generatePaginatedResult(returnType.Name, false));
+    //                    var _type= (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name)) 
+    //                        ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>" : returnType.Name;  
+    //                    body.AppendLine($"\n\treturn _mapper.Map<{_type}>(result);");
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (apiReturnTypeStr.Contains("Paged"))
+    //                {
+    //                    body.AppendLine(generatePaginatedResult(returnType.Name, false));
         
-                    }
-                    else
-                    {
-                        body.AppendLine("\n\treturn result;");
-                    }
-                }
-            }
-            else
-            {
-                body.AppendLine($"\n\tawait _apiClient.{apiMethod.Name}({paramText});");
-            }
+    //                }
+    //                else
+    //                {
+    //                    body.AppendLine("\n\treturn result;");
+    //                }
+    //            }
+    //        }
+    //        else
+    //        {
+    //            body.AppendLine($"\n\tawait _apiClient.{apiMethod.Name}({paramText});");
+    //        }
 
-            return body.ToString();
-        }
+    //        return body.ToString();
+    //    }
 
-        private string GenerateBodyWithDso(Type apiClientType, List<string> keywords, ParameterInfo dsoParam, Type returnType, Type? returnCollectionType = null)
-        {
-            var apiMethod = FindTargetMethod(apiClientType, keywords);
-            if (apiMethod == null)
-            {
-                Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
-                return string.Empty;
-            }
+    //    private string GenerateBodyWithDso(Type apiClientType, List<string> keywords, ParameterInfo dsoParam, Type returnType, Type? returnCollectionType = null)
+    //    {
+    //        var apiMethod = FindTargetMethod(apiClientType, keywords);
+    //        if (apiMethod == null)
+    //        {
+    //            Console.WriteLine("❌ لم يتم العثور على دالة مطابقة داخل _apiClient");
+    //            return string.Empty;
+    //        }
 
-            var apiParams = apiMethod.GetParameters();
-            var dtoParam = apiParams.FirstOrDefault(p => typeof(ITDto).IsAssignableFrom(p.ParameterType));
-            if (dtoParam == null)
-            {
-                Console.WriteLine("⚠️ دالة ApiClient لا تحتوي على معامل من نوع ITDto");
-                return string.Empty;
-            }
+    //        var apiParams = apiMethod.GetParameters();
+    //        var dtoParam = apiParams.FirstOrDefault(p => typeof(ITDto).IsAssignableFrom(p.ParameterType));
+    //        if (dtoParam == null)
+    //        {
+    //            Console.WriteLine("⚠️ دالة ApiClient لا تحتوي على معامل من نوع ITDto");
+    //            return string.Empty;
+    //        }
 
-            var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
-            var (apiReturnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
-            var paramNames = apiParams.Select(p => p.Name).ToArray();
-            var paramsText = string.Join(",", paramNames);
+    //        var apiReturnType = GeneratorHelpers.ExtractInnerTypeFromMethodReturnType(apiMethod.ReturnType);
+    //        var (apiReturnTypeStr, _) = AutoCodeGenerator.CleanMethodSignature(GeneratorHelpers.ConvertToSyntax(apiMethod));
+    //        var paramNames = apiParams.Select(p => p.Name).ToArray();
+    //        var paramsText = string.Join(",", paramNames);
 
-            var body = new StringBuilder();
+    //        var body = new StringBuilder();
 
-            // تحويل DSO إلى DTO
-            body.AppendLine($"\n\tvar _{dtoParam.Name} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});");
-            paramsText = paramsText.Replace(dtoParam.Name, $"_{dtoParam.Name}");
+    //        // تحويل DSO إلى DTO
+    //        body.AppendLine($"\n\tvar _{dtoParam.Name} = _mapper.Map<{dtoParam.ParameterType.Name}>({dsoParam.Name});");
+    //        paramsText = paramsText.Replace(dtoParam.Name, $"_{dtoParam.Name}");
 
-            if (IsReturnTypeWithValue(apiReturnType))
-            {
-                body.AppendLine($"\n\tvar result = await _apiClient.{apiMethod.Name}({paramsText});");
+    //        if (IsReturnTypeWithValue(apiReturnType))
+    //        {
+    //            body.AppendLine($"\n\tvar result = await _apiClient.{apiMethod.Name}({paramsText});");
 
-                if (typeof(ITDto).IsAssignableFrom(apiReturnType))
-                {
-                    if (apiReturnTypeStr.Contains("Paged"))
-                    {
-                        body.AppendLine(generatePaginatedResult(returnType.Name, true));
-                    }
-                    else
-                    {
-                        var _type = (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name))
-                           ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>" : returnType.Name;
+    //            if (typeof(ITDto).IsAssignableFrom(apiReturnType))
+    //            {
+    //                if (apiReturnTypeStr.Contains("Paged"))
+    //                {
+    //                    body.AppendLine(generatePaginatedResult(returnType.Name, true));
+    //                }
+    //                else
+    //                {
+    //                    var _type = (returnCollectionType != null && !string.IsNullOrWhiteSpace(returnCollectionType.Name))
+    //                       ? $"{GeneratorHelpers.GetSimpleTypeName(returnCollectionType)}<{returnType.Name}>" : returnType.Name;
 
-                        body.AppendLine($"\n\treturn _mapper.Map<{_type}>(result);");
+    //                    body.AppendLine($"\n\treturn _mapper.Map<{_type}>(result);");
                      
-                    }
-                }
-                else
-                {
-                    if (apiReturnTypeStr.Contains("Paged"))
-                    {
-                        body.AppendLine(generatePaginatedResult(returnType.Name,false));
-                    }
-                    else
-                    {
-                        body.AppendLine("\n\treturn result;");
-                    }
-                }
-            }
-            else
-            {
-                body.AppendLine($"\n\tawait _apiClient.{apiMethod.Name}({paramsText});");
-            }
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (apiReturnTypeStr.Contains("Paged"))
+    //                {
+    //                    body.AppendLine(generatePaginatedResult(returnType.Name,false));
+    //                }
+    //                else
+    //                {
+    //                    body.AppendLine("\n\treturn result;");
+    //                }
+    //            }
+    //        }
+    //        else
+    //        {
+    //            body.AppendLine($"\n\tawait _apiClient.{apiMethod.Name}({paramsText});");
+    //        }
 
-            return body.ToString();
-        }
+    //        return body.ToString();
+    //    }
 
-        private string generatePaginatedResult(string typeName,bool hasMapped=true)
-        {
-            var data =  hasMapped ? $"_mapper.Map<List<{typeName}>>(result.Data.ToList())":"result.Data.ToList()";
-            return "\n"+$@"
-                return PaginatedResult<{typeName}>.Success(
-                    {data},
-                    result.TotalRecords,
-                    result.PageNumber,
-                    result.PageSize,
-                    result.SortBy,
-                    result.SortDirection);";
-        }
-        private bool IsReturnTypeWithValue(Type returnType)
-        {
-            if (returnType == null || returnType == typeof(void) || returnType == typeof(Task))
-                return false;
+    //    private string generatePaginatedResult(string typeName,bool hasMapped=true)
+    //    {
+    //        var data =  hasMapped ? $"_mapper.Map<List<{typeName}>>(result.Data.ToList())":"result.Data.ToList()";
+    //        return "\n"+$@"
+    //            return PaginatedResult<{typeName}>.Success(
+    //                {data},
+    //                result.TotalRecords,
+    //                result.PageNumber,
+    //                result.PageSize,
+    //                result.SortBy,
+    //                result.SortDirection);";
+    //    }
+    //    private bool IsReturnTypeWithValue(Type returnType)
+    //    {
+    //        if (returnType == null || returnType == typeof(void) || returnType == typeof(Task))
+    //            return false;
 
-            if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
-                return true;
+    //        if (returnType.IsGenericType && returnType.GetGenericTypeDefinition() == typeof(Task<>))
+    //            return true;
 
-            return true;
-        }
+    //        return true;
+    //    }
 
-        private List<string> ExtractKeywords(string methodName)
-        {
-            return Regex.Matches(methodName, "[A-Z][a-z]*")
-                .Cast<Match>()
-                .Select(m => m.Value.ToLower())
-                .ToList();
-        }
+    //    private List<string> ExtractKeywords(string methodName)
+    //    {
+    //        return Regex.Matches(methodName, "[A-Z][a-z]*")
+    //            .Cast<Match>()
+    //            .Select(m => m.Value.ToLower())
+    //            .ToList();
+    //    }
 
-        private MethodInfo FindTargetMethod(Type apiClientType, List<string> keywords)
-        {
-            var methods = apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+    //    private MethodInfo FindTargetMethod(Type apiClientType, List<string> keywords)
+    //    {
+    //        var methods = apiClientType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 
-            // 1. تطابق تام مع أحد الكلمات
-            var exactMatch = methods.FirstOrDefault(m => keywords.Contains(m.Name));
-            if (exactMatch != null)
-                return exactMatch;
+    //        // 1. تطابق تام مع أحد الكلمات
+    //        var exactMatch = methods.FirstOrDefault(m => keywords.Contains(m.Name));
+    //        if (exactMatch != null)
+    //            return exactMatch;
 
-            // 2. استخراج كلمات مفتاحية جديدة من أول كلمة (إن وجدت)
-            if (keywords != null && keywords.Any())
-                keywords = ExtractKeywords(keywords.First());
+    //        // 2. استخراج كلمات مفتاحية جديدة من أول كلمة (إن وجدت)
+    //        if (keywords != null && keywords.Any())
+    //            keywords = ExtractKeywords(keywords.First());
 
-            // 3. تحقق من صلاحية الكلمات بعد الاستخراج
-            if (keywords == null || !keywords.Any())
-                return null;
+    //        // 3. تحقق من صلاحية الكلمات بعد الاستخراج
+    //        if (keywords == null || !keywords.Any())
+    //            return null;
 
-            // 4. تطابق جزئي (كل كلمة موجودة في اسم الدالة)
-            return methods.FirstOrDefault(m =>
-            {
-                var name = m.Name.ToLowerInvariant();
-                return keywords.All(k => name.Contains(k.ToLowerInvariant()));
-            });
-        }
+    //        // 4. تطابق جزئي (كل كلمة موجودة في اسم الدالة)
+    //        return methods.FirstOrDefault(m =>
+    //        {
+    //            var name = m.Name.ToLowerInvariant();
+    //            return keywords.All(k => name.Contains(k.ToLowerInvariant()));
+    //        });
+    //    }
 
-    }
+    //}
 
     //public class RepositoryAnalyzer2
     //{

@@ -1,6 +1,8 @@
-﻿namespace LAHJA.Data.UI.Models.Profile
+﻿using Shared.Interfaces;
+
+namespace LAHJA.Data.UI.Models.Profile
 {
-    public class DataBuildUserSubscriptionInfo
+    public class DataBuildUserSubscriptionInfo:ITVM
 	{
 		public string Id { get; set; }
 

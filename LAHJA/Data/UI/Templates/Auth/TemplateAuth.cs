@@ -13,7 +13,7 @@ using MudBlazor;
 using Shared.Constants;
 using Shared.Constants.Router;
 using Shared.Enums;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 using Domain.Entity;
 using Application.Services;
 using AccessTokenResponse = LAHJA.Data.UI.Models.Auth.AccessTokenResponse;

@@ -1,12 +1,7 @@
-﻿using AutoGenerator.Config.Attributes;
+﻿using AutoGenerator.Attributes;
 using AutoGenerator.Enums;
 using Shared.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entity
 {

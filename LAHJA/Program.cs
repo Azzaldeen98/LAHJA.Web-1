@@ -107,7 +107,7 @@ internal class Program
 
         var buildLogger = loggerFactory.CreateLogger("Web");
 
-        await AutoGeneratorAppFactory.GenerateAsync("Infrastructure");
+        //await AutoGeneratorAppFactory.GenerateAsync("Infrastructure");
 
         //await AutoGeneratorAppFactory.GenerateAsync("Web");
 

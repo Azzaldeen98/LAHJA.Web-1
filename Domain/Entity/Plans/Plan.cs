@@ -1,5 +1,7 @@
 ﻿using AutoGenerator;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
+using AutoGenerator.Attributes;
+using AutoGenerator.Attributes;
 using AutoGenerator.Enums;
 using Shared.Interfaces;
 
@@ -10,7 +12,7 @@ namespace Domain.Entity
 
     [AutoGenerate(GenerationTarget.Repository | GenerationTarget.UseCase | GenerationTarget.Service)]
     [SupportedMethods(SupportedMethods.GetById | SupportedMethods.GetAll | SupportedMethods.CountAll)]
-    [AutomateMapper( SupportedMethods.GetById | SupportedMethods.CountAll,true)]
+    [AutoMapper( SupportedMethods.GetById | SupportedMethods.CountAll,true)]
     //[MethodRoute(SupportedMethods.GetAll, "GetPlansAsync")]
     //[MethodRoute("GetPlansAsync", "GetPlansAsync")]
     [AutomateMapperWith(LayersModels.DTO, "PlanOutputVM", "PlanCreateVM" )]
@@ -30,9 +32,13 @@ namespace Domain.Entity
         public string BillingPeriod { get; set; }
 
         [MapTo(AutoGeneratorConstant.ModelType.VM, "TotalAmount")]
+      
         public double Amount { get; set; }
   
         public bool Active { get; set; }
+
+        [MapTo(AutoGeneratorConstant.ModelType.VM, "IsSubscriptionActive")]
+        public bool HasSubscription { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
 

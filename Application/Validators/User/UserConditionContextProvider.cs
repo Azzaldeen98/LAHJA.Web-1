@@ -15,11 +15,11 @@ namespace Application.Validators.User
 
     public class UserConditionContextProvider : IUserConditionContextProvider
     {
-        private readonly GetSubscriptionUseCase action;
+        private readonly GetSubscriptionUseCase subscriptionAction;
 
-        public UserConditionContextProvider(GetSubscriptionUseCase action)
+        public UserConditionContextProvider(GetSubscriptionUseCase subscriptionAction)
         {
-            this.action = action;
+            this.subscriptionAction = subscriptionAction;
         }
 
         public async Task<object?> GetContextAsync(UserValidatorStates conditionType, IConditionContextInput? input = null)
@@ -31,8 +31,8 @@ namespace Application.Validators.User
         {
             return conditionType switch
             {
-                UserValidatorStates.SubscriptionActive when input is SubscriptionContextInput subscriptionInput =>
-                    (await action.ExecuteAsync(cancellationToken)),
+                UserValidatorStates.SubscriptionActive=> // when input is SubscriptionContextInput subscriptionInput =>
+                    (await subscriptionAction.ExecuteAsync(cancellationToken)),
 
                 // شروط أخرى...
 

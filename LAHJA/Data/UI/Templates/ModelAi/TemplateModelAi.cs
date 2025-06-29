@@ -9,7 +9,7 @@ using LAHJA.ApplicationLayer.ModelAi;
 using LAHJA.Data.UI.Models.ModelAi;
 using LAHJA.Data.UI.Components.ServiceCard;
 using Client.Shared.Execution;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 
 namespace LAHJA.Data.UI.Templates.ModelAi
 {

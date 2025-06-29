@@ -23,6 +23,7 @@ namespace Application.Validators.Shared
     public interface ISharedValidator<TEnum> : ITValidator where TEnum:Enum
     {
         Task<ConditionResult> ValidateAsync(TEnum type, IConditionContextInput? input = null);
+        Task<ConditionResult> ValidateAsync(TEnum type, CancellationToken cancellationToken, IConditionContextInput? input = null);
     }
 
     

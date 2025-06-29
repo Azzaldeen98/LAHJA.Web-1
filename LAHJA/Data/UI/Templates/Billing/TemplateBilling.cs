@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Http;
 using MudBlazor;
 using Client.Shared.Execution;
 using Domain.ShareData.Base;
-using AutoGenerator.Config.Attributes;
+using AutoGenerator.Attributes;
 
 namespace LAHJA.Data.UI.Templates.Billing
 {

@@ -20,7 +20,7 @@ namespace Domain.Validators.Conditions.Shared.User
 
             return Task.FromResult(subscription?.Status?.ToLower() == "active"
                 ? ConditionResult.ToSuccess(subscription)
-                : ConditionResult.ToError("No active subscription."));
+                : ConditionResult.ToError(ErrorMessage));
         }
     }
 }

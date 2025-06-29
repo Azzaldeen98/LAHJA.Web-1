@@ -3,11 +3,11 @@ using Microsoft.Extensions.DependencyInjection;
 using AutoGenerator.Helper.Translation;
 using Shared.Interfaces;
 using System.Reflection;
-using AutoGenerator.Config.Attributes;
 using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 using Castle.Core.Logging;
 using AutoGenerator.Code;
+using AutoGenerator.Attributes;
 
 namespace AutoGenerator.Config
 {
@@ -107,7 +107,7 @@ namespace AutoGenerator.Config
     {
         public static bool CheckIgnoreAutomateMapper(Type type)
         {
-            var attribute = type.GetCustomAttribute<IgnoreAutomateMapperAttribute>();
+            var attribute = type.GetCustomAttribute<AutoMapperIgnoreAttribute>();
             return attribute != null && attribute.IgnoreMapping;
         }
 

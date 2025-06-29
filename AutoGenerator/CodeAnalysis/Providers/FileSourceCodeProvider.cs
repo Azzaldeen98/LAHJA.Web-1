@@ -1,0 +1,217 @@
+﻿namespace AutoGenerator.CodeAnalysis.Providers
+{
+    /// <summary>
+    /// Provides source code access by reading from and writing to a physical file.
+    /// Implements the <see cref="ISourceCodeProvider"/> interface.
+    /// </summary>
+    public class FileSourceCodeProvider : ISourceCodeProvider
+    {
+        private readonly string _filePath;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileSourceCodeProvider"/> class with the specified file path.
+        /// </summary>
+        /// <param name="filePath">The path to the source code file.</param>
+        /// <exception cref="ArgumentException">Thrown if the file path is null or empty.</exception>
+        public FileSourceCodeProvider(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentException("File path cannot be null or empty.", nameof(filePath));
+
+            _filePath = filePath;
+        }
+
+        /// <summary>
+        /// Asynchronously reads the source code from the specified file path.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous read operation. The task result contains the source code as a string.</returns>
+        /// <exception cref="FileNotFoundException">Thrown if the file does not exist.</exception>
+        public async Task<string> GetSourceCodeAsync()
+        {
+            if (!File.Exists(_filePath))
+                throw new FileNotFoundException("Source file not found.", _filePath);
+
+            return await File.ReadAllTextAsync(_filePath);
+        }
+
+        /// <summary>
+        /// Asynchronously writes the source code to the specified file path.
+        /// </summary>
+        /// <param name="code">The source code to be saved.</param>
+        /// <param name="outputId">Optional output file path. If null, the original file path is used.</param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown if the code or output path is null or empty.</exception>
+        /// <exception cref="ArgumentException">Thrown if the file path contains invalid characters.</exception>
+        public async Task SaveSourceCodeAsync(string code, string? outputId = null)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                throw new ArgumentNullException(nameof(code));
+
+            string path = !string.IsNullOrWhiteSpace(outputId)
+                ? outputId
+                : _filePath ?? throw new ArgumentNullException(nameof(_filePath));
+
+            // Validate file path
+            if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0 ||
+                Path.GetFileName(path).IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+                throw new ArgumentException("The file path contains invalid characters.", nameof(path));
+
+            // Ensure directory exists
+            var directory = Path.GetDirectoryName(path);
+            if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+
+            // Write code to file
+            await File.WriteAllTextAsync(path, code);
+        }
+    }
+
+    //public class FileSourceCodeProvider : ISourceCodeProvider
+    //{
+    //    private readonly string _filePath;
+
+    //    public FileSourceCodeProvider(string filePath)
+    //    {
+    //        if (string.IsNullOrEmpty(filePath))
+    //            throw new ArgumentException("File path cannot be null or empty.", nameof(filePath));
+
+    //        _filePath = filePath;
+    //    }
+
+    //    public async Task<string> GetSourceCodeAsync()
+    //    {
+    //        if (!File.Exists(_filePath))
+    //            throw new FileNotFoundException("Source file not found.", _filePath);
+
+    //        return await File.ReadAllTextAsync(_filePath);
+    //    }
+
+
+
+    //    public async Task SaveSourceCodeAsync(string code, string? outputId = null)
+    //    {
+    //        if (string.IsNullOrWhiteSpace(code))
+    //            throw new ArgumentNullException(nameof(code));
+
+    //        string path = !string.IsNullOrWhiteSpace(outputId)
+    //            ? outputId
+    //            : _filePath ?? throw new ArgumentNullException(nameof(_filePath));
+
+    //        // التحقق من وجود اسم ملف صحيح
+    //        if (path.IndexOfAny(Path.GetInvalidPathChars()) >= 0 || Path.GetFileName(path).IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+    //            throw new ArgumentException("The file path contains invalid characters.", nameof(path));
+
+    //        // التأكد من أن المجلد موجود، وإذا لم يكن موجوداً، يتم إنشاؤه
+    //        var directory = Path.GetDirectoryName(path);
+    //        if (!string.IsNullOrWhiteSpace(directory) && !Directory.Exists(directory))
+    //            Directory.CreateDirectory(directory);
+
+    //        // كتابة الكود إلى الملف
+    //        await File.WriteAllTextAsync(path, code);
+    //    }
+
+    //}
+    //public class TextSourceCodeProvider : ISourceCodeProvider
+    //{
+    //    private readonly string _code;
+    //    private readonly string? _outputPath;
+
+    //    public TextSourceCodeProvider(string code, string? outputPath = null)
+    //    {
+    //        _code = code ?? throw new ArgumentNullException(nameof(code));
+    //        _outputPath = outputPath;
+    //    }
+
+    //    public Task<string> GetSourceCodeAsync() => Task.FromResult(_code);
+
+    //    public async Task SaveSourceCodeAsync(string code, string? outputPath = null)
+    //    {
+    //        if (string.IsNullOrWhiteSpace(code))
+    //            throw new ArgumentNullException(nameof(code));
+
+    //        var path = outputPath ?? _outputPath;
+    //        if (string.IsNullOrWhiteSpace(path))
+    //            throw new ArgumentNullException(nameof(path));
+
+    //        await File.WriteAllTextAsync(path, code);
+    //    }
+    //}
+    //public class CompositeClassSelector : IClassSelector
+    //{
+    //    private readonly List<IClassSelector> _selectors = new();
+
+    //    public CompositeClassSelector AddSelector(IClassSelector selector)
+    //    {
+    //        if (selector != null)
+    //            _selectors.Add(selector);
+    //        return this;
+    //    }
+
+    //    public IEnumerable<ClassDeclarationSyntax> SelectClasses(CompilationUnitSyntax root)
+    //    {
+    //        return _selectors.SelectMany(s => s.SelectClasses(root)).Distinct();
+    //    }
+    //}
+    //public class SuffixClassSelector : IClassSelector
+    //{
+    //    private readonly string _suffix;
+
+    //    public SuffixClassSelector(string? suffix)
+    //    {
+    //        //if (string.IsNullOrWhiteSpace(suffix))
+    //        //    throw new ArgumentException("Suffix cannot be null or empty.", nameof(suffix));
+
+    //        _suffix = suffix ?? "";
+    //    }
+
+    //    public IEnumerable<ClassDeclarationSyntax> SelectClasses(CompilationUnitSyntax root)
+    //    {
+    //        if (root == null)
+    //            throw new ArgumentNullException(nameof(root));
+
+    //        return root.DescendantNodes()
+    //            .OfType<ClassDeclarationSyntax>()
+    //            .Where(c => string.IsNullOrWhiteSpace(_suffix) ? true : c.Identifier.Text.EndsWith(_suffix))
+    //            .ToList();
+    //    }
+    //}
+    //public class TypeBasedClassSelector : IClassSelector
+    //{
+    //    private readonly HashSet<string> _classNames;
+
+    //    public TypeBasedClassSelector(IEnumerable<Type> types)
+    //    {
+    //        _classNames = types?.Select(t => t.Name).ToHashSet()
+    //            ?? throw new ArgumentNullException(nameof(types));
+    //    }
+
+    //    public IEnumerable<ClassDeclarationSyntax> SelectClasses(CompilationUnitSyntax root)
+    //    {
+
+    //        return root.DescendantNodes()
+    //            .OfType<ClassDeclarationSyntax>()
+    //            .Where(c => _classNames.Contains(c.Identifier.Text));
+    //    }
+    //}
+    //public class PredicateClassSelector : IClassSelector
+    //{
+    //    private readonly Func<ClassDeclarationSyntax, bool> _predicate;
+
+    //    public PredicateClassSelector(Func<ClassDeclarationSyntax, bool> predicate)
+    //    {
+    //        _predicate = predicate ?? throw new ArgumentNullException(nameof(predicate));
+    //    }
+
+    //    public IEnumerable<ClassDeclarationSyntax> SelectClasses(CompilationUnitSyntax root)
+    //    {
+    //        return root.DescendantNodes()
+    //            .OfType<ClassDeclarationSyntax>()
+    //            .Where(_predicate);
+    //    }
+    //}
+
+
+
+
+
+}
