@@ -11,9 +11,9 @@ namespace Domain.Entity
 
 
     [AutoGenerate(GenerationTarget.Repository | GenerationTarget.UseCase | GenerationTarget.Service)]
-    [SupportedMethods(SupportedMethods.GetById | SupportedMethods.GetAll | SupportedMethods.CountAll)]
-    [AutoMapper( SupportedMethods.GetById | SupportedMethods.CountAll,true)]
-    //[MethodRoute(SupportedMethods.GetAll, "GetPlansAsync")]
+    [SupportedMethods(SupportedMethods.GetById | SupportedMethods.GetAllWithPaged | SupportedMethods.GetAll | SupportedMethods.CountAll)]
+    [AutoMapper( SupportedMethods.GetById | SupportedMethods.GetAllWithPaged | SupportedMethods.CountAll,true)]
+    //[MethodRoute(SupportedMethods.GetAllWithPaged, "GetAllPlansAsync")]
     //[MethodRoute("GetPlansAsync", "GetPlansAsync")]
     [AutomateMapperWith(LayersModels.DTO, "PlanOutputVM", "PlanCreateVM" )]
     [AutomateMapperWith(LayersModels.VM, "PlanViewModel")]

@@ -101,13 +101,13 @@ public class BuilderAuthApiClient : BuilderAuthApi<IAuthService, DataBuildAuthBa
     {
         var model = Mapper.Map<ForgetPassword>(data);
         model.ReturnUrl = Helper.GetInstance().GetFullPath(ConstantsApp.RESET_PASSWORDL_PAGE_URL); //   shareProvider.Navigation.anager.BaseUri+ConstantsApp.RESET_PASSWORDL_PAGE_URL;
-        await Service.forgotPasswordAsync(model, cancellationToken);
+        await Service.forgotPasswordAuthAsync(model, cancellationToken);
     }
 
     public override async Task<AccessTokenResponse> Login(DataBuildAuthBase data, CancellationToken cancellationToken)
     {
         var model = Mapper.Map<Login>(data);
-        var res = await Service.loginAsync(model, cancellationToken);
+        var res = await Service.loginAuthAsync(model, cancellationToken);
         return Mapper.Map<AccessTokenResponse>(res);
     }
 
@@ -115,7 +115,7 @@ public class BuilderAuthApiClient : BuilderAuthApi<IAuthService, DataBuildAuthBa
 
     public override async Task Logout(object data, CancellationToken cancellationToken)
     {
-        await Service.logoutAsync(data, cancellationToken);
+        await Service.logoutAuthAsync(data, cancellationToken);
     }
 
 
@@ -129,27 +129,27 @@ public class BuilderAuthApiClient : BuilderAuthApi<IAuthService, DataBuildAuthBa
     public override async Task Register(DataBuildAuthBase data, CancellationToken cancellationToken)
     {
         var model = Mapper.Map<Register>(data);
-        await Service.registerAsync(model, cancellationToken);
+        await Service.registerAuthAsync(model, cancellationToken);
     }
 
     public override async Task<string> ReSendConfirmationEmail(DataBuildAuthBase data, CancellationToken cancellationToken)
     {
         data.ReturnUrl = Helper.GetInstance().GetFullPath(ConstantsApp.CONFIRM_EMAIL_PAGE_URL);
         var model = Mapper.Map<ResendConfirmationEmail>(data);
-        return await Service.resendConfirmationEmailAsync(model, cancellationToken);
+        return await Service.resendConfirmationEmailAuthAsync(model, cancellationToken);
 
     }
 
     public override async Task ResetPassword(DataBuildAuthBase data, CancellationToken cancellationToken)
     {
         var model = Mapper.Map<ResetPassword>(data);
-        await Service.resetPasswordAsync(model, cancellationToken);
+        await Service.resetPasswordAuthAsync(model, cancellationToken);
     }
 
     public override async Task SubmitConfirmEmail(DataBuildAuthBase data, CancellationToken cancellationToken)
     {
         var model = Mapper.Map<ConfirmEmail>(data);
-        await Service.confirmationEmailAsync(model, cancellationToken);
+        await Service.confirmationEmailAuthAsync(model, cancellationToken);
     }
 }
 public class TemplateAuthShare<T, E> : TemplateBase<T, E>
@@ -420,12 +420,14 @@ public class TemplateAuth : TemplateAuthShare<IAuthService, DataBuildAuthBase>
             if (dataBuildAuthBase.IsLogin)
             {
                 var result = await handleApiLoginAsync(dataBuildAuthBase);
-                BuilderComponents?.SubmitResult?.Invoke(result);
+                if(BuilderComponents?.SubmitResult!=null)
+                    BuilderComponents?.SubmitResult.Invoke(result);
             }
             else
             {
                var result= await handleApiRegisterAsync(dataBuildAuthBase);
-               BuilderComponents?.SubmitResult?.Invoke(result);
+                if (BuilderComponents?.SubmitResult != null)
+                    BuilderComponents?.SubmitResult?.Invoke(result);
 
             }
         }

@@ -20,9 +20,15 @@ public partial class PlanRepository : IPlanRepository
         _mapper = mapper;
     }
 
+    public async Task<PaginatedResult<Plan>> GetAllPlansAsync(String lg, CancellationToken cancellationToken)
+    {
+        var result = await _apiClient.GetAllPlansAsync(lg, cancellationToken);
+        return PaginatedResult<Plan>.Success(_mapper.Map<List<Plan>>(result.Data.ToList()), result.TotalRecords, result.PageNumber, result.PageSize, result.SortBy, result.SortDirection);
+    }
 
     public async Task<ICollection<Plan>> GetPlansAsync(String lg, CancellationToken cancellationToken)
     {
+       
         var result = await _apiClient.GetPlansAsync(lg, cancellationToken);
         return _mapper.Map<ICollection<Plan>>(result);
     }

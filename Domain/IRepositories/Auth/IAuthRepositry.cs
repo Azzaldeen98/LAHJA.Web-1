@@ -11,7 +11,7 @@ namespace Domain.IRepositories
     {
         public Task RegisterAsync(Register body, CancellationToken cancellationToken);
 
-        public Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken);
+        public Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken,bool useCookies = false, bool useSessionCookies=false);
 
         [RouteTo("ConfirmEmailAsync")]
         public Task ConfirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken);

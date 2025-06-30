@@ -11,6 +11,7 @@ namespace Infrastructure.DataSource.ApiClientBase
         public interface IBuildApiClient<T> : ITBaseApiClient
         {
             public Task<T> GetApiClient();
+            public Task<T> GetBasicApiClient();
 
         }
 
@@ -40,8 +41,12 @@ namespace Infrastructure.DataSource.ApiClientBase
                 var client = await _clientFactory.CreateClientWithAuthAsync<T>(ConstantsAPI.API_CLIENT_NAME);
                 return client;
             }
+            public async Task<T> GetBasicApiClient()
+            {
+                var client = await _clientFactory.CreateClientAsync<T>(ConstantsAPI.API_CLIENT_NAME);
+                return client;
+            }
 
-
-        }
+    }
     
 }

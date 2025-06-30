@@ -8,6 +8,10 @@ using AutoGenerator.Enums;
 using System.Threading.Tasks;
 using AutoGenerator.Attributes;
 using AutoGenerator.CodeAnalysis.Attributes;
+using AutoGenerator.Helper;
+using AutoGenerator.CodeAnalysis;
+using System.Linq;
+using AutoGenerator.CodeAnalysis.Descriptors;
 
 namespace AutoGenerator.Code.Service
 {
@@ -43,6 +47,7 @@ namespace AutoGenerator.Code.Service
 
                 var new_class_name = $"{folderName}{generationOptions.DestinationCategoryName}";
                 var new_interface_name = $"I{new_class_name}";
+                var new_class_file_path = $"{output_directory}\\{new_class_name}.cs";
 
                 var fildsPropertyCode = new StringBuilder().AppendLine();
                 var parametersCode = new StringBuilder().AppendLine();
@@ -50,6 +55,24 @@ namespace AutoGenerator.Code.Service
                 var methodsCode = new StringBuilder().AppendLine();
                 var interfaceMethodsCode = new StringBuilder().AppendLine();
 
+                var requiredAttribute = nameof(ManualEditedAttribute).Replace("Attribute", "");
+
+
+               var classDescriptor= new CodeAnalyzer().ExtractClassDescriptor(new_class_file_path,attributeToCheck: nameof(ManualEditedAttribute));
+               
+
+                if (classDescriptor != null && classDescriptor.Attributes.Contains(requiredAttribute))
+                {
+                    Console.WriteLine($"Class {new_class_name} is marked as ManualEdited. Skipping generation.");
+                    continue;
+                }
+                //var destinationClassDeclarations = GeneratorHelpers.ExtractClassesFromFile(new_class_file_path);
+                //if(destinationClassDeclarations?.Any() == true)
+                //{
+                //    // If the class already exists, we can skip generating it
+                //    Console.WriteLine($"Class {new_class_name} already exists. Skipping generation.");
+                //    continue;
+                //}
                 foreach (var file in files)
                 {
 
@@ -96,14 +119,24 @@ namespace AutoGenerator.Code.Service
                                         }
 
                                     }
-
-                                    var generateCodeMethod = GeneratedMethod(method, generationOptions.MethodContentCode
-                                        .Replace("{PropertyFieldName}", fieldName), newMethodName);
-                                    if (!string.IsNullOrWhiteSpace(generateCodeMethod))
+                                    if (classDescriptor?.Methods.FirstOrDefault(x => x.Name == newMethodName) is MethodDescriptor methodDes 
+                                        && !string.IsNullOrWhiteSpace(methodDes.Code))
                                     {
-                                        methodsCode.AppendLine(generateCodeMethod);
+                                        methodsCode.AppendLine(methodDes.Code);
                                         methodsCode.AppendLine();
                                     }
+                                    else
+                                    {
+                                        var generateCodeMethod = GeneratedMethod(method, generationOptions.MethodContentCode.Replace("{PropertyFieldName}", fieldName), newMethodName);
+
+                                        if (!string.IsNullOrWhiteSpace(generateCodeMethod))
+                                        {
+                                            methodsCode.AppendLine(generateCodeMethod);
+                                        
+                                        }
+                                    }
+
+                                    methodsCode.AppendLine();
 
 
                                 }
@@ -138,7 +171,7 @@ namespace AutoGenerator.Code.Service
                                                     initializeFieldsCode.ToString(),
                                                     methodsCode.ToString());
 
-                await GeneratorManager.SaveToFileAsync($"{output_directory}\\{new_class_name}.cs", generateClassCode);
+                await GeneratorManager.SaveToFileAsync(new_class_file_path, generateClassCode);
             }
         }
 

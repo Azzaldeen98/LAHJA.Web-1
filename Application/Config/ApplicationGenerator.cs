@@ -16,7 +16,7 @@ namespace Application.Config
         public static async Task GeneratorCodeAsync()
         {
             //await Task.Delay(1000);
-            await GenerateUseCaseTemplates();
+            //await GenerateUseCaseTemplates();
             //await Task.Delay(1000);
             await GenerateServicesTemplates();
         }
@@ -122,20 +122,21 @@ namespace Application.Config
                      "Microsoft.Extensions.Configuration",
                      "Application.UseCases",
                      "Shared.Wrapper",
-                     "Domain.Entity"
+                     "Domain.Entity",
+                     "AutoGenerator.Attributes"
         },
-        AdditionalCode = @"
-        {PropertyFields}
-    public {ClassName}(   {Parameters})
-    {
-                        {InitializeFields}
-    }
+                AdditionalCode = @"
+                {PropertyFields}
+            public {ClassName}(   {Parameters})
+            {
+                                {InitializeFields}
+            }
 
-                ",
-    MethodContentCode = @"
+                        ",
+                MethodContentCode = @"
 
-        [RETERN] await {PropertyFieldName}.{InvokeMethodCallback};
-        ",
+                    [RETERN] await {PropertyFieldName}.{InvokeMethodCallback};
+                    ",
 
             });
         }

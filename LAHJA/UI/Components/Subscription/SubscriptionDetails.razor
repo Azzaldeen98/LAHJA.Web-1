@@ -1,0 +1,127 @@
+﻿@using Domain.Entities.Subscriptions.Response
+@using LAHJA.Data.UI.Components
+@using LAHJA.Data.UI.Models.Profile
+@using LAHJA.UI.Components.ProFile.USettings
+
+
+<MudPaper Class="pa-4" Style="direction: rtl; font-family: 'Tajawal', sans-serif; background-color: #f8fafc">
+    <MudGrid>
+        <!-- Header -->
+        <MudItem xs="12">
+            <MudPaper Elevation="4" Class="pa-4 gradient-bg text-white">
+                <MudGrid Justify="Justify.SpaceBetween">
+                    <MudItem>
+                        <MudIcon Icon="@Icons.Material.Filled.Star" Color="@Color.Warning" />
+                        <MudText Typo="Typo.h5" Class="d-inline-block">بريميوم</MudText>
+                    </MudItem>
+                    <MudItem Class="d-flex align-center gap-2">
+                        <MudAvatar>
+                            <MudImage Src="https://randomuser.me/api/portraits/women/44.jpg" Size="Size.Medium" Alt="صورة المستخدم" />
+                        </MudAvatar>
+
+                        <MudIcon Icon="@Icons.Material.Filled.Star" Color="@Color.Warning" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+
+        <!-- Subscription Card -->
+        <MudItem xs="12" lg="4">
+            <MudCard Class="elevation-6">
+                <MudCardHeader Class="gradient-bg text-white">
+                    <MudText Typo="Typo.h6">الباقة المميزة</MudText>
+                    <MudText Typo="Typo.subtitle2">اشتراك سنوي</MudText>
+                </MudCardHeader>
+                <MudCardContent>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">تاريخ التجديد</MudText>
+                            <MudText>15 يناير 2024</MudText>
+                        </MudItem>
+                        <MudItem xs="6" Class="text-end">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">السعر</MudText>
+                            <MudText>$99.99/سنة</MudText>
+                        </MudItem>
+                    </MudGrid>
+
+                    <MudText Class="mt-4 mb-1">استهلاك التخزين</MudText>
+                    <MudProgressLinear Color="Color.Primary" Value="45" Rounded Height="8" />
+
+                    <MudList T="string" Dense Class="mt-4">
+                        <MudListItem>
+                            <MudAvatar Icon="@Icons.Material.Filled.Cloud" Color="Color.Primary" Size="Size.Medium" />
+                            <MudText>100GB مساحة تخزين</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">زيادة إلى 200GB مع الترقية</MudText>
+                        </MudListItem>
+                        <MudListItem>
+                            <MudAvatar Icon="@Icons.Material.Filled.Group" Color="Color.Secondary" Size="Size.Medium" />
+                            <MudText>5 مستخدمين</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">إضافة مستخدمين إضافيين</MudText>
+                        </MudListItem>
+                        <MudListItem>
+                            <MudAvatar Icon="@Icons.Material.Filled.SupportAgent" Color="Color.Info" Size="Size.Medium" />
+                            <MudText>دعم مميز 24/7</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">أولوية في الرد</MudText>
+                        </MudListItem>
+                    </MudList>
+
+                    <MudButton FullWidth Color="Color.Primary" Variant="Variant.Filled" Class="mt-4">ترقية الباقة</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Details + Actions -->
+        <MudItem xs="12" lg="8">
+            <MudPaper Elevation="2" Class="pa-4 mb-4">
+                <MudText Typo="Typo.h6">تفاصيل الاشتراك</MudText>
+                <MudDivider Class="my-2" />
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.subtitle1">معلومات الدفع</MudText>
+                        <MudText Typo="Typo.caption">طريقة الدفع: VISA •••• 4242</MudText>
+                        <MudText Typo="Typo.caption">التجديد التالي: 15 يناير 2024</MudText>
+                        <MudText Typo="Typo.caption">الدورة: سنوية</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudText Typo="Typo.subtitle1">تاريخ الفواتير</MudText>
+                        <MudList T="string" Dense>
+                            <MudListItem><MudText>15 يناير 2023 - $99.99</MudText></MudListItem>
+                            <MudListItem><MudText>15 يناير 2022 - $99.99</MudText></MudListItem>
+                            <MudListItem><MudText>15 يناير 2021 - $99.99</MudText></MudListItem>
+                        </MudList>
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle1">إعدادات الاشتراك</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudSwitch Label="التجديد التلقائي" T="string" Color="Color.Primary" />
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">يتم التجديد تلقائياً</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="6">
+                        <MudSwitch T="string" Label="إشعارات التجديد" Color="Color.Primary" />
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">تنبيهات قبل الانتهاء</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            <MudPaper Elevation="2" Class="pa-4">
+                <MudText Typo="Typo.h6">إجراءات الاشتراك</MudText>
+                <MudDivider Class="my-2" />
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Error" StartIcon="@Icons.Material.Filled.Cancel">إلغاء الاشتراك</MudButton>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.SwapHoriz">تغيير الباقة</MudButton>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Success" StartIcon="@Icons.Material.Filled.Download">تحميل الفواتير</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+

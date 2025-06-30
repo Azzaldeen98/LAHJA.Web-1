@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="Core\CodeAnalysis\" />
+    <Folder Include="NewFolder\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

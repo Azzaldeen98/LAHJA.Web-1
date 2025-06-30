@@ -10,18 +10,20 @@ namespace Domain.IRepositories;
 
 public interface ISubscriptionRepository: ITBaseRepository,ITScope
 {
-    	[AutoMapper]
+    [AutoMapper]
 	public Task<ICollection<Subscription>> GetSubscriptionsAsync(CancellationToken cancellationToken);
 	[AutoMapper]
+	[RouteTo("GetMySubscriptionAsync")]
 	public Task<Subscription> GetSubscriptionAsync(CancellationToken cancellationToken);
 	[AutoMapper]
 	public Task<Subscription> GetOneAsync(string id, CancellationToken cancellationToken);
-[RouteTo("PauseCollectionAsync")]
+	[RouteTo("PauseCollectionAsync")]
 	public Task PauseAsync(Subscription model, CancellationToken cancellationToken);
+	[RouteTo("RenewSubscriptionAsync")]
 	public Task RenewAsync(CancellationToken cancellationToken);
-[RouteTo("ResumeCollection2Async")]
+	[RouteTo("ResumeCollectionAsync")]
 	public Task ResumeAsync(CancellationToken cancellationToken);
-[RouteTo("Cancel2Async")]
+	[RouteTo("CancelAtEndAsync")]
 	public Task CancelAsync(CancellationToken cancellationToken);
 
 

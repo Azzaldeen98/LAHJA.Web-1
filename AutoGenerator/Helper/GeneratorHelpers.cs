@@ -21,6 +21,22 @@ namespace AutoGenerator.Helper
             return GetTypeByName(fullTypeName);
         }
 
+        public static List<ClassDeclarationSyntax> ExtractClassesFromFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+                return new List<ClassDeclarationSyntax>();
+            //throw new FileNotFoundException("The specified file does not exist.", filePath);
+
+            var code = File.ReadAllText(filePath);
+            var syntaxTree = CSharpSyntaxTree.ParseText(code);
+            var root = syntaxTree.GetCompilationUnitRoot();
+
+            var classNodes = root.DescendantNodes()
+                                 .OfType<ClassDeclarationSyntax>()
+                                 .ToList();
+
+            return classNodes;
+        }
         public static Type? GetTypeByName(string fullTypeName)
         {
             // حاول إيجاد النوع باستخدام Type.GetType مباشرة

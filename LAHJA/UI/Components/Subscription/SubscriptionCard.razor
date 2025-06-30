@@ -6,13 +6,19 @@
 
     @if (DataBuild != null)
     {
-  
-        <SubscriptionDetails DataBuild="DataBuild" />
+
+        <LAHJA.UI.Components.ProFile.USettings.SubscriptionDetails  
+                                                DataBuild="DataBuild" 
+                                                SubmitPause="SubmitPause" 
+                                                SubmitResume="SubmitResume" 
+                                                SubmitDelete="SubmitCancel" />
     }
 
 
 @code {
 
-
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitCancel{ get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitResume { get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitPause{ get; set; }
     [Parameter] public DataBuildUserSubscriptionInfo DataBuild { get; set; }
 }

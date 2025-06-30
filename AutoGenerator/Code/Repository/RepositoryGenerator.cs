@@ -36,6 +36,7 @@ namespace AutoGenerator.Code.Repository
                 var supportedAttr = model.GetCustomAttribute<SupportedMethodsAttribute>();
                 var autoMapper = model.GetCustomAttribute<AutoMapperAttribute>();
                 var MethodRouteAttr = model.GetCustomAttributes<MethodRouteAttribute>();
+
                 ///TODO: Future developer
                  //var attrRouteProvider = model.GetCustomAttribute<MethodRouteProviderAttribute>();
                  //if (attrRouteProvider != null)
@@ -365,13 +366,14 @@ namespace AutoGenerator.Code.Repository
 
                 var methodParamsAttr = MethodRouteAttr.ToDictionary(a => a.SourceMethod, a => a.CustomParams);
 
-                if (methodRouteAttr != null && methodRouteAttr.TryGetValue(methodFlag, out var targetMethod1) && !string.IsNullOrWhiteSpace(targetMethod1))
+                if (methodRouteAttr != null && methodRouteAttr.TryGetValue(methodFlag, out var targetMethod1) 
+                    && !string.IsNullOrWhiteSpace(targetMethod1))
                 {
-                    sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{targetMethod1}\")]");
+                    sb.AppendLine($"\t[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{targetMethod1}\")]");
                 }
                 else if (methodSourceAttr!=null && methodSourceAttr.TryGetValue(methodName, out var targetMethod2) && !string.IsNullOrWhiteSpace(targetMethod2))
                 {
-                    sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{targetMethod2}\")]");
+                    sb.AppendLine($"\t[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{targetMethod2}\")]");
                 }
 
                 if (methodParamsAttr != null &&  methodParamsAttr.TryGetValue(methodFlag, out var _params) && _params?.Any() == true)

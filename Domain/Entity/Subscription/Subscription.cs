@@ -25,11 +25,13 @@ namespace Domain.Entity
     [AutoMapper(SupportedMethods.GetAll | SupportedMethods.GetOne | SupportedMethods.GetCurrent, true)]
     [MethodRoute(SupportedMethods.Pause, "PauseCollectionAsync", "Subscription model")]
     [MethodRoute(SupportedMethods.Resume, "ResumeCollectionAsync")]
-    [MethodRoute(SupportedMethods.Resume, "RenewSubscriptionAsync")]
+    [MethodRoute(SupportedMethods.Renew, "RenewSubscriptionAsync")]
     [MethodRoute(SupportedMethods.Cancel, "CancelAtEndAsync")]
+    //[MethodRoute("GetSubscriptionAsync", "GetMySubscriptionAsync")]
     [MethodRoute(SupportedMethods.GetCurrent, "GetMySubscriptionAsync")]
     //[MethodRouteProvider(typeof(RouteProviderSubscription))]
-
+    [AutomateMapperWith(LayersModels.DTO, "SubscriptionOutputVM", "SubscriptionUpdateRequest", "SubscriptionResumeRequest")]
+    [AutomateMapperWith(LayersModels.VM, "DataBuildUserSubscriptionInfo")]
     public class Subscription: ITDso
     {
 

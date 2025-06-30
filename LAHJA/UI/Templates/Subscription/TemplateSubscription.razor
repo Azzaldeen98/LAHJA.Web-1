@@ -25,9 +25,17 @@
 else
 {
 	<MainSubscription 
-		BuildSubscriptionData="buildSubscriptionData" 
-		BuildPlanData="buildPlanData" 
-		SubmitDeleteSubscription="Template.BuilderComponents.SubmitDelete" />
+			BuildSubscriptionData="buildSubscriptionData" 
+			BuildPlanData="buildPlanData" 
+			SubmitCancel="onCancelSubscription"
+			SubmitPause="onPauseSubscription"
+			SubmitResume="onResumeSubscription" />
+
+
+
+
+
+
 }
 
 
@@ -54,7 +62,7 @@ else
 	{
 		if (Template.BuilderComponents.GetSubscription != null && !string.IsNullOrEmpty(SubscriptionId))
 		{
-			
+
 			var result = await Template.BuilderComponents.GetSubscription(SubscriptionId);
 
 			if (result.Succeeded)
@@ -80,15 +88,31 @@ else
 		}
 	}
 
+	private void onCancelSubscription(DataBuildUserSubscriptionInfo subscription)
+	{
+		if (Template.BuilderComponents.SubmitCancel!=null)
+		{
+			Template.BuilderComponents.SubmitCancel(subscription);
+		
+		}
+	}
+	private void onResumeSubscription(DataBuildUserSubscriptionInfo subscription)
+	{
+		if (Template.BuilderComponents.SubmitResume != null)
+		{
+			Template.BuilderComponents.SubmitResume(subscription);
 
-	// protected override async Task OnAfterRenderAsync(bool firstRender)
-	// {
+		}
+	}
+	private void onPauseSubscription(DataBuildUserSubscriptionInfo subscription)
+	{
+		if (Template.BuilderComponents.SubmitPause != null)
+		{
+			Template.BuilderComponents.SubmitPause(subscription);
 
-	// 	if (firstRender)
-	// 	{ }
+		}
+	}
 
-
-	// }
 	
 
 } 

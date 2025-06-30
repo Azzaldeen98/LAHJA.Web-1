@@ -2,6 +2,7 @@
 using Domain.Entity;
 using Application.Validators.User;
 using Domain.Validators.Enums;
+using AutoGenerator.Attributes;
 namespace Application.Services;
 
 
@@ -75,7 +76,7 @@ public class SubscriptionService : ISubscriptionService {
     }
 
 
-
+    [ManualEdited]
     public async Task pauseSubscriptionAsync(Subscription model, CancellationToken cancellationToken)
     {
 
@@ -96,7 +97,7 @@ public class SubscriptionService : ISubscriptionService {
     }
 
 
-
+    [ManualEdited]
     public async Task resumeSubscriptionAsync(CancellationToken cancellationToken)
     {
 
@@ -106,7 +107,7 @@ public class SubscriptionService : ISubscriptionService {
         
     }
 
-
+    [ManualEdited]
     public async Task cancelSubscriptionAsync(CancellationToken cancellationToken)
     {
 

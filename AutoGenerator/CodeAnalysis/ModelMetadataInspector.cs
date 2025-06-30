@@ -1,11 +1,11 @@
 ﻿namespace AutoGenerator.CodeAnalysis;
 
 using AutoGenerator.Attributes;
+using Microsoft.CodeAnalysis;
 using Shared.Interfaces;
 using System;
 using System.Linq;
 using System.Reflection;
-
 /// <summary>
 /// Provides functionality to inspect model classes that implement a specific interface,
 /// extracting public properties and identifying custom attributes such as [Filterable].

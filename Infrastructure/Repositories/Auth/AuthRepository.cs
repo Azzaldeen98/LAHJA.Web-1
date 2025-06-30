@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Infrastructure.DataSource.ApiClient2;
 using System.Collections.Generic;
 using AutoMapper;
-using AutoGenerator.Enums;
 
 namespace Infrastructure.Repositories;
 public partial class AuthRepository : IAuthRepository
@@ -27,18 +26,18 @@ public partial class AuthRepository : IAuthRepository
         await _apiClient.RegisterAsync(_body, cancellationToken);
     }
 
-    public async Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken)
+    public async Task<AccessToken> LoginAsync(Login body, CancellationToken cancellationToken, Boolean useCookies, Boolean useSessionCookies)
     {
         var _body = _mapper.Map<LoginRequest>(body);
-        var result = await _apiClient.LoginAsync(true, true, _body, cancellationToken);
+        var result = await _apiClient.LoginAsync(useCookies, useSessionCookies, _body, cancellationToken);
         return _mapper.Map<AccessToken>(result);
     }
-   
+
+    [RouteTo("ConfirmEmailAsync")]
     public async Task ConfirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken)
     {
         var _body = _mapper.Map<ConfirmEmailRequest>(body);
         await _apiClient.ConfirmEmailAsync(_body, cancellationToken);
-   
     }
 
     public async Task<string> ResendConfirmationEmailAsync(ResendConfirmationEmail body, CancellationToken cancellationToken)

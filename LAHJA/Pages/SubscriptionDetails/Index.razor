@@ -1,24 +1,22 @@
-﻿@* @page "/subscriptionDetails" *@
+﻿@page "/subscriptionDetails" 
 @page "/subscriptionDetails/{SubscriptionId}"
 @page "/subscriptionDetails/{SubscriptionId}/{PlanId}"
+@using LAHJA.UI.Components.Subscription
 @using LAHJA.UI.Templates.Plans
 @using LAHJA.UI.Templates.Subscription
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
+@* @attribute [Authorize] *@
 
 
-<TemplateSubscription PlanId="@PlanId" SubscriptionId="@SubscriptionId" />
-
+<TemplateSubscription PlanId="@PlanId" SubscriptionId="@SubscriptionId" /> 
+<SubscriptionDetails />
 
 @code{
 
     [Parameter] public string? PlanId{ get; set; }
     [Parameter] public string SubscriptionId { get; set; }
 
-    // protected override void OnInitialized()
-    // {
-    //     base.OnInitialized();
-    // }
+
 }
 
 

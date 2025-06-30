@@ -14,6 +14,6 @@ namespace AutoGenerator.Attributes
         {
             GenerateTarget = target;
         }
-    }
+    }    
 
 }

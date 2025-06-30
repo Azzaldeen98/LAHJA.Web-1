@@ -101,7 +101,8 @@ namespace Client.Shared.UI.ErrorHandling
 
         public async Task HandleUnauthorizedErrorAsync(UnauthorizedException? ex = null)
         {
-            userActionService.NavigationTo($"{RouterPage.LOGOUT}/");
+            //userActionService.NavigationTo($"{RouterPage.LOGIN}/");
+            userActionService.ShowSnackBar(ex.Message);
         }
 
         public async Task HandleSubscriptionUnavailableErrorAsync(SubscriptionUnavailableException? ex=null)

@@ -81,6 +81,9 @@ namespace AutoGenerator.Config
                 bodyCode = GenerateBodyWithDso(apiClientType, keywords, dsoParam, returnType, returnCollectionType);
             }
 
+            if (bodyCode == null)
+                bodyCode = "throw new NotImplementedException();";
+
             var cleanedBodyCode = GeneratorHelpers.CleanMessyCode(bodyCode);
             chunksCode.Add(method.Name, cleanedBodyCode);
         }

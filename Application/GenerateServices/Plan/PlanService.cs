@@ -4,6 +4,7 @@ using Domain.Entity;
 using Application.Validators.User;
 using Domain.Validators.Enums;
 using Shared.Constants.Localization;
+using AutoGenerator.Attributes;
 namespace Application.Services;
 
 
@@ -13,6 +14,7 @@ public class PlanService : IPlanService {
     private readonly GetAllPlansUseCase _getAllPlansUseCase;
     private readonly GetByIdPlanUseCase _getByIdPlanUseCase;
     private readonly GetPlansUseCase _getPlansUseCase;
+    [ManualEdited]
     private readonly IUserValidator userValidator;
 
     public PlanService(
@@ -59,7 +61,7 @@ public class PlanService : IPlanService {
     }
 
 
-
+    [ManualEdited]
     public async Task<ICollection<Plan>> getPlansAsync(String lg, CancellationToken cancellationToken)
     {
 
@@ -81,8 +83,6 @@ public class PlanService : IPlanService {
         }
 
         return items;
-
-
 
 
     }

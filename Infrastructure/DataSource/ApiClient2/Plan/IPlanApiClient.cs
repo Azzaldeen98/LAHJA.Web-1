@@ -17,7 +17,7 @@ public interface IPlanApiClient : ITBaseShareApiClient
 
 
     public Task<ICollection<PlanOutputVM>> GetPlansAsync(string lg, CancellationToken cancellationToken);
-
+    public Task<PlanOutputVMIEnumerablePagedResponse> GetAllPlansAsync(string lg, CancellationToken cancellationToken);
 
     public Task<PlanOutputVM> GetPlanByIdAsync(string id, string lg, CancellationToken cancellationToken);
 

@@ -46,7 +46,7 @@ namespace AutoGenerator.Config
         /// <param name="targetNamespace">Optional namespace to filter types.</param>
         /// <returns>A list of data model types in the namespace.</returns>
         List<Type> GetDataModelsType(Assembly assembly, string targetNamespace = null);
-
+  
         /// <summary>
         /// Gets types in the assembly whose names contain a specified keyword, optionally filtered by interface implementation and namespace.
         /// </summary>

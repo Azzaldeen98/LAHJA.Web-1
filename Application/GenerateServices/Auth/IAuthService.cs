@@ -11,25 +11,25 @@ namespace Application.Services;
 public interface IAuthService :  ITBaseShareService  
 {
 
-    public Task confirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken);
+    public Task confirmationEmailAuthAsync(ConfirmEmail body, CancellationToken cancellationToken);
 
 
-    public Task forgotPasswordAsync(ForgetPassword body, CancellationToken cancellationToken);
+    public Task forgotPasswordAuthAsync(ForgetPassword body, CancellationToken cancellationToken);
 
 
-    public Task<AccessToken> loginAsync(Login body, CancellationToken cancellationToken);
+    public Task<AccessToken> loginAuthAsync(Login body, CancellationToken cancellationToken);
 
 
-    public Task logoutAsync(object body, CancellationToken cancellationToken);
+    public Task logoutAuthAsync(object body, CancellationToken cancellationToken);
 
 
-    public Task registerAsync(Register body, CancellationToken cancellationToken);
+    public Task registerAuthAsync(Register body, CancellationToken cancellationToken);
 
 
-    public Task<string> resendConfirmationEmailAsync(ResendConfirmationEmail body, CancellationToken cancellationToken);
+    public Task<string> resendConfirmationEmailAuthAsync(ResendConfirmationEmail body, CancellationToken cancellationToken);
 
 
-    public Task resetPasswordAsync(ResetPassword body, CancellationToken cancellationToken);
+    public Task resetPasswordAuthAsync(ResetPassword body, CancellationToken cancellationToken);
 
 
 

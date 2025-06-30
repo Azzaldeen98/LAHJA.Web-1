@@ -123,8 +123,8 @@ namespace LAHJA.Data.UI.Components.Base
         protected string lastName="eweqwe";
         protected string picture ="";
         protected string phoneNumber="897977897";
-        protected string email = "shopingcartapi90@gmail.com";
-        protected string password="Test@123";
+        protected string email = "admin@gmail.com";
+        protected string password= "Admin123*";
         protected string repeatPassword;
         protected string code;
 

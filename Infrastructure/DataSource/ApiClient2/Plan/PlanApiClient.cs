@@ -26,8 +26,8 @@ namespace Infrastructure.DataSource.ApiClient2;
     {
     
          return   await apiInvoker.InvokeAsync(async () => {
-            var client = await GetApiClient();
-             return   await client.GetPlansAsync(lg,cancellationToken);
+            var client = await GetBasicApiClient();
+             return new List<PlanOutputVM>();// await client.GetPlansAsync(lg,cancellationToken);
         });
                 
     }
@@ -37,7 +37,7 @@ namespace Infrastructure.DataSource.ApiClient2;
     {
     
          return   await apiInvoker.InvokeAsync(async () => {
-            var client = await GetApiClient();
+            var client = await GetBasicApiClient();
              return    await client.GetPlanByIdAsync(id, lg, cancellationToken);
         });
                 
@@ -48,7 +48,7 @@ namespace Infrastructure.DataSource.ApiClient2;
     {
     
          return   await apiInvoker.InvokeAsync(async () => {
-            var client = await GetApiClient();
+            var client = await GetBasicApiClient();
              return    await client.CountAllPlansAsync(cancellationToken);
         });
                 

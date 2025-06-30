@@ -10,6 +10,8 @@ using Microsoft.CodeAnalysis;
 using AutoGenerator.AppFolder;
 using AutoGenerator.CodeAnalysis.Injections;
 using AutoGenerator.CodeAnalysis.Selectors;
+using AutoGenerator.CodeAnalysis.Specifications;
+using System.ComponentModel.DataAnnotations;
 
 
 namespace Infrastructure.Config
@@ -24,10 +26,11 @@ namespace Infrastructure.Config
         {
 
 
-            //await InterfaceInjectionDtoModelsAsync();
+            await InterfaceInjectionClientTypesAsync();
+            await InterfaceInjectionDtoModelsAsync();
             //await Task.Delay(1000);
             //await GenerateAllApiClientTemplates(sourceFilePath);
-            ////await Task.Delay(1000);
+            //await Task.Delay(1000);
             await GeneratorRepositoriesForEntityModels();
 
 
@@ -36,6 +39,41 @@ namespace Infrastructure.Config
 
 
         }
+        /// <summary>
+        /// Generates interface injections for client types in the specified assembly.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task InterfaceInjectionClientTypesAsync()
+        {
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            var filter = new TypeSpecificationBuilder()
+                       .InNamespace("Infrastructure.Nswag")
+                       .IsClass(true)
+                       .IsPublic(true)
+                       .WhereNameEndWith("Client")
+                       .Build();
+
+            var clientTypes = new DataTypeExplorerService().GetDiscoveredTypes(assembly, filter);
+            if (!clientTypes.Any())
+            {
+                //clientTypes = dataType.GetDataModelsType(assembly, "Infrastructure.Nswag").ToList();
+                await CodeInjectionServiceFactory.CreateService(InjectionType.Interface).ExecuteAsync(new CodeInjectionOptions
+                {
+                    InjectionType = InjectionType.Interface,
+                    IsSourceText = false,
+                    SourceCodeOrFilePath = sourceFilePath,
+                    OutputFilePath = sourceFilePath,
+                    InterfaceFullName = "Shared.Interfaces.ITApiClient",
+                    Selector = new TypeBasedClassSelector(clientTypes)
+                });
+            }
+        }
+
+        /// <summary>
+        /// Generates interface injections for DTO models in the specified assembly.
+        /// </summary>
+        /// <returns></returns>
         public static async Task InterfaceInjectionDtoModelsAsync()
         {
 
@@ -56,9 +94,13 @@ namespace Infrastructure.Config
                 });
             }
         }
+        /// <summary>
+        /// Generates Repositories For Entity Models in the specified assembly.
+        /// </summary>
+        /// <returns></returns>
         public static async Task GeneratorRepositoriesForEntityModels()
         {
-            await GeneratorInterfacesRepository();
+            //await GeneratorInterfacesRepository();
             //await Task.Delay(1000); // Wait for the interface generation to complete
             await GeneratorRepositoryImplementations();
             // Wait for the repository generation to complete
@@ -70,24 +112,12 @@ namespace Infrastructure.Config
         }
 
 
-        //public static async Task EnsureAllRepositoryFilesExist()
-        //{
-        //    var basePath = Path.Combine(ArchitecturalLayersRoot.InfrastructureRoot, "Repositories");
-        //    int retries = 5;
+        
 
-        //    while (retries-- > 0)
-        //    {
-        //        if (Directory.Exists(basePath) && Directory.GetFiles(basePath, "*.cs", SearchOption.AllDirectories).Length > 0)
-        //        {
-        //            return; // الملفات موجودة
-        //        }
-
-        //        await Task.Delay(1000); // انتظر ثانية وحاول مرة أخرى
-        //    }
-
-        //    throw new Exception("الملفات لم يتم إنشاؤها بعد انتهاء GeneratorRepositoryImplementations.");
-        //}
-
+        /// <summary>
+        ///    Generates Interfaces Repositories For Entity Models in the specified assembly.
+        /// </summary>
+        /// <returns></returns>
         public static async Task GeneratorInterfacesRepository()
         {
           
@@ -126,6 +156,11 @@ namespace Infrastructure.Config
 
             });
         }
+
+        /// <summary>
+        /// Generates Class Repositories by  Interfaces Repositories in the specified assembly.
+        /// </summary>
+        /// <returns></returns>
         public static async Task GeneratorRepositoryImplementations()
         {
             await new RepositoryGenerator().GenerateRepositoryImplementations(new GenerationOptions
@@ -171,6 +206,11 @@ namespace Infrastructure.Config
 
             });
         }
+
+        /// <summary>
+        /// Generates the content methods for class repository methods by entity models and  route to apiClient methods
+        /// </summary>
+        /// <returns></returns>
         public static async Task ReBuildRepositoryMethodsBody()
         {
 
@@ -207,6 +247,11 @@ namespace Infrastructure.Config
       
       
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public static async Task GenerateRepositoryTemplates()
         {
 
@@ -221,6 +266,12 @@ namespace Infrastructure.Config
             //if(files!=null && files.Any())
             //    GenerateAllRepositoryTemplates(files[0]);
         }
+
+        /// <summary>
+        ///  Generate ApiClients classes from NSwagger client classes
+        /// </summary>
+        /// <param name="sourceTemplateFilePath"></param>
+        /// <returns></returns>
         public static async Task GenerateAllApiClientTemplates(string sourceTemplateFilePath)
         {
            await AutoCodeGenerator.GenerateAllClassTemplate(new GenerationOptions
@@ -268,6 +319,12 @@ namespace Infrastructure.Config
 
             });
         }
+
+        /// <summary>
+        /// Generates Class Repositories by  Interfaces Repositories by using direct Interfaces Repository in the specified assembly.
+        /// </summary>
+        /// <param name="sourceTemplateFilePath"></param>
+        /// <returns></returns>
         public static async Task GenerateAllRepositoryTemplates(string sourceTemplateFilePath)
         {
            await AutoCodeGenerator.GenerateAllClassTemplate(new GenerationOptions
@@ -310,7 +367,23 @@ namespace Infrastructure.Config
             });
         }
 
-        
-        
+        //public static async Task EnsureAllRepositoryFilesExist()
+        //{
+        //    var basePath = Path.Combine(ArchitecturalLayersRoot.InfrastructureRoot, "Repositories");
+        //    int retries = 5;
+
+        //    while (retries-- > 0)
+        //    {
+        //        if (Directory.Exists(basePath) && Directory.GetFiles(basePath, "*.cs", SearchOption.AllDirectories).Length > 0)
+        //        {
+        //            return; // الملفات موجودة
+        //        }
+
+        //        await Task.Delay(1000); // انتظر ثانية وحاول مرة أخرى
+        //    }
+
+        //    throw new Exception("الملفات لم يتم إنشاؤها بعد انتهاء GeneratorRepositoryImplementations.");
+        //}
+
     }
 }

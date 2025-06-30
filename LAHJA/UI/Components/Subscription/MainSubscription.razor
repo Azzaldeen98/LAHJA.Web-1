@@ -13,7 +13,7 @@
     @if (BuildSubscriptionData != null)
     {
         <MudItem md="6" sm="12">
-            <SubscriptionCard DataBuild="BuildSubscriptionData" />
+            <SubscriptionCard DataBuild="BuildSubscriptionData" SubmitCancel="SubmitCancel" SubmitPause="SubmitPause" SubmitResume="SubmitResume" />
         </MudItem>
     }
 
@@ -31,13 +31,15 @@
 
     [Parameter] public DataBuildUserSubscriptionInfo? BuildSubscriptionData { get; set; }
     [Parameter] public PlanViewModel? BuildPlanData { get; set; }
-    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitDeleteSubscription { get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitCancel{ get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitResume { get; set; }
+    [Parameter] public EventCallback<DataBuildUserSubscriptionInfo> SubmitPause { get; set; }
 
     private void onDeleteSubscription(string subscriptionId)
     {
-        if (SubmitDeleteSubscription.HasDelegate)
+        if (SubmitCancel.HasDelegate)
         {
-            SubmitDeleteSubscription.InvokeAsync(new DataBuildUserSubscriptionInfo{ Id=subscriptionId});
+            SubmitCancel.InvokeAsync(new DataBuildUserSubscriptionInfo { Id = subscriptionId });
         }
     }
 }

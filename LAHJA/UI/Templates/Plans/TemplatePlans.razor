@@ -82,14 +82,7 @@
             if (response!=null && response.Succeeded)
             {
                 var _dataBuilds = response.Data;
-                // var res = await TemplateProfile.GetDataBuildSubscriptions(new FilterResponseData { lg = lg });
-                // if (res.Succeeded && res.Data?.Any()==true)
-                // {
-                //     dataBuilds = await SubscriptionHelpers.filterPlansAsync(_dataBuilds, res.Data);
-                // }
-                // else
-                
-                    dataBuilds = _dataBuilds;
+                dataBuilds = _dataBuilds;
                 
 
               
@@ -103,58 +96,5 @@
     }
 
 
-        // protected override async Task OnAfterRenderAsync(bool firstRender)
-        // {
-        //     if (firstRender)
-        //     {
-
-        //     }
-        // }
-
-    // var response = await Template.BuilderComponents.GetPlans(data);
-    // if (response.Succeeded)
-    // {
-    //     var _dataBuilds = response.Data;
-    //     var res = await TemplateProfile.GetDataBuildSubscriptions(new FilterResponseData { lg = lg });
-
-    //     التحقق مما إذا كان هناك اشتراك نشط
-    //     bool hasActiveSubscription = res.Succeeded && res.Data?.Any(sub => sub?.Status.ToLower() == "active") == true;
-
-    //     التحقق مما إذا كان المستخدم قد اشترك سابقًا في الخطة المجانية
-    //     bool hasSubscribedToFreeBefore = res.Succeeded && res.Data?.Any(sub =>
-    //         _dataBuilds.Any(plan => plan.Name.ToLower() == "free" && plan.Id == sub.PlanId)
-    //     ) == true;
-
-    //     foreach (var plan in _dataBuilds)
-    //     {
-    //         var planName = plan.Name.ToLower();
-
-    //         التحقق مما إذا كان هناك اشتراك نشط لهذه الخطة
-    //         var existingSubscription = res.Data?.FirstOrDefault(sub => sub?.PlanId == plan.Id);
-    //         bool isActive = existingSubscription != null && existingSubscription.Status.ToLower() == "active";
-
-    //         if (planName == "free")
-    //         {
-    //             لا يمكن الاشتراك بالخطة المجانية إذا تم الاشتراك بها مسبقًا
-    //             plan.IsSubscriptionAllowed = !hasSubscribedToFreeBefore;
-    //             plan.IsUpgradeAllowed = false;
-    //         }
-    //         else
-    //         {
-    //             إذا لم يكن هناك أي اشتراك سابق، فالسماح بالاشتراك بأي خطة
-    //             if (!hasActiveSubscription)
-    //             {
-    //                 plan.IsSubscriptionAllowed = true;
-    //             }
-    //             else
-    //             {
-    //                 إذا كان المستخدم لديه اشتراك نشط، فالسماح فقط بالترقية
-    //                 plan.IsSubscriptionAllowed = !isActive;
-    //                 plan.IsUpgradeAllowed = isActive;
-    //             }
-    //         }
-
-    //         dataBuilds.Add(plan);
-    //     }
-    // }
+       
 } 

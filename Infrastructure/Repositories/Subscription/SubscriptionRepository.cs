@@ -26,6 +26,7 @@ public partial class SubscriptionRepository : ISubscriptionRepository
         return _mapper.Map<ICollection<Subscription>>(result);
     }
 
+    [RouteTo("GetMySubscriptionAsync")]
     public async Task<Subscription> GetSubscriptionAsync(CancellationToken cancellationToken)
     {
         var result = await _apiClient.GetMySubscriptionAsync(cancellationToken);
@@ -45,18 +46,19 @@ public partial class SubscriptionRepository : ISubscriptionRepository
         await _apiClient.PauseCollectionAsync(_body, cancellationToken);
     }
 
+    [RouteTo("RenewSubscriptionAsync")]
     public async Task RenewAsync(CancellationToken cancellationToken)
     {
         await _apiClient.RenewSubscriptionAsync(cancellationToken);
     }
 
-    [RouteTo("ResumeCollection2Async")]
+    [RouteTo("ResumeCollectionAsync")]
     public async Task ResumeAsync(CancellationToken cancellationToken)
     {
         await _apiClient.ResumeCollectionAsync(cancellationToken);
     }
 
-    [RouteTo("Cancel2Async")]
+    [RouteTo("CancelAtEndAsync")]
     public async Task CancelAsync(CancellationToken cancellationToken)
     {
         await _apiClient.CancelAtEndAsync(cancellationToken);
