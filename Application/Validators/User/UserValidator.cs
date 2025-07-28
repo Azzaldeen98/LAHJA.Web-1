@@ -4,12 +4,12 @@ using Domain.Validators.Conditions.Base;
 
 using Domain.Validators.Conditions.Shared.User;
 using WasmAI.ConditionChecker.Validators;
-using Application.Validators.Shared;
+using Application.Validators;
 using Domain.Validators.Enums;
 using System;
 
 
-namespace Application.Validators.User
+namespace Application.Validators
 {
     /// <summary>
     /// Represents a validator for user-related conditions.

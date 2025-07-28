@@ -2,7 +2,7 @@
 
 public interface IAppGenerator
 {
-    Task GenerateAsync();
+    Task GenerateAsync(string operationType);
 }
 
 

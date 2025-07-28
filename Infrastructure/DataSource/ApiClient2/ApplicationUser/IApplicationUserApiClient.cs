@@ -9,10 +9,12 @@ using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
 using Infrastructure.Share.Invoker;
 using Microsoft.Extensions.Configuration;
+using AutoGenerator.Attributes;
+using Shared.Exceptions;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
-public interface IApplicationUserApiClient : ITBaseShareApiClient 
+public interface IApplicationUserApiClient :  ITBaseShareApiClient  
 {
     public Task<ICollection<ApplicationUserOutputVM>> GetApplicationUsersAsync(CancellationToken cancellationToken);
 

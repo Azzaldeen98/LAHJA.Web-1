@@ -6,10 +6,10 @@ namespace LAHJA.Generator.Config
 {
     public class WebAppGeneratorWrapper : IAppGenerator
     {
-        public async Task GenerateAsync()
+        public async Task GenerateAsync(string operationType)
         {
-            await WebAppGenerator.GeneratorCode();
-            await WebAppGenerator.InjectorCode();
+            await WebAppGenerator.GeneratorCode(operationType);
+      
             await Task.CompletedTask; // للتوافق مع async
         }
     }

@@ -5,13 +5,16 @@ using Microsoft.Extensions.Configuration;
 using Application.UseCases;
 using Shared.Wrapper;
 using Domain.Entity;
+using AutoGenerator.Attributes;
+using Application.Validators;
+using Domain.Validators.Enums;
 namespace Application.Services;
 
 
 public class AuthService : IAuthService {
 
 
-                
+           
      private readonly ConfirmationEmailAuthUseCase _confirmationEmailAuthUseCase;
      private readonly ForgotPasswordAuthUseCase _forgotPasswordAuthUseCase;
      private readonly LoginAuthUseCase _loginAuthUseCase;
@@ -21,7 +24,7 @@ public class AuthService : IAuthService {
      private readonly ResetPasswordAuthUseCase _resetPasswordAuthUseCase;
 
 
-            public AuthService(   
+        public AuthService(   
             ConfirmationEmailAuthUseCase confirmationEmailAuthUseCase,
             ForgotPasswordAuthUseCase forgotPasswordAuthUseCase,
             LoginAuthUseCase loginAuthUseCase,
@@ -29,8 +32,8 @@ public class AuthService : IAuthService {
             RegisterAuthUseCase registerAuthUseCase,
             ResendConfirmationEmailAuthUseCase resendConfirmationEmailAuthUseCase,
             ResetPasswordAuthUseCase resetPasswordAuthUseCase)
-            {
-                                
+        {
+                
           _confirmationEmailAuthUseCase=confirmationEmailAuthUseCase;
           _forgotPasswordAuthUseCase=forgotPasswordAuthUseCase;
           _loginAuthUseCase=loginAuthUseCase;
@@ -40,7 +43,7 @@ public class AuthService : IAuthService {
           _resetPasswordAuthUseCase=resetPasswordAuthUseCase;
 
 
-            }
+        }
 
                         
 
@@ -64,11 +67,11 @@ public class AuthService : IAuthService {
 
 
 
-    public async Task<AccessToken> loginAuthAsync(Login body, CancellationToken cancellationToken)
+    public async Task<AccessToken> loginAuthAsync(Login body, CancellationToken cancellationToken, bool useCookies, bool useSessionCookies)
     {
     
 
-                     return   await _loginAuthUseCase.ExecuteAsync(body, cancellationToken);
+                     return   await _loginAuthUseCase.ExecuteAsync(body, cancellationToken, useCookies, useSessionCookies);
                     
     }
 

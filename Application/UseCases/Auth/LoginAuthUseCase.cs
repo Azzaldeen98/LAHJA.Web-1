@@ -17,10 +17,10 @@ public class LoginAuthUseCase : ITBaseUseCase {
     }
 
                 
-    public  async Task<AccessToken> ExecuteAsync(Login body, CancellationToken cancellationToken)
+    public  async Task<AccessToken> ExecuteAsync(Login body, CancellationToken cancellationToken, bool useCookies, bool useSessionCookies)
     {
     
-         return    await _repository.LoginAsync(body, cancellationToken);
+         return    await _repository.LoginAsync(body, cancellationToken, useCookies, useSessionCookies);
         
     }
 

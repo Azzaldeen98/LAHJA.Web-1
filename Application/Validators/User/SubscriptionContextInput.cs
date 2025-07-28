@@ -2,7 +2,7 @@
 using Domain.Validators.Conditions.Base;
 
 
-namespace Application.Validators.User
+namespace Application.Validators
 {
     /// <summary>
     /// Represents a context input specifically for subscription-related condition evaluations.

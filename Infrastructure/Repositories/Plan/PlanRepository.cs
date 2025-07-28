@@ -26,11 +26,11 @@ public partial class PlanRepository : IPlanRepository
         return PaginatedResult<Plan>.Success(_mapper.Map<List<Plan>>(result.Data.ToList()), result.TotalRecords, result.PageNumber, result.PageSize, result.SortBy, result.SortDirection);
     }
 
+    [ManualEdited]
     public async Task<ICollection<Plan>> GetPlansAsync(String lg, CancellationToken cancellationToken)
     {
-       
-        var result = await _apiClient.GetPlansAsync(lg, cancellationToken);
-        return _mapper.Map<ICollection<Plan>>(result);
+        //var result = await _apiClient.GetPlansAsync(lg, cancellationToken);
+        return _mapper.Map<ICollection<Plan>>(new List<Plan>());
     }
 
     public async Task<int> CountAllPlansAsync(CancellationToken cancellationToken)

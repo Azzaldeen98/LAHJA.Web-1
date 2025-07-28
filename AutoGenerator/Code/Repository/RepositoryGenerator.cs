@@ -6,9 +6,14 @@ using Shared.Interfaces;
 using System.Reflection;
 using System.Text;
 using AutoGenerator.Attributes;
+using AutoGenerator.CodeAnalysis;
+using AutoGenerator.CodeAnalysis.Descriptors;
 
 namespace AutoGenerator.Code.Repository
 {
+    /// <summary>
+    /// Generates repository interfaces and implementations based on the specified generation options.
+    /// </summary>
     public class RepositoryGenerator:BaseGenerator, ITGenerator
     {
 
@@ -19,6 +24,11 @@ namespace AutoGenerator.Code.Repository
             return generatedCode;
 
         }
+        /// <summary>
+        /// Generates interfaces for repositories based on the specified generation options.
+        /// </summary>
+        /// <param name="generationOptions"></param>
+        /// <returns></returns>
         public async Task GenerateIRepositories(GenerationOptions generationOptions)
         {
             var modelTypes = generationOptions.Assembly.GetTypes()
@@ -299,8 +309,22 @@ namespace AutoGenerator.Code.Repository
         {
             return (mapperAttr?.Methods.HasFlag(method) == true) || hasCUGET;
         }
-        // افترض أن هذه الدالة معرفة مسبقاً
-        string GenerateMethodSignature(
+
+        /// <summary>
+        /// Generates the method signature for a repository method based on the provided parameters.
+        /// </summary>
+        /// <param name="methodName"></param>
+        /// <param name="modelName"></param>
+        /// <param name="returnType"></param>
+        /// <param name="methodFlag"></param>
+        /// <param name="autoMapper"></param>
+        /// <param name="hasREAD"></param>
+        /// <param name="customParams"></param>
+        /// <param name="includeLangParam"></param>
+        /// <param name="endWithSemicolon"></param>
+        /// <param name="MethodRouteAttr"></param>
+        /// <returns></returns>
+        private string GenerateMethodSignature(
             string methodName,
             string modelName,
             string returnType,
@@ -409,7 +433,11 @@ namespace AutoGenerator.Code.Repository
             return sb.ToString();
         }
 
-
+        /// <summary>
+        /// Generates repository implementations for all interfaces that inherit from the specified source type.
+        /// </summary>
+        /// <param name="generationOptions"></param>
+        /// <returns></returns>
         public async Task GenerateRepositoryImplementations(GenerationOptions generationOptions)
         {
             var dist_root = generationOptions.DestinationRoot;
@@ -432,178 +460,249 @@ namespace AutoGenerator.Code.Repository
 
             foreach (var iRepo in interfaces)
             {
-               await GenerateAndSave(iRepo, generationOptions); // اجمع المهام هنا
+                var (filePath, code) = await GenerateRepositoryClass(iRepo, generationOptions);
+                if (!string.IsNullOrWhiteSpace(filePath) && !string.IsNullOrWhiteSpace(code))
+                {
+                    // Save to file
+                    await GeneratorManager.SaveToFileAsync(filePath, code);
+                }
+
             }
 
             //await Task.WhenAll(tasks);
             
         }
-        private async Task GenerateAndSave(Type iRepo, GenerationOptions generationOptions)
+        /// <summary>
+        /// Generates and saves the repository implementation for a given interface type.
+        /// </summary>
+        /// <param name="iRepo"></param>
+        /// <param name="generationOptions"></param>
+        /// <returns></returns>
+        private async Task<(string, string)> GenerateRepositoryClass(Type iRepo, GenerationOptions generationOptions)
         {
 
-
+            // Extract model name and class/interface names
             var modelName = iRepo.Name.Replace(generationOptions.DestinationCategoryName, "").Replace("I", "");
             var className = $"{modelName}{generationOptions.DestinationCategoryName}";
             var interfaceName = iRepo.Name;
             var sb = new StringBuilder();
 
+            
+            var filePath = @$"{generationOptions.DestinationRoot}\\{generationOptions.DestinationDirectory}\\{modelName}\\{className}.cs";
+            
+            // 
+            var requiredAttribute = nameof(ManualEditedAttribute).Replace("Attribute", "");
+
+            // Check if the file already exists and if it has the required attribute
+            var classDescriptor = new CodeAnalyzer().ExtractClassDescriptor(filePath, attributeToCheck: nameof(ManualEditedAttribute));
+
+            // If the class is marked as ManualEdited, skip generation
+            if (classDescriptor != null && classDescriptor.Attributes.Contains(requiredAttribute))
+            {
+                Console.WriteLine($"Class {className} is marked as ManualEdited. Skipping generation.");
+                return ("","");
+            }
+
+            // Initialize StringBuilder for fields, parameters, and initialization code
+            var fildsPropertyCode = new StringBuilder();
+            var parametersCode = new StringBuilder();
+            var initializeFieldsCode = new StringBuilder();
+
+            // Check if the class descriptor has fields and generate code for them
+            if (classDescriptor!=null &&  classDescriptor?.Fields.Count() > 0)
+            {
+       
+                for (int i = 0; i < classDescriptor.Fields.Count; i++)
+                {
+                    var filed = classDescriptor.Fields[i];
+                    bool isLast = i == classDescriptor.Fields.Count - 1;
+                    string comma = isLast ? "" : ",";
+
+                    fildsPropertyCode.AppendLine($"\t\t{filed.Code}");
+                    parametersCode.AppendLine($"\t\t{filed.FieldType} {filed.VariableName}{comma}");
+                    initializeFieldsCode.AppendLine($"\t\t\t this.{filed.VariableName}={filed.VariableName};");
+                }
+            }
+
+            // 1. Usings
             sb.AppendLine(GeneratorHelpers.GenerateUsingsNamespaces(generationOptions));
             sb.AppendLine();
 
+            // 2.  Class declaration
             sb.AppendLine($"\tpublic partial class {className} : {interfaceName}");
             sb.AppendLine("\t{");
+
+            // 3. Fields
             sb.AppendLine($"\t\tprivate readonly I{modelName}ApiClient _apiClient;");
             sb.AppendLine("\t\tprivate readonly IMapper _mapper;");
+            sb.AppendLine($"\t\t{fildsPropertyCode.ToString()}");
             sb.AppendLine();
-            sb.AppendLine($"\t\tpublic {className}(I{modelName}ApiClient apiClient, IMapper mapper)");
+
+            // 4. Constructor
+            var parametars = parametersCode.Length>0? $",{parametersCode.ToString()}":"";
+            sb.AppendLine($"\t\tpublic {className}(I{modelName}ApiClient apiClient, IMapper mapper {parametars})");
             sb.AppendLine("\t\t{");
             sb.AppendLine("\t\t\t_apiClient = apiClient;");
             sb.AppendLine("\t\t\t_mapper = mapper;");
+            sb.AppendLine($"{initializeFieldsCode.ToString()}");
             sb.AppendLine("\t\t}");
             sb.AppendLine();
 
+            // Implement Methods from Interface
             foreach (var method in iRepo.GetMethods())
             {
-                
-                
-                //var routeToAtt = method.CustomAttributes.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
-                var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
-                (var returnType, var modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
-
-                returnType = !returnType.Contains("async") ? $"async {returnType}" : returnType;
-
-                var paramList = string.Join(",", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
-
-                ///TODO :  Read Value from  RouteToAttribute
-
-
-                var attribute = method.GetCustomAttributes(typeof(RouteToAttribute))
-                           ?.OfType<RouteToAttribute>()
-                           ?.FirstOrDefault();
-
-                if (attribute != null)
+                // Check if the method is already implemented in the class descriptor
+                if (classDescriptor != null && classDescriptor?.Methods.FirstOrDefault(x => x.Name == method.Name) is MethodDescriptor methodDes
+                         && !string.IsNullOrWhiteSpace(methodDes.Code))
                 {
-                    sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{attribute.Name}\")]");
+                    sb.AppendLine($"{methodDes.Code}");
+                    sb.AppendLine();
                 }
-
-
-                sb.AppendLine($"\t\t{modifiers} {returnType} {method.Name}({paramList})");
-                
-                sb.AppendLine("\t\t{");
-                sb.AppendLine("\t\t\tthrow new NotImplementedException();");
-                sb.AppendLine("\t\t}");
-                sb.AppendLine();
-            }
-
-            sb.AppendLine("\t}");
-
-            var filePath = @$"{generationOptions.DestinationRoot}\\{generationOptions.DestinationDirectory}\\{modelName}\\{className}.cs";
-            await GeneratorManager.SaveToFileAsync(filePath, sb.ToString());
-        }
-        public async Task GenerateRepositoryImplementations2(GenerationOptions generationOptions)
-        {
-            var dist_root = ArchitecturalLayersRoot.InfrastructureRoot;
-
-            var interfaces = ApplicationAssemblies.AssemblyDomain
-                .GetTypes()
-                .Where(t => t.IsInterface &&
-                            typeof(ITBaseRepository).IsAssignableFrom(t) &&
-                            t != typeof(ITBaseRepository)) // استبعاد الواجهة الأصلية نفسها
-                .ToList();
-
-            //var code=generationOptions.Template.Replace("{ClassName}", $"{class_name}:")
-            //    .Replace("{BaseClass}","")
-            //    .Replace("{Interfaces}", string.Join(",", generationOptions.Interfaces.Select(x=>x.Name)))
-            //    .Replace("{Properties}", 
-            //    @$"private readonly I{model.Name}ApiClient _apiClient;
-            //    private readonly IMapper _mapper;
-            //");
-
-            foreach (var iRepo in interfaces)
-            {
-                var modelName = iRepo.Name.Replace("Repository", "").Replace("I", "");
-                var className = $"{modelName}Repository";
-                var interfaceName = iRepo.Name;
-                var namespaceName = "Infrastructure.Repositories";
-                var sb = new StringBuilder();
-
-                // 1. Usings
-                sb.AppendLine("using System;");
-                sb.AppendLine("using System.Threading;");
-                sb.AppendLine("using System.Threading.Tasks;");
-                sb.AppendLine("using System.Collections.Generic;");
-                sb.AppendLine("using AutoMapper;");
-                sb.AppendLine("using Domain.IRepositories;");
-                sb.AppendLine("using Domain.Entity;");
-                sb.AppendLine("using Shared.Interfaces;");
-                sb.AppendLine("using Shared.Wrapper;");
-         
-                sb.AppendLine();
-
-                // 2. Namespace + Class declaration
-                sb.AppendLine($"namespace {namespaceName}");
-                sb.AppendLine("{");
-                sb.AppendLine($"\tpublic partial class {className} : {interfaceName}");
-                sb.AppendLine("\t{");
-
-                // 3. Fields
-                sb.AppendLine($"\t\tprivate readonly I{modelName}ApiClient _apiClient;");
-                sb.AppendLine("\t\tprivate readonly IMapper _mapper;");
-                sb.AppendLine();
-
-                // 4. Constructor
-                sb.AppendLine($"\t\tpublic {className}(I{modelName}ApiClient apiClient, IMapper mapper)");
-                sb.AppendLine("\t\t{");
-                sb.AppendLine("\t\t\t_apiClient = apiClient;");
-                sb.AppendLine("\t\t\t_mapper = mapper;");
-                sb.AppendLine("\t\t}");
-                sb.AppendLine();
-
-                // 5. Implement Methods from Interface
-                var methods = iRepo.GetMethods();
-                var partialMethods = "";
-                foreach (var method in methods)
+                else
                 {
-                    var attributes = method.GetCustomAttributes();
-
+                    //var routeToAtt = method.CustomAttributes.FirstOrDefault(x => x.AttributeType is RouteToAttribute);
                     var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
-                    (var returnType, var Modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
-                    //returnType= returnType.Replace("`1[","<").Replace("]", ">");
-                    var methodName = method.Name;
-                    var parameters = method.GetParameters();
-                
-                    var paramList = string.Join(",", parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
-                    var variabels = string.Join(",", parameters.Select(p => $"{p.Name}"));
-                    //var variabelsObject = string.Join(",", parameters.Where(p=> p.GetType().IsClass || p.GetType().IsAbstract || p.GetType().IsInterface).Select(p =>  $"{p.Name}"));
-                    var variablesObject = parameters.Where(p => p.ParameterType.IsClass && !p.ParameterType.IsPrimitive && p.ParameterType != typeof(string))
-                        .Select(p => p.Name);
+                    (var returnType, var modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
 
-                    var defaultBody = $"\t\t\t";
+                    returnType = !returnType.Contains("async") ? $"async {returnType}" : returnType;
 
-                    //partialMethods += $"\n\t\tpublic partial  {returnType} On{methodName}({paramList});";
+                    var paramList = string.Join(",", method.GetParameters().Select(p => $"{p.ParameterType.Name} {p.Name}"));
 
-                    sb.AppendLine($"\t\tpublic  {returnType} {methodName}({paramList})");
+                    ///TODO :  Read Value from  RouteToAttribute
+
+
+                    var attribute = method.GetCustomAttributes(typeof(RouteToAttribute))
+                               ?.OfType<RouteToAttribute>()
+                               ?.FirstOrDefault();
+
+                    if (attribute != null)
+                    {
+                        sb.AppendLine($"[{nameof(RouteToAttribute).Replace("Attribute", "")}(\"{attribute.Name}\")]");
+                    }
+
+                    // Build Method code
+                    sb.AppendLine($"\t\t{modifiers} {returnType} {method.Name}({paramList})");
                     sb.AppendLine("\t\t{");
-                    //sb.AppendLine($"\t\t On{methodName}({paramList})");
-                    sb.AppendLine(defaultBody);
                     sb.AppendLine("\t\t\tthrow new NotImplementedException();");
                     sb.AppendLine("\t\t}");
-                    //sb.AppendLine($"\t\tpublic partial {returnType} On{methodName}({paramList});");
                     sb.AppendLine();
                 }
 
-                // 6. Close class + namespace
-                sb.AppendLine(partialMethods);
-                sb.AppendLine("\t}");
-                sb.AppendLine("}");
-
-                // 7. Save to file
-                await GeneratorManager.SaveToFileAsync(
-                    @$"{dist_root}\\Repositories\\{modelName}\\{className}.cs",
-                    sb.ToString()
-                );
             }
+
+            sb.AppendLine("\t}"); // end class
+
+            return (filePath,sb.ToString());
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="generationOptions"></param>
+        /// <returns></returns>
+        //public async Task GenerateRepositoryImplementations2(GenerationOptions generationOptions)
+        //{
+        //    var dist_root = ArchitecturalLayersRoot.InfrastructureRoot;
+
+        //    var interfaces = ApplicationAssemblies.AssemblyDomain
+        //        .GetTypes()
+        //        .Where(t => t.IsInterface &&
+        //                    typeof(ITBaseRepository).IsAssignableFrom(t) &&
+        //                    t != typeof(ITBaseRepository)) // استبعاد الواجهة الأصلية نفسها
+        //        .ToList();
+
+        //    //var code=generationOptions.Template.Replace("{ClassName}", $"{class_name}:")
+        //    //    .Replace("{BaseClass}","")
+        //    //    .Replace("{Interfaces}", string.Join(",", generationOptions.Interfaces.Select(x=>x.Name)))
+        //    //    .Replace("{Properties}", 
+        //    //    @$"private readonly I{model.Name}ApiClient _apiClient;
+        //    //    private readonly IMapper _mapper;
+        //    //");
+
+        //    foreach (var iRepo in interfaces)
+        //    {
+        //        var modelName = iRepo.Name.Replace("Repository", "").Replace("I", "");
+        //        var className = $"{modelName}Repository";
+        //        var interfaceName = iRepo.Name;
+        //        var namespaceName = "Infrastructure.Repositories";
+        //        var sb = new StringBuilder();
+
+        //        // 1. Usings
+        //        sb.AppendLine("using System;");
+        //        sb.AppendLine("using System.Threading;");
+        //        sb.AppendLine("using System.Threading.Tasks;");
+        //        sb.AppendLine("using System.Collections.Generic;");
+        //        sb.AppendLine("using AutoMapper;");
+        //        sb.AppendLine("using Domain.IRepositories;");
+        //        sb.AppendLine("using Domain.Entity;");
+        //        sb.AppendLine("using Shared.Interfaces;");
+        //        sb.AppendLine("using Shared.Wrapper;");
+         
+        //        sb.AppendLine();
+
+        //        // 2. Namespace + Class declaration
+        //        sb.AppendLine($"namespace {namespaceName}");
+        //        sb.AppendLine("{");
+        //        sb.AppendLine($"\tpublic partial class {className} : {interfaceName}");
+        //        sb.AppendLine("\t{");
+
+        //        // 3. Fields
+        //        sb.AppendLine($"\t\tprivate readonly I{modelName}ApiClient _apiClient;");
+        //        sb.AppendLine("\t\tprivate readonly IMapper _mapper;");
+        //        sb.AppendLine();
+
+        //        // 4. Constructor
+        //        sb.AppendLine($"\t\tpublic {className}(I{modelName}ApiClient apiClient, IMapper mapper)");
+        //        sb.AppendLine("\t\t{");
+        //        sb.AppendLine("\t\t\t_apiClient = apiClient;");
+        //        sb.AppendLine("\t\t\t_mapper = mapper;");
+        //        sb.AppendLine("\t\t}");
+        //        sb.AppendLine();
+
+        //        // 5. Implement Methods from Interface
+        //        var methods = iRepo.GetMethods();
+        //        var partialMethods = "";
+        //        foreach (var method in methods)
+        //        {
+        //            var attributes = method.GetCustomAttributes();
+
+        //            var methodSyntax = GeneratorHelpers.ConvertToSyntax(method);
+        //            (var returnType, var Modifiers) = AutoCodeGenerator.CleanMethodSignature(methodSyntax);
+        //            //returnType= returnType.Replace("`1[","<").Replace("]", ">");
+        //            var methodName = method.Name;
+        //            var parameters = method.GetParameters();
+                
+        //            var paramList = string.Join(",", parameters.Select(p => $"{p.ParameterType.Name} {p.Name}"));
+        //            var variabels = string.Join(",", parameters.Select(p => $"{p.Name}"));
+        //            //var variabelsObject = string.Join(",", parameters.Where(p=> p.GetType().IsClass || p.GetType().IsAbstract || p.GetType().IsInterface).Select(p =>  $"{p.Name}"));
+        //            var variablesObject = parameters.Where(p => p.ParameterType.IsClass && !p.ParameterType.IsPrimitive && p.ParameterType != typeof(string))
+        //                .Select(p => p.Name);
+
+        //            var defaultBody = $"\t\t\t";
+
+        //            //partialMethods += $"\n\t\tpublic partial  {returnType} On{methodName}({paramList});";
+
+        //            sb.AppendLine($"\t\tpublic  {returnType} {methodName}({paramList})");
+        //            sb.AppendLine("\t\t{");
+        //            //sb.AppendLine($"\t\t On{methodName}({paramList})");
+        //            sb.AppendLine(defaultBody);
+        //            sb.AppendLine("\t\t\tthrow new NotImplementedException();");
+        //            sb.AppendLine("\t\t}");
+        //            //sb.AppendLine($"\t\tpublic partial {returnType} On{methodName}({paramList});");
+        //            sb.AppendLine();
+        //        }
+
+        //        // 6. Close class + namespace
+        //        sb.AppendLine(partialMethods);
+        //        sb.AppendLine("\t}");
+        //        sb.AppendLine("}");
+
+        //        // 7. Save to file
+        //        await GeneratorManager.SaveToFileAsync(
+        //            @$"{dist_root}\\Repositories\\{modelName}\\{className}.cs",
+        //            sb.ToString()
+        //        );
+        //    }
+        //}
 
     }
 }

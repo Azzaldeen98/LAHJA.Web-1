@@ -18,13 +18,35 @@ namespace LAHJA.Generator.Code
     {
        
         private static string appRoot = ArchitecturalLayersRoot.ClientAppRoot;
-
-        public static async Task GeneratorCode()
-        {
-
-           await   GenerateTemplates();
-        }        
         
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="operationType"></param>
+        /// <returns></returns>
+        public static async Task GeneratorCode(string operationType)
+        {
+            if (string.IsNullOrWhiteSpace(operationType) || operationType == "All")
+            {
+                await GenerateTemplates();
+                await InjectorCode();
+            }
+            else if (operationType == "Templates")
+            {
+                await GenerateTemplates();
+            }
+            else if (operationType == "InjectorSaveInvoker")
+            {
+                await InjectorCode();
+            }
+
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public static async Task InjectorCode()
         {
             string templatesPath = Path.Combine($"{appRoot}\\Data\\UI", "Templates");

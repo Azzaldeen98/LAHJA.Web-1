@@ -6,9 +6,9 @@ namespace LAHJA.Generator.Config
 {
     public class ApplicationAppGenerator : IAppGenerator
     {
-        public async Task GenerateAsync()
+        public async Task GenerateAsync(string operationType)
         {
-            await ApplicationGenerator.GeneratorCodeAsync();
+            await ApplicationGenerator.GeneratorCodeAsync(operationType);
         }
     }
 }

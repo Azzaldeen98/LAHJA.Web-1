@@ -9,10 +9,12 @@ using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
 using Infrastructure.Share.Invoker;
 using Microsoft.Extensions.Configuration;
+using AutoGenerator.Attributes;
+using Shared.Exceptions;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
-public interface IFAQItemApiClient : ITBaseShareApiClient 
+public interface IFAQItemApiClient :  ITBaseShareApiClient  
 {
     public Task<ICollection<FAQItemOutputVM>> GetFAQItemsAsync(string lg, CancellationToken cancellationToken);
 

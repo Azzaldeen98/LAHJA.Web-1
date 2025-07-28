@@ -12,6 +12,8 @@ using AutoGenerator.Helper;
 using AutoGenerator.CodeAnalysis;
 using System.Linq;
 using AutoGenerator.CodeAnalysis.Descriptors;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.Primitives;
 
 namespace AutoGenerator.Code.Service
 {
@@ -66,6 +68,9 @@ namespace AutoGenerator.Code.Service
                     Console.WriteLine($"Class {new_class_name} is marked as ManualEdited. Skipping generation.");
                     continue;
                 }
+
+   
+                
                 //var destinationClassDeclarations = GeneratorHelpers.ExtractClassesFromFile(new_class_file_path);
                 //if(destinationClassDeclarations?.Any() == true)
                 //{
@@ -99,6 +104,8 @@ namespace AutoGenerator.Code.Service
                                 parametersCode.AppendLine($"            {sourceClassName} {variableName},");
                                 initializeFieldsCode.AppendLine($"          {fieldName}={variableName};");
 
+                      
+                        
                                 var newMethodName = sourceClassName.Replace(generationOptions.SourceCategoryName, "");
                                 newMethodName = $"{char.ToLower(newMethodName[0])}{newMethodName.Substring(1)}Async";
 
@@ -119,10 +126,13 @@ namespace AutoGenerator.Code.Service
                                         }
 
                                     }
+
+                                    /// If the function already exists and is declared using the ManualEdited attribute.
+                                    /// the function code and body are accepted as is without any new modifications because it must be manually modified.
                                     if (classDescriptor?.Methods.FirstOrDefault(x => x.Name == newMethodName) is MethodDescriptor methodDes 
                                         && !string.IsNullOrWhiteSpace(methodDes.Code))
                                     {
-                                        methodsCode.AppendLine(methodDes.Code);
+                                        methodsCode.AppendLine($"\t{methodDes.Code}");
                                         methodsCode.AppendLine();
                                     }
                                     else
@@ -143,6 +153,20 @@ namespace AutoGenerator.Code.Service
 
                             }
                         }
+                    }
+                }
+
+
+                if (classDescriptor?.Fields.Count() > 0)
+                {
+                  
+
+                    foreach (var filed in classDescriptor.Fields)
+                    {
+                        fildsPropertyCode.AppendLine($"     {filed.Code}");
+                        parametersCode.AppendLine($"            {filed.FieldType} {filed.VariableName},");
+                        initializeFieldsCode.AppendLine($"          this.{filed.VariableName}={filed.VariableName};");
+
                     }
                 }
 

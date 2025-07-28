@@ -3,7 +3,7 @@ using Domain.Validators.Conditions.Base;
 using WasmAI.ConditionChecker.Validators;
 
 
-namespace Application.Validators.Shared
+namespace Application.Validators
 {
 
     /// <summary>

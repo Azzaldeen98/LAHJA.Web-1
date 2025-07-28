@@ -8,7 +8,7 @@ namespace Domain.IRepositories;
 
 
 
-public interface IPlanRepository: ITBaseRepository,ITScope
+public interface IPlanRepository: ITBaseShareRepository
 {
     [AutoMapper]
 	public Task<PaginatedResult<Plan>> GetAllPlansAsync(string lg, CancellationToken cancellationToken);

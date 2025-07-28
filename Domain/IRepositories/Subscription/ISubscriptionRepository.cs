@@ -8,7 +8,7 @@ namespace Domain.IRepositories;
 
 
 
-public interface ISubscriptionRepository: ITBaseRepository,ITScope
+public interface ISubscriptionRepository: ITBaseShareRepository
 {
     [AutoMapper]
 	public Task<ICollection<Subscription>> GetSubscriptionsAsync(CancellationToken cancellationToken);

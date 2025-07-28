@@ -22,17 +22,33 @@ namespace Infrastructure.Config
 
         private static string appRoot = ArchitecturalLayersRoot.InfrastructureRoot;
         private static string sourceFilePath = $"{ArchitecturalLayersRoot.InfrastructureRoot}\\DataSource\\ApiClientFactory\\Nswag\\WebClientApi.cs";
-        public static async Task GeneratorCodeAsync()
+        public static async Task GeneratorCodeAsync(string operationType="All")
         {
 
-
-            await InterfaceInjectionClientTypesAsync();
-            await InterfaceInjectionDtoModelsAsync();
+            if (operationType == "All" || operationType == "Nswag")
+            {
+                await InterfaceInjectionClientTypesAsync();
+                await InterfaceInjectionDtoModelsAsync();
+            }
+       
             //await Task.Delay(1000);
-            //await GenerateAllApiClientTemplates(sourceFilePath);
-            //await Task.Delay(1000);
-            await GeneratorRepositoriesForEntityModels();
+            if (operationType == "All" || operationType == "ApiClient") {
 
+                await GenerateAllApiClientTemplates(sourceFilePath);
+            }
+                
+            //await Task.Delay(1000);
+            if (operationType == "All" || operationType == "RepositoryByEntityModel")
+            {
+                await GeneratorRepositoriesForEntityModels();
+            }
+                
+            if (operationType == "All" ||  operationType == "RepositoryClass")
+            {
+                await GeneratorRepositoriesClassWithReBuildMethodsBodyAsync();
+            }
+
+          
 
 
             //await GenerateRepositoryTemplates();
@@ -98,21 +114,34 @@ namespace Infrastructure.Config
         /// Generates Repositories For Entity Models in the specified assembly.
         /// </summary>
         /// <returns></returns>
+
         public static async Task GeneratorRepositoriesForEntityModels()
         {
-            //await GeneratorInterfacesRepository();
+            await GeneratorInterfacesRepository();
             //await Task.Delay(1000); // Wait for the interface generation to complete
-            await GeneratorRepositoryImplementations();
+            await GeneratorRepositoriesClassWithReBuildMethodsBodyAsync();
             // Wait for the repository generation to complete
             //await EnsureAllRepositoryFilesExist();
 
-            await ReBuildRepositoryMethodsBody();
+
             // Wait for the method body rewriting to complete
 
         }
 
+        /// <summary>
+        /// Generates the Repositories Class by using Interfaces Repositories and rebuilds the methods body for each repository class.
+        /// </summary>
+        /// <returns></returns>
+        public static async Task GeneratorRepositoriesClassWithReBuildMethodsBodyAsync()
+        {
+            
+          
+            await GeneratorRepositoriesClassAsync();
+            await ReBuildRepositoryMethodsBody();
 
-        
+
+        }
+
 
         /// <summary>
         ///    Generates Interfaces Repositories For Entity Models in the specified assembly.
@@ -132,8 +161,8 @@ namespace Infrastructure.Config
                 NamespaceName = "Domain.IRepositories",
                 Interfaces = new List<Type>
                     {
-                           typeof(ITBaseRepository),
-                           typeof(ITScope),
+                           typeof(ITBaseShareRepository),
+                      
                     },
                 Usings = new List<string>
                     {
@@ -161,7 +190,7 @@ namespace Infrastructure.Config
         /// Generates Class Repositories by  Interfaces Repositories in the specified assembly.
         /// </summary>
         /// <returns></returns>
-        public static async Task GeneratorRepositoryImplementations()
+        public static async Task GeneratorRepositoriesClassAsync()
         {
             await new RepositoryGenerator().GenerateRepositoryImplementations(new GenerationOptions
             {
@@ -170,13 +199,13 @@ namespace Infrastructure.Config
                 Assembly = ApplicationAssemblies.AssemblyInfrastructure,
                 DestinationRoot = $"{ArchitecturalLayersRoot.InfrastructureRoot}",
                 DestinationDirectory = "Repositories",
-                SourceType = typeof(ITBaseRepository),
+                SourceType = typeof(ITBaseShareRepository),
                 DestinationCategoryName = "Repository",
                 NamespaceName = "Infrastructure.Repositories",
 
                 Interfaces = new List<Type>
                 {
-                    //typeof(ITBaseRepository),
+                    //typeof(ITBaseShareRepository),
                 },
                 Usings = new List<string>
                     {
@@ -217,7 +246,7 @@ namespace Infrastructure.Config
             Assembly assembly = Assembly.GetExecutingAssembly();
             IDataTypeExplorerService dataType = new DataTypeExplorerService();
 
-            var typesRepositories = dataType.GetRepositoriesType(assembly, "Repository", typeof(ITBaseRepository), "Infrastructure.Repositories").ToList();
+            var typesRepositories = dataType.GetRepositoriesType(assembly, "Repository", typeof(ITBaseShareRepository), "Infrastructure.Repositories").ToList();
             //var repo = typesRepositories.FirstOrDefault();
             foreach (var type in typesRepositories)
             {
@@ -289,7 +318,7 @@ namespace Infrastructure.Config
                 NamespaceName = "Infrastructure.DataSource.ApiClient2",
                 Interfaces = new List<Type>
                 {
-                    typeof(ITBaseApiClient)
+                    typeof(ITBaseShareApiClient)
                 },
                 Usings = new List<string>
                 {
@@ -303,10 +332,15 @@ namespace Infrastructure.Config
                      "Infrastructure.DataSource.ApiClientFactory",
                      "Infrastructure.Share.Invoker",
                      "Microsoft.Extensions.Configuration",
+                     "AutoGenerator.Attributes",
+                     "Shared.Exceptions",
                  },
                 AdditionalCode = @"
-  
-    public {ClassName}(ClientFactory clientFactory, IMapper mapper,IApiInvoker apiInvoker) : base(clientFactory, mapper, apiInvoker){
+    {FieldsProperty}
+    public {ClassName}(ClientFactory clientFactory, IMapper mapper,IApiInvoker apiInvoker {ConstructorParameters}) 
+    : base(clientFactory, mapper, apiInvoker){
+
+        {InitializeFields}
 
     }
                 ",
@@ -340,7 +374,7 @@ namespace Infrastructure.Config
                 NamespaceName = "Infrastructure.Repositories",
                 Interfaces = new List<Type>
                 {
-                    typeof(ITBaseRepository),
+                    typeof(ITBaseShareRepository),
                     typeof(ITScope),
                 },
                 Usings = new List<string>

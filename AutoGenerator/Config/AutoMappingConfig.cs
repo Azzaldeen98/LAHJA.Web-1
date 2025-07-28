@@ -14,7 +14,7 @@ namespace AutoGenerator.Config
     /// This class automatically registers bidirectional mappings between DSO models and their corresponding DTO and ViewModel types,
     /// using custom mapping logic and attribute-based configuration.
     /// </summary>
-    public class AutoMappingConfig : Profile
+    public class AutoMappingConfig : AutoMapper.Profile
     {
         private readonly Microsoft.Extensions.Logging.ILogger _logger;
 

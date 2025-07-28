@@ -9,13 +9,20 @@ using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
 using Infrastructure.Share.Invoker;
 using Microsoft.Extensions.Configuration;
+using AutoGenerator.Attributes;
+using Shared.Exceptions;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
  public  class InvoiceApiClient : BuildApiClient<InvoiceClient>  , IInvoiceApiClient {
 
-  
-    public InvoiceApiClient(ClientFactory clientFactory, IMapper mapper,IApiInvoker apiInvoker) : base(clientFactory, mapper, apiInvoker){
+    
+
+    public InvoiceApiClient(ClientFactory clientFactory, IMapper mapper,IApiInvoker apiInvoker ) 
+    : base(clientFactory, mapper, apiInvoker){
+
+        
+
 
     }
                 

@@ -7,7 +7,7 @@ using Shared.Interfaces;
 
 namespace Domain.IRepositories
 {
-    public interface IAuthRepository : ITBaseRepository, ITScope
+    public interface IAuthRepository : ITBaseShareRepository
     {
         public Task RegisterAsync(Register body, CancellationToken cancellationToken);
 

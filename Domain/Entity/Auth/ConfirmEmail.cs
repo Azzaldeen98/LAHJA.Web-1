@@ -10,7 +10,7 @@ namespace Domain.Entity
     
     [AutomateMapperWith(LayersModels.DTO, "ConfirmEmailRequest")]
     [AutomateMapperWith(LayersModels.VM, "DataBuildAuthBase", "ConfirmEmailRequest")]
-    [MethodRoute("ConfirmationEmailAsync", "ConfirmEmailAsync")]
+    [MethodRoute("ConfirmationEmailAsync", "CustomMapIdentityApiApi_confirmEmailAsync")]
 
 
     public class ConfirmEmail : ITDso

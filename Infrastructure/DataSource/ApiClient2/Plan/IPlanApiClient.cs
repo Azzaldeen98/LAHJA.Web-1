@@ -9,14 +9,13 @@ using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
 using Infrastructure.Share.Invoker;
 using Microsoft.Extensions.Configuration;
+using AutoGenerator.Attributes;
+using Shared.Exceptions;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
-public interface IPlanApiClient : ITBaseShareApiClient 
+public interface IPlanApiClient :  ITBaseShareApiClient  
 {
-
-
-    public Task<ICollection<PlanOutputVM>> GetPlansAsync(string lg, CancellationToken cancellationToken);
     public Task<PlanOutputVMIEnumerablePagedResponse> GetAllPlansAsync(string lg, CancellationToken cancellationToken);
 
     public Task<PlanOutputVM> GetPlanByIdAsync(string id, string lg, CancellationToken cancellationToken);

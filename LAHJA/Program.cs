@@ -128,7 +128,6 @@ internal class Program
             {
                 // args[1] تحتوي على نوع التوليد المطلوب
                 string target = args[1].ToLower();
-
                 switch (target)
                 {
                     case "all":
@@ -259,10 +258,6 @@ internal class Program
                 reCaptchaOptions.SiteKey = "dddddddgffee";
                 //Set any other ReCaptcha options here...
             });
-
-
-
-
 
         builder.Services.AddMudBlazorSnackbar(config =>
         {

@@ -6,6 +6,8 @@
         public List<string> Attributes { get; set; } = new();
 
         public string? Code { get; set; }
+        public string? FieldType { get; set; }
+        public string? VariableName { get; set; }
     }
 
 

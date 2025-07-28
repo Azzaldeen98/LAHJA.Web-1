@@ -6,7 +6,7 @@ using Shared.Interfaces;
 using Application.UseCases;
 
 
-namespace Application.Validators.User
+namespace Application.Validators
 {
     public interface IUserConditionContextProvider: ISharedConditionContextProvider<UserValidatorStates>,ITScope
     {

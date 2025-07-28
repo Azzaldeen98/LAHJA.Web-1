@@ -9,10 +9,12 @@ using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
 using Infrastructure.Share.Invoker;
 using Microsoft.Extensions.Configuration;
+using AutoGenerator.Attributes;
+using Shared.Exceptions;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
-public interface IMasterApiClient : ITBaseShareApiClient 
+public interface IMasterApiClient :  ITBaseShareApiClient  
 {
     public Task<ICollection<LanguageOutputVM>> GetLanguages2Async(string lg, CancellationToken cancellationToken);
 

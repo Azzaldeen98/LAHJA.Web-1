@@ -1,4 +1,7 @@
-﻿using AutoGenerator.Helper;
+﻿using AutoGenerator.Attributes;
+using AutoGenerator.CodeAnalysis;
+using AutoGenerator.CodeAnalysis.Descriptors;
+using AutoGenerator.Helper;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -85,6 +88,12 @@ namespace AutoGenerator.Code
             if (generationOptions.Interfaces.Any())
                 interfaces.AddRange(generationOptions.Interfaces);
 
+
+            // 
+            var requiredAttribute = nameof(ManualEditedAttribute).Replace("Attribute", "");
+
+      
+
             foreach (var classDecl in classDeclarations)
             {
                 bool isImplementsInterface = IsImplementsOrInheritsBase(classDecl, 
@@ -99,15 +108,30 @@ namespace AutoGenerator.Code
                     if (!string.IsNullOrWhiteSpace(sourceClassName))
                     {
                       var  className = sourceClassName.Replace(generationOptions.SourceCategoryName, "");
-                        
+
+                       
+                 
+
                         //generationOptions.BaseIClassName = baseClassName;
                         var output_directory = "";
                         if (!string.IsNullOrWhiteSpace(className))
                         {
+                            
+
                             generationOptions.ClassName = $"{className}{generationOptions.DestinationCategoryName}";
                             output_directory = $"{generationOptions.DestinationRoot}\\{generationOptions.DestinationDirectory}\\{className}";
-                            // Directory.CreateDirectory().FullName;
-                            //generationOptions.DestinationDirection = output_directory;
+                            var filePath = $"{output_directory}\\{generationOptions.ClassName}.cs";
+
+                            // Check if the file already exists and if it has the required attribute
+                            var classDescriptor = new CodeAnalyzer().ExtractClassDescriptor(filePath, attributeToCheck: nameof(ManualEditedAttribute));
+
+                            // If the class is marked as ManualEdited, skip generation
+                            if (classDescriptor != null && classDescriptor.Attributes.Contains(requiredAttribute))
+                            {
+                                Console.WriteLine($"Class {className} is marked as ManualEdited. Skipping generation.");
+                                continue;
+                            }
+
                             var generateCode = "";
                             if (generationOptions.ImplementGenerateInterface)
                             {
@@ -118,7 +142,7 @@ namespace AutoGenerator.Code
                             }
 
 
-                            generateCode = GenerateClass(classDecl, generationOptions, sourceClassName);
+                            generateCode = GenerateClass(classDecl, generationOptions, sourceClassName,classDescriptor: classDescriptor);
                             await GeneratorManager.SaveToFileAsync($"{output_directory}\\{generationOptions.ClassName}.cs", generateCode);
                             
                         }
@@ -431,7 +455,8 @@ namespace AutoGenerator.Code
         string sourceClassName = "", 
         bool includeNamespaces = true,
         string typeModifierClass = "", 
-        string typeModifierMethods = "")
+        string typeModifierMethods = "",
+        ClassDescriptor classDescriptor=null)
         {
             var sb = new StringBuilder();
             
@@ -444,8 +469,38 @@ namespace AutoGenerator.Code
                 sb.Append(GeneratorHelpers.GenerateUsingsNamespaces(generationOptions));
             sb.AppendLine();
 
+            // Initialize StringBuilder for fields, parameters, and initialization code
+            var fildsPropertyCode = new StringBuilder();
+            var parametersCode = new StringBuilder();
+            var initializeFieldsCode = new StringBuilder();
 
-            sb.Append($" public {typeModifierClass} class {generationOptions.ClassName}");
+            // Check if the class descriptor has fields and generate code for them
+            if (classDescriptor?.Fields.Count() > 0)
+            {
+
+                for (int i = 0; i < classDescriptor.Fields.Count; i++)
+                {
+                    var filed = classDescriptor.Fields[i];
+                    bool isLast = i == classDescriptor.Fields.Count - 1;
+                    string comma = isLast ? "" : ",";
+
+                    fildsPropertyCode.AppendLine($"\t\t{filed.Code}");
+                    parametersCode.AppendLine($"\t\t{filed.FieldType} {filed.VariableName}{comma}");
+                    initializeFieldsCode.AppendLine($"\t\t\t this.{filed.VariableName}={filed.VariableName};");
+                }
+
+                if(parametersCode.Length>1)
+                    parametersCode = parametersCode.Insert(0,','); 
+            }
+            else
+            {
+
+                fildsPropertyCode = fildsPropertyCode.Clear();
+                parametersCode=parametersCode.Clear();
+                initializeFieldsCode = initializeFieldsCode.Clear();
+            }
+
+                sb.Append($" public {typeModifierClass} class {generationOptions.ClassName}");
 
             if (!string.IsNullOrWhiteSpace(generationOptions.BaseClass))
             {
@@ -481,10 +536,22 @@ namespace AutoGenerator.Code
             if (!string.IsNullOrWhiteSpace(generationOptions.AdditionalCode))
             {
                 var code = generationOptions.AdditionalCode.Replace("{ClassName}", Regex.Replace(generationOptions.ClassName, @"<[^<>]*>", ""));
+
                 if(code.Contains("{BaseClass"))
                     code = code.Replace("{BaseClass}", generationOptions.BaseClass);
+
                 if (code.Contains("{IPropertyType"))
-                    code = code.Replace("{IPropertyType}", $"I{sourceClassName}");
+                    code = code.Replace("{IPropertyType}", $"I{sourceClassName}");    
+                
+                if (code.Contains("{FieldsProperty}"))
+                    code = code.Replace("{FieldsProperty}", $"{fildsPropertyCode.ToString()}\n");
+
+                if (code.Contains("{ConstructorParameters}"))
+                    code = code.Replace("{ConstructorParameters}",$"{parametersCode.ToString()}");
+
+                if (code.Contains("{InitializeFields}"))
+                    code = code.Replace("{InitializeFields}", $"{initializeFieldsCode.ToString()}\n");   
+               
 
                 sb.AppendLine(code);
                 sb.AppendLine();
@@ -495,14 +562,26 @@ namespace AutoGenerator.Code
             {
 
                 var generateCode = "";
-
+             
                 if (!string.IsNullOrWhiteSpace(typeModifierMethods))
                 {
                     generateCode = GenerateDeclarationMethod(method, generationOptions.UnifiedNameForFunctions);
                     generateCode = generateCode.Replace("public", $" public {typeModifierMethods} ");
                 }
                 else
-                    generateCode = GenerateMethod(method, generationOptions.MethodContentCode, generationOptions.UnifiedNameForFunctions);
+                {
+                    // Check if the method is already implemented in the class descriptor
+                    if (classDescriptor?.Methods.FirstOrDefault(x => x.Name == method.Identifier.Text) is MethodDescriptor methodDes
+                    && !string.IsNullOrWhiteSpace(methodDes.Code))
+                    {
+                        generateCode=methodDes.Code;
+                    }
+                    else
+                    {
+                        generateCode = GenerateMethod(method, generationOptions.MethodContentCode, generationOptions.UnifiedNameForFunctions);
+                    }
+                }
+                    
 
                 sb.AppendLine(generateCode);
             }

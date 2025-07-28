@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using AutoGenerator.CodeAnalysis.Descriptors;
 using AutoGenerator.Enums;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// أداة لتحليل الكود من ملفات C# أو من النوع (Type) باستخدام Roslyn أو الانعكاس.
@@ -145,7 +146,15 @@ public class CodeAnalyzer
     public ClassDescriptor ExtractClassDescriptor(string filePath , string? className = null, int? index = null, ClassTypes? classType = ClassTypes.Class, string? attributeToCheck = null)
     {
 
-        BuildFileCodeAnalyzer(filePath);
+        try
+        {
+            BuildFileCodeAnalyzer(filePath);
+        }
+        catch
+        {
+            return null;
+        }
+
 
         if (!string.IsNullOrWhiteSpace(attributeToCheck))
         {
@@ -229,13 +238,24 @@ public class CodeAnalyzer
                 if (attributeToCheck != null && !attrs.Contains(attributeToCheck))
                     continue;
 
+                var fullFieldCode = field.NormalizeWhitespace().ToFullString();
+
+                string pattern = @"\[ManualEdited\]\s*private\s+readonly\s+(?<type>\S+)\s+(?<name>\w+)\s*;";
+
+                var match = Regex.Match(fullFieldCode, pattern);
+  
+
                 foreach (var variable in field.Declaration.Variables)
                 {
+                    var fieldType = match.Success ? match.Groups["type"].Value : "";
+
                     classDescriptor.Fields.Add(new FieldDescriptor
                     {
                         Name = variable.Identifier.Text,
                         Attributes = attrs,
-                        Code = variable.NormalizeWhitespace().ToFullString()
+                        Code = fullFieldCode ,
+                        FieldType = fieldType,
+                        VariableName = variable.Identifier.Text,
                     });
                 }
             }

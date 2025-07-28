@@ -37,7 +37,7 @@ public partial class AuthRepository : IAuthRepository
     public async Task ConfirmationEmailAsync(ConfirmEmail body, CancellationToken cancellationToken)
     {
         var _body = _mapper.Map<ConfirmEmailRequest>(body);
-        await _apiClient.ConfirmEmailAsync(_body, cancellationToken);
+        await _apiClient.CustomMapIdentityApiApi_confirmEmailAsync(_body, cancellationToken);
     }
 
     public async Task<string> ResendConfirmationEmailAsync(ResendConfirmationEmail body, CancellationToken cancellationToken)

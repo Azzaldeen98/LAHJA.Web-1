@@ -9,10 +9,12 @@ using Infrastructure.DataSource.ApiClientBase;
 using Infrastructure.DataSource.ApiClientFactory;
 using Infrastructure.Share.Invoker;
 using Microsoft.Extensions.Configuration;
+using AutoGenerator.Attributes;
+using Shared.Exceptions;
 namespace Infrastructure.DataSource.ApiClient2;
 
 
-public interface IInvoiceApiClient : ITBaseShareApiClient 
+public interface IInvoiceApiClient :  ITBaseShareApiClient  
 {
     public Task<ICollection<InvoiceOutputVM>> GetInvoicesAsync(CancellationToken cancellationToken);
 

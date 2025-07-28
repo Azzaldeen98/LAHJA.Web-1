@@ -13,12 +13,26 @@ namespace Application.Config
     {
        
         private static string appRoot = ArchitecturalLayersRoot.ApplicationRoot;
-        public static async Task GeneratorCodeAsync()
+        public static async Task GeneratorCodeAsync(string operationType)
         {
-            //await Task.Delay(1000);
-            //await GenerateUseCaseTemplates();
-            //await Task.Delay(1000);
-            await GenerateServicesTemplates();
+
+            if (string.IsNullOrWhiteSpace(operationType) || operationType == "All")
+            {
+                await GenerateUseCaseTemplates();
+                await GenerateServicesTemplates();
+            }
+            else if (operationType == "UseCase")
+            {
+                await GenerateUseCaseTemplates();
+            }
+            else if (operationType == "Services")
+            {
+                await GenerateServicesTemplates();
+            }
+
+
+
+
         }
 
         public static async Task GenerateUseCaseTemplates()
@@ -82,6 +96,7 @@ namespace Application.Config
                      "Domain.IRepositories",
                      "Shared.Wrapper",
                      "Domain.Entity",
+
         },
                 AdditionalCode = @"
     private readonly {IPropertyType} _repository;
@@ -123,14 +138,16 @@ namespace Application.Config
                      "Application.UseCases",
                      "Shared.Wrapper",
                      "Domain.Entity",
-                     "AutoGenerator.Attributes"
+                     "AutoGenerator.Attributes",
+                     "Application.Validators",
+                     "Domain.Validators.Enums",
         },
                 AdditionalCode = @"
-                {PropertyFields}
-            public {ClassName}(   {Parameters})
-            {
-                                {InitializeFields}
-            }
+           {PropertyFields}
+        public {ClassName}(   {Parameters})
+        {
+                {InitializeFields}
+        }
 
                         ",
                 MethodContentCode = @"
